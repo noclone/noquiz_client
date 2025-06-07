@@ -18,6 +18,7 @@ class PlayerRoomLobbyPage extends StatefulWidget {
 
 class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
   late IOWebSocketChannel channel;
+  late Stream<dynamic> broadcastStream;
   List<Map<String, dynamic>> players = [];
   Map<String, dynamic>? admin;
 
@@ -32,7 +33,9 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
       channel.sink.add('{"name": "${widget.nickname}"}');
     });
 
-    channel.stream.listen((message) {
+    broadcastStream = channel.stream.asBroadcastStream();
+
+    broadcastStream.listen((message) {
       final data = jsonDecode(message);
       if (data.containsKey('room-deleted')) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -44,7 +47,7 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PlayerRoomGamePage(channel: channel,),
+            builder: (context) => PlayerRoomGamePage(channel: channel, broadcastStream: broadcastStream,),
           ),
         );
       }
