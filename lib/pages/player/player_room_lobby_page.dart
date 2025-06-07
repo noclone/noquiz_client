@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 import 'dart:convert';
 
-import 'components/player_list.dart';
+import '../../components/player_list.dart';
+import 'player_room_game_page.dart';
 
 
 class PlayerRoomLobbyPage extends StatefulWidget {
@@ -37,7 +38,15 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Admin left the room')),
         );
-        Navigator.of(context).pop();
+        Navigator.popUntil(context, ModalRoute.withName('/'));
+      }
+      else if (data.containsKey('start-game')){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlayerRoomGamePage(channel: channel,),
+          ),
+        );
       }
       else {
         setState(() {

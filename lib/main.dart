@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'menu_page.dart';
+import 'pages/menu_page.dart';
 
 void main() {
   runApp(const NoQuiz());

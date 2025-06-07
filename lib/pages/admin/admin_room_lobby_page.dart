@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:web_socket_channel/io.dart';
 import 'dart:convert';
-import 'components/player_list.dart';
+
+import '../../components/player_list.dart';
+import 'admin_room_game_page.dart';
 
 class AdminRoomLobbyPage extends StatefulWidget {
   final String roomId;
@@ -16,6 +18,7 @@ class AdminRoomLobbyPage extends StatefulWidget {
 
 class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
   late IOWebSocketChannel channel;
+  late Stream<dynamic> broadcastStream;
   List<Map<String, dynamic>> players = [];
   Map<String, dynamic>? admin;
 
@@ -30,12 +33,16 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
       channel.sink.add('{"name": "${widget.nickname}", "admin": true}');
     });
 
-    channel.stream.listen((message) {
+    broadcastStream = channel.stream.asBroadcastStream();
+
+    broadcastStream.listen((message) {
       final data = jsonDecode(message);
-      setState(() {
-        players = List<Map<String, dynamic>>.from(data['players']);
-        admin = data['admin'];
-      });
+      if (data.containsKey('players')){
+        setState(() {
+          players = List<Map<String, dynamic>>.from(data['players']);
+          admin = data['admin'];
+        });
+      }
     }, onError: (error) {
       print('WebSocket error: $error');
     }, onDone: () {
@@ -51,6 +58,16 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
 
   Future<void> _copyToClipboard() async {
     await Clipboard.setData(ClipboardData(text: widget.roomId));
+  }
+
+  void _startGame() {
+    channel.sink.add('{"start-game": true}');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AdminRoomGamePage(roomId: widget.roomId, broadcastStream: broadcastStream),
+      ),
+    );
   }
 
   @override
@@ -72,9 +89,23 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: PlayerList(players: players, admin: admin),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: PlayerList(players: players, admin: admin),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _startGame,
+                child: const Text('Start Game'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

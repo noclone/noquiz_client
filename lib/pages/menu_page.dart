@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:noquiz_client/player_room_lobby_page.dart';
+import 'package:noquiz_client/pages/player/player_room_lobby_page.dart';
 import 'dart:convert';
-import 'admin_room_lobby_page.dart';
+import 'admin/admin_room_lobby_page.dart';
 
 class MenuPage extends StatefulWidget {
   final String nickname;
