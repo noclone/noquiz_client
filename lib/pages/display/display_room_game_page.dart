@@ -15,6 +15,7 @@ class DisplayRoomGamePage extends StatefulWidget {
 class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
   late IOWebSocketChannel channel;
   String currentQuestion = 'Waiting for a question...';
+  String currentAnswer = '';
   List<Map<String, dynamic>> players = [];
 
   @override
@@ -38,6 +39,7 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
       } else if (data.containsKey('new-question')) {
         setState(() {
           currentQuestion = data['new-question'];
+          currentAnswer = data['answer'] ?? '';
         });
       }
     }, onError: (error) {
@@ -133,47 +135,89 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Player Answers'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: players.length,
-              itemBuilder: (context, index) {
-                final player = players[index];
-                return Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        player['name'],
-                        style: const TextStyle(fontSize: 20),
+        bool showAnswer = false;
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Player Answers'),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (showAnswer && currentAnswer.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Text(
+                          'Answer: $currentAnswer',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 10),
-                      Text(
-                        player['current_answer'] ?? 'No answer',
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+                    if (!showAnswer && currentAnswer.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              showAnswer = true;
+                            });
+                          },
+                          child: const Text('Show Answer'),
+                        ),
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+                    Expanded(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: players.length,
+                        itemBuilder: (context, index) {
+                          final player = players[index];
+                          return Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  player['name'],
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  player['current_answer'] ?? 'No answer',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Close'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
+
 
   @override
   void dispose() {
@@ -213,6 +257,29 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
                   heroTag: 'scoresButton',
                   child: const Icon(Icons.score),
                 ),
+                const SizedBox(width: 10),
+                FloatingActionButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        content: Text(
+                          currentAnswer.isNotEmpty ? currentAnswer : 'Answer not available.',
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Close'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  heroTag: 'showAnswerButton',
+                  child: const Icon(Icons.lightbulb),
+                ),
+
               ],
             ),
           ),

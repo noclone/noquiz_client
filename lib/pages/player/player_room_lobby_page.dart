@@ -51,7 +51,7 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
           ),
         );
       }
-      else {
+      else if (data.containsKey('players')) {
         setState(() {
           players = List<Map<String, dynamic>>.from(data['players']);
           admin = data['admin'];

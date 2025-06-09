@@ -45,7 +45,7 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
   void _submitNumber() {
     final number = _numberController.text;
     if (number.isNotEmpty) {
-      widget.channel.sink.add(jsonEncode({"answer": number}));
+      widget.channel.sink.add(jsonEncode({"player-answer": number}));
       _numberController.clear();
     }
   }
