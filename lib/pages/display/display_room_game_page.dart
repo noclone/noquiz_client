@@ -65,6 +65,24 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
     }
   }
 
+  Future<void> fetchPlayerAnswers() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          players = List<Map<String, dynamic>>.from(data['players']);
+        });
+        print(players);
+        _showPlayerAnswers();
+      } else {
+        print('Failed to load player answers');
+      }
+    } catch (e) {
+      print('Error fetching player answers: $e');
+    }
+  }
+
   void _showPlayerScores() {
     showDialog(
       context: context,
@@ -111,6 +129,51 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
     );
   }
 
+  void _showPlayerAnswers() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Player Answers'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: players.length,
+              itemBuilder: (context, index) {
+                final player = players[index];
+                return Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        player['name'],
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        player['current_answer'] ?? 'No answer',
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void dispose() {
@@ -136,9 +199,21 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
           Positioned(
             bottom: 16,
             right: 16,
-            child: FloatingActionButton(
-              onPressed: fetchRoomState,
-              child: const Icon(Icons.score),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  onPressed: fetchPlayerAnswers,
+                  heroTag: 'answersButton',
+                  child: const Icon(Icons.comment),
+                ),
+                const SizedBox(width: 10),
+                FloatingActionButton(
+                  onPressed: fetchRoomState,
+                  heroTag: 'scoresButton',
+                  child: const Icon(Icons.score),
+                ),
+              ],
             ),
           ),
         ],
