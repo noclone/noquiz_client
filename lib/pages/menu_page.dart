@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:noquiz_client/pages/player/player_room_lobby_page.dart';
 import 'dart:convert';
 import 'admin/admin_room_lobby_page.dart';
-import 'display/display_room_game_page.dart';
+import 'display/game_page/display_room_game_page.dart';
 
 class MenuPage extends StatefulWidget {
   final String nickname;

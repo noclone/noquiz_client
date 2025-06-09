@@ -4,7 +4,7 @@ import 'package:web_socket_channel/io.dart';
 import 'dart:convert';
 
 import '../../components/player_list.dart';
-import 'admin_room_game_page.dart';
+import 'game_page/admin_room_game_page.dart';
 
 class AdminRoomLobbyPage extends StatefulWidget {
   final String roomId;
