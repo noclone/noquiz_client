@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/io.dart';
 
 class QuestionsSection extends StatefulWidget {
   final String roomId;
   final Set<int> correctAnswers;
   final Set<int> wrongAnswers;
+  final IOWebSocketChannel channel;
 
   const QuestionsSection({
     super.key,
     required this.roomId,
     required this.correctAnswers,
     required this.wrongAnswers,
+    required this.channel,
   });
 
   @override
@@ -103,8 +106,7 @@ class _QuestionsSectionState extends State<QuestionsSection> {
     if (question.containsKey("image")) {
       dict["image"] = question["image"];
     }
-    // Assuming you have access to the channel or a callback to send the question
-    // widget.channel.sink.add(jsonEncode(dict));
+    widget.channel.sink.add(jsonEncode(dict));
 
     setState(() {
       sentQuestionIndices.add(index);

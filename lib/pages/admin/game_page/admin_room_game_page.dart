@@ -86,6 +86,7 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
                     roomId: widget.roomId,
                     correctAnswers: correctAnswers,
                     wrongAnswers: wrongAnswers,
+                    channel: widget.channel,
                   ),
                 ),
                 Container(

@@ -19,6 +19,7 @@ class BuzzesSection extends StatelessWidget {
       ),
       child: Column(
         children: [
+          const SizedBox(height: 10),
           ElevatedButton(
             onPressed: onResetBuzzers,
             child: const Text('Reset Buzzers'),

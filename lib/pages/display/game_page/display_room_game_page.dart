@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/io.dart';
 import 'question_display.dart';
 import 'player_scores_dialog.dart';
@@ -60,6 +61,41 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
     }, onDone: () {
       print('WebSocket connection closed');
     });
+  }
+
+  Future<void> fetchRoomState() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          players = List<Map<String, dynamic>>.from(data['players']);
+          players.sort((a, b) => b['score'].compareTo(a['score']));
+        });
+        PlayerScoresDialog.show(context, players);
+      } else {
+        print('Failed to load room state');
+      }
+    } catch (e) {
+      print('Error fetching room state: $e');
+    }
+  }
+
+  Future<void> fetchPlayerAnswers() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          players = List<Map<String, dynamic>>.from(data['players']);
+        });
+        PlayerAnswersDialog.show(context, players, currentAnswer);
+      } else {
+        print('Failed to load player answers');
+      }
+    } catch (e) {
+      print('Error fetching player answers: $e');
+    }
   }
 
   void startTimer(int duration) {
@@ -134,13 +170,13 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 FloatingActionButton(
-                  onPressed: () => PlayerAnswersDialog.show(context, players, currentAnswer),
+                  onPressed: () => fetchPlayerAnswers(),
                   heroTag: 'answersButton',
                   child: const Icon(Icons.comment),
                 ),
                 const SizedBox(width: 10),
                 FloatingActionButton(
-                  onPressed: () => PlayerScoresDialog.show(context, players),
+                  onPressed: () => fetchRoomState(),
                   heroTag: 'scoresButton',
                   child: const Icon(Icons.score),
                 ),

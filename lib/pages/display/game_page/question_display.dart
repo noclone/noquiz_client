@@ -34,7 +34,7 @@ class QuestionDisplay extends StatelessWidget {
               style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
             ),
           ),
-        if (imageUrl != null && remainingTime <= 0)
+        if (imageUrl != null && imageUrl != "" && remainingTime <= 0)
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Image.network(imageUrl!),
