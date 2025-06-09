@@ -6,6 +6,7 @@ import 'package:web_socket_channel/io.dart';
 import 'question_display.dart';
 import 'player_scores_dialog.dart';
 import 'player_answers_dialog.dart';
+import 'themes_dialog.dart';
 
 class DisplayRoomGamePage extends StatefulWidget {
   final String roomId;
@@ -55,6 +56,8 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
         pauseTimer();
       } else if (data.containsKey('reset-timer')) {
         resetTimer();
+      } else if (data.containsKey('show-themes')) {
+        ThemesDialog.show(context, List<String>.from(data['show-themes']));
       }
     }, onError: (error) {
       print('WebSocket error: $error');
@@ -153,7 +156,7 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Display Room: ${widget.roomId}'),
+        title: const Text('Display Room'),
       ),
       body: Stack(
         children: [

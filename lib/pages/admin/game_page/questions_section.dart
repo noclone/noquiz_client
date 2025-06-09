@@ -127,6 +127,12 @@ class _QuestionsSectionState extends State<QuestionsSection> {
     });
   }
 
+  void showThemes() {
+    widget.channel.sink.add(jsonEncode({
+      "show-themes": themes
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -172,16 +178,26 @@ class _QuestionsSectionState extends State<QuestionsSection> {
                             height: 50,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              itemCount: themes.length,
+                              itemCount: themes.length + 1,
                               itemBuilder: (context, index) {
-                                final theme = themes[index];
-                                return Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: ElevatedButton(
-                                    onPressed: () => fetchThemeQuestions(theme),
-                                    child: Text(theme),
-                                  ),
-                                );
+                                if (index < themes.length) {
+                                  final theme = themes[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: ElevatedButton(
+                                      onPressed: () => fetchThemeQuestions(theme),
+                                      child: Text(theme),
+                                    ),
+                                  );
+                                } else {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: IconButton(
+                                      icon: const Icon(Icons.screen_share),
+                                      onPressed: () => showThemes(),
+                                    ),
+                                  );
+                                }
                               },
                             ),
                           ),
