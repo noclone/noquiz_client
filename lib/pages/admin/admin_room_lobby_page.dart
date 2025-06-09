@@ -65,7 +65,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AdminRoomGamePage(roomId: widget.roomId, channel: channel, broadcastStream: broadcastStream),
+        builder: (context) => AdminRoomGamePage(roomId: widget.roomId, channel: channel, broadcastStream: broadcastStream, players: players),
       ),
     );
   }
