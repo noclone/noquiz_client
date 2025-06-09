@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:noquiz_client/pages/player/player_room_lobby_page.dart';
 import 'dart:convert';
 import 'admin/admin_room_lobby_page.dart';
+import 'display/display_room_game_page.dart';
 
 class MenuPage extends StatefulWidget {
   final String nickname;
@@ -101,6 +102,43 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
+  Future<void> _displayRoom() async {
+    final roomId = _roomIdController.text.trim();
+    if (roomId.isEmpty) {
+      _showErrorDialog('Please enter a room ID.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final url = Uri.parse('http://localhost:8000/api/rooms/$roomId');
+      final response = await http.get(url);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response.statusCode == 200) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DisplayRoomGamePage(roomId: roomId),
+          ),
+        );
+      } else {
+        _showErrorDialog('Room not found');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      _showErrorDialog('An error occurred: $e');
+    }
+  }
+
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -166,18 +204,36 @@ class _MenuPageState extends State<MenuPage> {
           Positioned(
             bottom: 20,
             right: 20,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _createRoom,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              ),
-              child: _isLoading
-                  ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-              )
-                  : const Text('Admin: Create Room'),
+            child: Row(
+              children: [
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _displayRoom,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  )
+                      : const Text('Display'),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _createRoom,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  )
+                      : const Text('Admin: Create Room'),
+                ),
+              ],
             ),
           ),
         ],

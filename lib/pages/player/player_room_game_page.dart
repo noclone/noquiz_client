@@ -33,7 +33,7 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
     setState(() {
       isBuzzerEnabled = false;
     });
-    widget.channel.sink.add('{"buzz": true}');
+    widget.channel.sink.add(jsonEncode({"buzz": true}));
   }
 
   @override

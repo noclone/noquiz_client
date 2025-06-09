@@ -30,7 +30,7 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
     );
 
     channel.ready.then((_) {
-      channel.sink.add('{"name": "${widget.nickname}"}');
+      channel.sink.add(jsonEncode({"name": widget.nickname}));
     });
 
     broadcastStream = channel.stream.asBroadcastStream();

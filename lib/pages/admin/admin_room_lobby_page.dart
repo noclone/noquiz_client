@@ -30,7 +30,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
     );
 
     channel.ready.then((_) {
-      channel.sink.add('{"name": "${widget.nickname}", "admin": true}');
+      channel.sink.add(jsonEncode({"name": widget.nickname, "admin": true}));
     });
 
     broadcastStream = channel.stream.asBroadcastStream();
@@ -61,7 +61,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
   }
 
   void _startGame() {
-    channel.sink.add('{"start-game": true}');
+    channel.sink.add(jsonEncode({"start-game": true}));
     Navigator.push(
       context,
       MaterialPageRoute(
