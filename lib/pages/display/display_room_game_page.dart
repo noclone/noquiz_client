@@ -16,6 +16,7 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
   late IOWebSocketChannel channel;
   String currentQuestion = 'Waiting for a question...';
   String currentAnswer = '';
+  String? imageUrl;
   List<Map<String, dynamic>> players = [];
 
   @override
@@ -40,6 +41,7 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
         setState(() {
           currentQuestion = data['new-question'];
           currentAnswer = data['answer'] ?? '';
+          imageUrl = data['image']; // Capture the image URL if present
         });
       }
     }, onError: (error) {
@@ -75,7 +77,6 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
         setState(() {
           players = List<Map<String, dynamic>>.from(data['players']);
         });
-        print(players);
         _showPlayerAnswers();
       } else {
         print('Failed to load player answers');
@@ -218,7 +219,6 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
     );
   }
 
-
   @override
   void dispose() {
     channel.sink.close();
@@ -233,12 +233,22 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
       ),
       body: Stack(
         children: [
-          Center(
-            child: Text(
-              currentQuestion,
-              style: const TextStyle(fontSize: 24),
-              textAlign: TextAlign.center,
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Text(
+                  currentQuestion,
+                  style: const TextStyle(fontSize: 24),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              if (imageUrl != null)
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Image.network(imageUrl!),
+                ),
+            ],
           ),
           Positioned(
             bottom: 16,
@@ -279,7 +289,6 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
                   heroTag: 'showAnswerButton',
                   child: const Icon(Icons.lightbulb),
                 ),
-
               ],
             ),
           ),

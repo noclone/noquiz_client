@@ -75,13 +75,17 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
   }
 
   void sendQuestionToSocket(int index) {
-    // _resetBuzzers();
+    _resetBuzzers();
     final question = questions[index];
-    widget.channel.sink.add(jsonEncode({
+    var dict = {
       "new-question": question['question'],
       "answer": question['answer'],
       "expected_answer_type": question['expected_answer_type']
-    }));
+    };
+    if (question.containsKey("image")){
+      dict["image"] = question["image"];
+    }
+    widget.channel.sink.add(jsonEncode(dict));
 
     setState(() {
       sentQuestionIndices.add(index);
