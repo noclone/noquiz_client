@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -26,48 +25,10 @@ class AdminRoomGamePage extends StatefulWidget {
 }
 
 class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
-  List<Map<String, dynamic>> buzzes = [];
-  Set<int> correctAnswers = {};
-  Set<int> wrongAnswers = {};
-  final TextEditingController _timerController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('buzz')) {
-        setState(() {
-          buzzes.add({
-            'name': data['buzz'][0],
-            'time': data['buzz'][1],
-          });
-          buzzes.sort((a, b) => a['time'].compareTo(b['time']));
-        });
-      }
-    });
-  }
-
-  void _resetBuzzers() {
-    setState(() {
-      buzzes.clear();
-    });
-    widget.channel.sink.add(jsonEncode({"reset-buzzer": true}));
-  }
-
-  void _startTimer() {
-    final duration = int.tryParse(_timerController.text) ?? 0;
-    if (duration > 0) {
-      widget.channel.sink.add(jsonEncode({"start-timer": duration}));
-    }
-  }
-
-  void _pauseTimer() {
-    widget.channel.sink.add(jsonEncode({"pause-timer": true}));
-  }
-
-  void _resetTimer() {
-    widget.channel.sink.add(jsonEncode({"reset-timer": true}));
   }
 
   @override
@@ -84,8 +45,6 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
                 Expanded(
                   child: QuestionsSection(
                     roomId: widget.roomId,
-                    correctAnswers: correctAnswers,
-                    wrongAnswers: wrongAnswers,
                     channel: widget.channel,
                   ),
                 ),
@@ -108,14 +67,12 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
                           child: TabBarView(
                             children: [
                               BuzzesSection(
-                                buzzes: buzzes,
-                                onResetBuzzers: _resetBuzzers,
+                                channel: widget.channel,
+                                broadcastStream: widget.broadcastStream,
                               ),
                               TimerSection(
-                                timerController: _timerController,
-                                onStartTimer: _startTimer,
-                                onPauseTimer: _pauseTimer,
-                                onResetTimer: _resetTimer,
+                                channel: widget.channel,
+                                broadcastStream: widget.broadcastStream,
                               ),
                             ],
                           ),

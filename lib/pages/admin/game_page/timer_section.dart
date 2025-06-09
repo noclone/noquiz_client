@@ -1,17 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
 
 class TimerSection extends StatefulWidget {
-  final TextEditingController timerController;
-  final VoidCallback onStartTimer;
-  final VoidCallback onPauseTimer;
-  final VoidCallback onResetTimer;
+
+  final IOWebSocketChannel channel;
+  final Stream<dynamic> broadcastStream;
 
   const TimerSection({
     super.key,
-    required this.timerController,
-    required this.onStartTimer,
-    required this.onPauseTimer,
-    required this.onResetTimer,
+    required this.channel,
+    required this.broadcastStream,
   });
 
   @override
@@ -20,15 +20,31 @@ class TimerSection extends StatefulWidget {
 
 class _TimerSectionState extends State<TimerSection> {
   bool isTimerRunning = false;
+  final TextEditingController _timerController = TextEditingController();
+
+  void _startTimer() {
+    final duration = int.tryParse(_timerController.text) ?? 0;
+    if (duration > 0) {
+      widget.channel.sink.add(jsonEncode({"start-timer": duration}));
+    }
+  }
+
+  void _pauseTimer() {
+    widget.channel.sink.add(jsonEncode({"pause-timer": true}));
+  }
+
+  void _resetTimer() {
+    widget.channel.sink.add(jsonEncode({"reset-timer": true}));
+  }
 
   void toggleTimer() {
     setState(() {
       isTimerRunning = !isTimerRunning;
     });
     if (isTimerRunning) {
-      widget.onStartTimer();
+      _startTimer();
     } else {
-      widget.onPauseTimer();
+      _pauseTimer();
     }
   }
 
@@ -39,7 +55,7 @@ class _TimerSectionState extends State<TimerSection> {
       child: Column(
         children: [
           TextField(
-            controller: widget.timerController,
+            controller: _timerController,
             decoration: const InputDecoration(
               labelText: 'Enter time in seconds',
               border: OutlineInputBorder(),
@@ -57,7 +73,7 @@ class _TimerSectionState extends State<TimerSection> {
               setState(() {
                 isTimerRunning = false;
               });
-              widget.onResetTimer();
+              _resetTimer();
             },
             child: const Text('Reset Timer'),
           ),

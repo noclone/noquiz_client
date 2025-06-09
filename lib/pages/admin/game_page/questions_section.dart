@@ -5,15 +5,11 @@ import 'package:web_socket_channel/io.dart';
 
 class QuestionsSection extends StatefulWidget {
   final String roomId;
-  final Set<int> correctAnswers;
-  final Set<int> wrongAnswers;
   final IOWebSocketChannel channel;
 
   const QuestionsSection({
     super.key,
     required this.roomId,
-    required this.correctAnswers,
-    required this.wrongAnswers,
     required this.channel,
   });
 
@@ -26,6 +22,9 @@ class _QuestionsSectionState extends State<QuestionsSection> {
   Set<int> sentQuestionIndices = {};
   List<String> themes = [];
   List<Map<String, dynamic>> themeQuestions = [];
+
+  Set<int> correctAnswers = {};
+  Set<int> wrongAnswers = {};
 
   @override
   void initState() {
@@ -77,8 +76,8 @@ class _QuestionsSectionState extends State<QuestionsSection> {
         final data = jsonDecode(response.body);
         setState(() {
           themeQuestions = List<Map<String, dynamic>>.from(data);
-          widget.correctAnswers.clear();
-          widget.wrongAnswers.clear();
+          correctAnswers.clear();
+          wrongAnswers.clear();
         });
       } else {
         print('Failed to load theme questions');
@@ -115,15 +114,15 @@ class _QuestionsSectionState extends State<QuestionsSection> {
 
   void markAsCorrect(int index) {
     setState(() {
-      widget.wrongAnswers.remove(index);
-      widget.correctAnswers.add(index);
+     wrongAnswers.remove(index);
+     correctAnswers.add(index);
     });
   }
 
   void markAsWrong(int index) {
     setState(() {
-      widget.correctAnswers.remove(index);
-      widget.wrongAnswers.add(index);
+     correctAnswers.remove(index);
+     wrongAnswers.add(index);
     });
   }
 
@@ -208,9 +207,9 @@ class _QuestionsSectionState extends State<QuestionsSection> {
                                 final question = themeQuestions[index];
                                 return Card(
                                   margin: const EdgeInsets.all(8.0),
-                                  color: widget.correctAnswers.contains(index)
+                                  color: correctAnswers.contains(index)
                                       ? Colors.green
-                                      : widget.wrongAnswers.contains(index)
+                                      : wrongAnswers.contains(index)
                                       ? Colors.red
                                       : null,
                                   child: ListTile(

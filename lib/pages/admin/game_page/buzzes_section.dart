@@ -1,14 +1,49 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class BuzzesSection extends StatelessWidget {
-  final List<Map<String, dynamic>> buzzes;
-  final VoidCallback onResetBuzzers;
+import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
+
+class BuzzesSection extends StatefulWidget {
+  final IOWebSocketChannel channel;
+  final Stream<dynamic> broadcastStream;
 
   const BuzzesSection({
     super.key,
-    required this.buzzes,
-    required this.onResetBuzzers,
+    required this.channel,
+    required this.broadcastStream,
   });
+
+  @override
+  State<BuzzesSection> createState() => _BuzzesSectionState();
+}
+
+class _BuzzesSectionState extends State<BuzzesSection> {
+  List<Map<String, dynamic>> buzzes = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.broadcastStream.listen((message) {
+      final data = jsonDecode(message);
+      if (data.containsKey('buzz')) {
+        setState(() {
+          buzzes.add({
+            'name': data['buzz'][0],
+            'time': data['buzz'][1],
+          });
+          buzzes.sort((a, b) => a['time'].compareTo(b['time']));
+        });
+      }
+    });
+  }
+
+  void resetBuzzers() {
+    setState(() {
+      buzzes.clear();
+    });
+    widget.channel.sink.add(jsonEncode({"reset-buzzer": true}));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +56,7 @@ class BuzzesSection extends StatelessWidget {
         children: [
           const SizedBox(height: 10),
           ElevatedButton(
-            onPressed: onResetBuzzers,
+            onPressed: resetBuzzers,
             child: const Text('Reset Buzzers'),
           ),
           Expanded(
