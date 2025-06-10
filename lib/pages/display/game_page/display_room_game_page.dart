@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/io.dart';
 import 'question_display.dart';
 import 'player_scores_dialog.dart';
@@ -23,8 +21,7 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
   String currentAnswer = '';
   String? imageUrl;
   List<Map<String, dynamic>> players = [];
-  Timer? countdownTimer;
-  int remainingTime = 0;
+  late Stream<dynamic> broadcastStream;
 
   @override
   void initState() {
@@ -37,7 +34,8 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
       channel.sink.add(jsonEncode({"name": "display_${widget.roomId}", "display": true}));
     });
 
-    channel.stream.listen((message) {
+    broadcastStream = channel.stream.asBroadcastStream();
+    broadcastStream.listen((message) {
       final data = jsonDecode(message);
       if (data.containsKey('room-deleted')) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -50,12 +48,6 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
           currentAnswer = data['answer'] ?? '';
           imageUrl = data['image'];
         });
-      } else if (data.containsKey('start-timer')) {
-        startTimer(data['start-timer'] * 1000);
-      } else if (data.containsKey('pause-timer')) {
-        pauseTimer();
-      } else if (data.containsKey('reset-timer')) {
-        resetTimer();
       } else if (data.containsKey('show-themes')) {
         ThemesDialog.show(context, List<String>.from(data['show-themes']));
       }
@@ -66,88 +58,8 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
     });
   }
 
-  Future<void> fetchRoomState() async {
-    try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}'));
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        setState(() {
-          players = List<Map<String, dynamic>>.from(data['players']);
-          players.sort((a, b) => b['score'].compareTo(a['score']));
-        });
-        PlayerScoresDialog.show(context, players);
-      } else {
-        print('Failed to load room state');
-      }
-    } catch (e) {
-      print('Error fetching room state: $e');
-    }
-  }
-
-  Future<void> fetchPlayerAnswers() async {
-    try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}'));
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        setState(() {
-          players = List<Map<String, dynamic>>.from(data['players']);
-        });
-        PlayerAnswersDialog.show(context, players, currentAnswer);
-      } else {
-        print('Failed to load player answers');
-      }
-    } catch (e) {
-      print('Error fetching player answers: $e');
-    }
-  }
-
-  void startTimer(int duration) {
-    if (remainingTime == 0) {
-      setState(() {
-        remainingTime = duration;
-      });
-    }
-
-    countdownTimer?.cancel();
-
-    const oneMs = Duration(milliseconds: 10);
-    countdownTimer = Timer.periodic(oneMs, (timer) {
-      setState(() {
-        if (remainingTime > 0) {
-          remainingTime -= 10;
-        } else {
-          countdownTimer?.cancel();
-        }
-      });
-    });
-  }
-
-  void pauseTimer() {
-    countdownTimer?.cancel();
-  }
-
-  void resetTimer() {
-    countdownTimer?.cancel();
-    setState(() {
-      remainingTime = 0;
-    });
-  }
-
-  String formatTime(int milliseconds) {
-    int hundreds = (milliseconds / 10).truncate();
-    int seconds = (hundreds / 100).truncate();
-    int minutes = (seconds / 60).truncate();
-
-    String minutesStr = (minutes % 60).toString().padLeft(2, '0');
-    String secondsStr = (seconds % 60).toString().padLeft(2, '0');
-    String hundredsStr = (hundreds % 100).toString().padLeft(2, '0');
-
-    return "$minutesStr:$secondsStr:$hundredsStr";
-  }
-
   @override
   void dispose() {
-    countdownTimer?.cancel();
     channel.sink.close();
     super.dispose();
   }
@@ -161,10 +73,9 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
       body: Stack(
         children: [
           QuestionDisplay(
-            question: remainingTime > 0 ? '' : currentQuestion,
+            question: currentQuestion,
             imageUrl: imageUrl,
-            remainingTime: remainingTime,
-            formatTime: formatTime,
+            broadcastStream: broadcastStream,
           ),
           Positioned(
             bottom: 16,
@@ -173,13 +84,28 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 FloatingActionButton(
-                  onPressed: () => fetchPlayerAnswers(),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => PlayerAnswersDialog(
+                        roomId: widget.roomId,
+                        currentAnswer: currentAnswer,
+                      ),
+                    );
+                  },
                   heroTag: 'answersButton',
                   child: const Icon(Icons.comment),
                 ),
                 const SizedBox(width: 10),
                 FloatingActionButton(
-                  onPressed: () => fetchRoomState(),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => PlayerScoresDialog(
+                        roomId: widget.roomId,
+                      ),
+                    );
+                  },
                   heroTag: 'scoresButton',
                   child: const Icon(Icons.score),
                 ),
