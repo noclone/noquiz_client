@@ -73,6 +73,13 @@ class _QuestionsSectionState extends State<QuestionsSection> {
     });
   }
 
+  void sendShowAnswersToSocket(int index) {
+    final question = questions[index];
+    widget.channel.sink.add(jsonEncode({
+      "show-answer": question['question'],
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -95,6 +102,10 @@ class _QuestionsSectionState extends State<QuestionsSection> {
                 IconButton(
                   icon: const Icon(Icons.send),
                   onPressed: () => sendQuestionToSocket(index),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.visibility),
+                  onPressed: () => sendShowAnswersToSocket(index),
                 ),
               ],
             ),

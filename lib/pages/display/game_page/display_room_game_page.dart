@@ -2,10 +2,20 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 import 'question_display.dart';
-import 'player_scores_dialog.dart';
-import 'player_answers_dialog.dart';
-import 'themes_dialog.dart';
-import 'theme_answers_dialog.dart';
+import 'player_scores_display.dart';
+import 'player_answers_display.dart';
+import 'themes_display.dart';
+import 'theme_answers_display.dart';
+import 'answer_display.dart';
+
+enum DisplayState {
+  question,
+  playerAnswers,
+  playerScores,
+  themes,
+  themeAnswers,
+  answer,
+}
 
 class DisplayRoomGamePage extends StatefulWidget {
   final String roomId;
@@ -21,8 +31,10 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
   String currentQuestion = 'Waiting for a question...';
   String currentAnswer = '';
   String? imageUrl;
-  List<Map<String, dynamic>> players = [];
+  List<String> themes = [];
+  List<dynamic> themeAnswers = [];
   late Stream<dynamic> broadcastStream;
+  DisplayState currentDisplayState = DisplayState.question;
 
   @override
   void initState() {
@@ -48,26 +60,36 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
           currentQuestion = data['new-question'];
           currentAnswer = data['answer'] ?? '';
           imageUrl = data['image'];
+          currentDisplayState = DisplayState.question;
         });
       } else if (data.containsKey('show-themes')) {
-        ThemesDialog.show(context, List<String>.from(data['show-themes']));
+        setState(() {
+          themes = List<String>.from(data['show-themes']);
+          currentDisplayState = DisplayState.themes;
+        });
       } else if (data.containsKey('theme-answers')) {
-        showThemeAnswersDialog(data['theme-answers']);
+        setState(() {
+          themeAnswers = data['theme-answers'];
+          currentDisplayState = DisplayState.themeAnswers;
+        });
+      } else if (data.containsKey('show-players-scores')) {
+        setState(() {
+          currentDisplayState = DisplayState.playerScores;
+        });
+      } else if (data.containsKey('show-players-answers')) {
+        setState(() {
+          currentDisplayState = DisplayState.playerAnswers;
+        });
+      } else if (data.containsKey('show-answer')) {
+        setState(() {
+          currentDisplayState = DisplayState.answer;
+        });
       }
     }, onError: (error) {
       print('WebSocket error: $error');
     }, onDone: () {
       print('WebSocket connection closed');
     });
-  }
-
-  void showThemeAnswersDialog(List<dynamic> themeAnswers) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ThemeAnswersDialog(themeAnswers: themeAnswers);
-      },
-    );
   }
 
   @override
@@ -82,70 +104,30 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
       appBar: AppBar(
         title: const Text('Display Room'),
       ),
-      body: Stack(
-        children: [
-          QuestionDisplay(
-            question: currentQuestion,
-            imageUrl: imageUrl,
-            broadcastStream: broadcastStream,
-          ),
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FloatingActionButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => PlayerAnswersDialog(
-                        roomId: widget.roomId,
-                        currentAnswer: currentAnswer,
-                      ),
-                    );
-                  },
-                  heroTag: 'answersButton',
-                  child: const Icon(Icons.comment),
-                ),
-                const SizedBox(width: 10),
-                FloatingActionButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => PlayerScoresDialog(
-                        roomId: widget.roomId,
-                      ),
-                    );
-                  },
-                  heroTag: 'scoresButton',
-                  child: const Icon(Icons.score),
-                ),
-                const SizedBox(width: 10),
-                FloatingActionButton(
-                  onPressed: () => showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      content: Text(
-                        currentAnswer.isNotEmpty ? currentAnswer : 'Answer not available.',
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Close'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  heroTag: 'showAnswerButton',
-                  child: const Icon(Icons.lightbulb),
-                ),
-              ],
-            ),
-          ),
-        ],
+      body: Center(
+        child: buildDisplay(),
       ),
     );
+  }
+
+  Widget buildDisplay() {
+    switch (currentDisplayState) {
+      case DisplayState.question:
+        return QuestionDisplay(
+          question: currentQuestion,
+          imageUrl: imageUrl,
+          broadcastStream: broadcastStream,
+        );
+      case DisplayState.playerScores:
+        return PlayerScoresDisplay(roomId: widget.roomId);
+      case DisplayState.playerAnswers:
+        return PlayerAnswersDisplay(roomId: widget.roomId, currentAnswer: currentAnswer);
+      case DisplayState.themes:
+        return ThemesDisplay(themes: themes);
+      case DisplayState.themeAnswers:
+        return ThemeAnswersDisplay(themeAnswers: themeAnswers);
+      case DisplayState.answer:
+        return AnswerDisplay(answer: currentAnswer);
+      }
   }
 }

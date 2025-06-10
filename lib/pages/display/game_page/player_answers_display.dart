@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class PlayerAnswersDialog extends StatefulWidget {
+class PlayerAnswersDisplay extends StatefulWidget {
   final String roomId;
   final String currentAnswer;
 
-  const PlayerAnswersDialog({
-    Key? key,
+  const PlayerAnswersDisplay({
+    super.key,
     required this.roomId,
     required this.currentAnswer,
-  }) : super(key: key);
+  });
 
   @override
-  _PlayerAnswersDialogState createState() => _PlayerAnswersDialogState();
+  State<PlayerAnswersDisplay> createState() => _PlayerAnswersDisplayState();
 }
 
-class _PlayerAnswersDialogState extends State<PlayerAnswersDialog> {
+class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
   bool showAnswer = false;
   List<Map<String, dynamic>> players = [];
 
@@ -44,13 +44,30 @@ class _PlayerAnswersDialogState extends State<PlayerAnswersDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Player Answers'),
-      content: SizedBox(
-        width: double.maxFinite,
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 500),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const Text(
+              'Player Answers',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
             if (showAnswer && widget.currentAnswer.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
@@ -108,14 +125,6 @@ class _PlayerAnswersDialogState extends State<PlayerAnswersDialog> {
           ],
         ),
       ),
-      actions: <Widget>[
-        TextButton(
-          child: const Text('Close'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
     );
   }
 }
