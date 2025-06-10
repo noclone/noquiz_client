@@ -5,6 +5,7 @@ import 'question_display.dart';
 import 'player_scores_dialog.dart';
 import 'player_answers_dialog.dart';
 import 'themes_dialog.dart';
+import 'theme_answers_dialog.dart';
 
 class DisplayRoomGamePage extends StatefulWidget {
   final String roomId;
@@ -50,12 +51,23 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
         });
       } else if (data.containsKey('show-themes')) {
         ThemesDialog.show(context, List<String>.from(data['show-themes']));
+      } else if (data.containsKey('theme-answers')) {
+        showThemeAnswersDialog(data['theme-answers']);
       }
     }, onError: (error) {
       print('WebSocket error: $error');
     }, onDone: () {
       print('WebSocket connection closed');
     });
+  }
+
+  void showThemeAnswersDialog(List<dynamic> themeAnswers) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ThemeAnswersDialog(themeAnswers: themeAnswers);
+      },
+    );
   }
 
   @override

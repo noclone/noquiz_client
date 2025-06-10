@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/pages/admin/game_page/modes_section.dart';
 import 'package:web_socket_channel/io.dart';
 
 import 'buzzes_section.dart';
-import 'questions_section.dart';
 import 'scores_section.dart';
 import 'timer_section.dart';
 
@@ -43,7 +43,7 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
             child: Row(
               children: [
                 Expanded(
-                  child: QuestionsSection(
+                  child: ModesSection(
                     roomId: widget.roomId,
                     channel: widget.channel,
                   ),
