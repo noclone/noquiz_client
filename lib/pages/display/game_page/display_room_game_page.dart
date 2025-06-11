@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
+import '../../../utils/visibility_component.dart';
 import 'display_state.dart';
 import 'question_display.dart';
 import 'player_scores_display.dart';
@@ -137,15 +138,4 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
       ),
     );
   }
-
-  Widget buildComponent({required bool visible, required Widget child}) {
-    return Visibility(
-      visible: visible,
-      maintainState: true,
-      maintainAnimation: true,
-      maintainSize: true,
-      child: child,
-    );
-  }
-
 }

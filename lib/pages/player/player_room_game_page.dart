@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:web_socket_channel/io.dart';
+import '../../utils/visibility_component.dart';
+import 'number_input.dart';
+import 'buzzer.dart';
+
+enum AnswerType {
+  none,
+  number,
+}
 
 class PlayerRoomGamePage extends StatefulWidget {
   final IOWebSocketChannel channel;
@@ -13,41 +21,27 @@ class PlayerRoomGamePage extends StatefulWidget {
 }
 
 class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
-  bool isBuzzerEnabled = true;
-  String? expectedAnswerType;
-  final TextEditingController _numberController = TextEditingController();
+  AnswerType expectedAnswerType = AnswerType.none;
 
   @override
   void initState() {
     super.initState();
     widget.broadcastStream.listen((message) {
       final data = jsonDecode(message);
-      if (data.containsKey('reset-buzzer')) {
-        setState(() {
-          isBuzzerEnabled = true;
-        });
-      }
       if (data.containsKey('new-question')) {
         setState(() {
-          expectedAnswerType = data['expected_answer_type'];
+          if (data['expected_answer_type'] == 'NONE') {
+            expectedAnswerType = AnswerType.none;
+          } else if (data['expected_answer_type'] == 'NUMBER') {
+            expectedAnswerType = AnswerType.number;
+          }
         });
       }
+    }, onError: (error) {
+      print('WebSocket error: $error');
+    }, onDone: () {
+      print('WebSocket connection closed');
     });
-  }
-
-  void _onBuzzerPressed() {
-    setState(() {
-      isBuzzerEnabled = false;
-    });
-    widget.channel.sink.add(jsonEncode({"buzz": true}));
-  }
-
-  void _submitNumber() {
-    final number = _numberController.text;
-    if (number.isNotEmpty) {
-      widget.channel.sink.add(jsonEncode({"player-answer": number}));
-      _numberController.clear();
-    }
   }
 
   @override
@@ -57,37 +51,23 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
         title: const Text('Game Room'),
       ),
       body: Center(
-        child: expectedAnswerType == 'NUMBER'
-            ? Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: _numberController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Answer',
-                ),
+            buildComponent(
+              visible: expectedAnswerType == AnswerType.none,
+              child: BuzzerComponent(
+                channel: widget.channel,
+                broadcastStream: widget.broadcastStream,
               ),
             ),
-            ElevatedButton(
-              onPressed: _submitNumber,
-              child: const Text('Submit'),
+            buildComponent(
+              visible: expectedAnswerType == AnswerType.number,
+              child: NumberInputComponent(
+                channel: widget.channel,
+              ),
             ),
           ],
-        )
-            : ElevatedButton(
-          onPressed: isBuzzerEnabled ? _onBuzzerPressed : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
-          ),
-          child: const Text(
-            'BUZZER',
-            style: TextStyle(fontSize: 24, color: Colors.white),
-          ),
         ),
       ),
     );
