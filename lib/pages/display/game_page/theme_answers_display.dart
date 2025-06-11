@@ -1,9 +1,42 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
-class ThemeAnswersDisplay extends StatelessWidget {
-  final List<dynamic> themeAnswers;
+import 'display_state.dart';
 
-  const ThemeAnswersDisplay({super.key, required this.themeAnswers});
+class ThemeAnswersDisplay extends StatefulWidget {
+  final Function setCurrentDisplayState;
+  final Stream<dynamic> broadcastStream;
+
+  const ThemeAnswersDisplay(
+      {super.key, required this.setCurrentDisplayState, required this.broadcastStream});
+
+  @override
+  State<ThemeAnswersDisplay> createState() => _ThemeAnswersDisplayState();
+}
+
+class _ThemeAnswersDisplayState extends State<ThemeAnswersDisplay> {
+
+  List<dynamic> themeAnswers = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.broadcastStream.listen((message) {
+      final data = jsonDecode(message);
+      if (data.containsKey('theme-answers')) {
+        setState(() {
+          themeAnswers = data['theme-answers'];
+        });
+        widget.setCurrentDisplayState(DisplayState.themeAnswers);
+      }
+    }, onError: (error) {
+      print('WebSocket error: $error');
+    }, onDone: () {
+      print('WebSocket connection closed');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

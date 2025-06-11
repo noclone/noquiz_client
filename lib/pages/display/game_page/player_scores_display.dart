@@ -3,10 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'display_state.dart';
+
 class PlayerScoresDisplay extends StatefulWidget {
   final String roomId;
+  final Function setCurrentDisplayState;
+  final Stream<dynamic> broadcastStream;
 
-  const PlayerScoresDisplay({super.key, required this.roomId,});
+  const PlayerScoresDisplay({super.key, required this.roomId, required this.setCurrentDisplayState, required this.broadcastStream});
 
   @override
   State<PlayerScoresDisplay> createState() => _PlayerScoresDisplayState();
@@ -18,7 +22,18 @@ class _PlayerScoresDisplayState extends State<PlayerScoresDisplay> {
   @override
   void initState() {
     super.initState();
-    fetchRoomState();
+
+    widget.broadcastStream.listen((message) {
+      final data = jsonDecode(message);
+      if (data.containsKey('show-players-scores')) {
+        fetchRoomState();
+        widget.setCurrentDisplayState(DisplayState.playerScores);
+      }
+    }, onError: (error) {
+      print('WebSocket error: $error');
+    }, onDone: () {
+      print('WebSocket connection closed');
+    });
   }
 
   Future<void> fetchRoomState() async {

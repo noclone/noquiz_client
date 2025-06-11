@@ -1,9 +1,43 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
-class AnswerDisplay extends StatelessWidget {
-  final String answer;
+import 'display_state.dart';
 
-  const AnswerDisplay({super.key, required this.answer});
+class AnswerDisplay extends StatefulWidget {
+  final Function setCurrentDisplayState;
+  final Stream<dynamic> broadcastStream;
+
+  const AnswerDisplay(
+      {super.key, required this.setCurrentDisplayState, required this.broadcastStream});
+
+  @override
+  State<AnswerDisplay> createState() => _AnswerDisplayState();
+}
+
+class _AnswerDisplayState extends State<AnswerDisplay> {
+
+  String currentAnswer = '';
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.broadcastStream.listen((message) {
+      final data = jsonDecode(message);
+      if (data.containsKey('new-question')) {
+        setState(() {
+          currentAnswer = data['answer'] ?? '';
+        });
+      } else if (data.containsKey('show-answer')) {
+        widget.setCurrentDisplayState(DisplayState.answer);
+      }
+    }, onError: (error) {
+      print('WebSocket error: $error');
+    }, onDone: () {
+      print('WebSocket connection closed');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +51,7 @@ class AnswerDisplay extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            answer.isNotEmpty ? answer : 'Answer not available.',
+            currentAnswer.isNotEmpty ? currentAnswer : 'Answer not available.',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),

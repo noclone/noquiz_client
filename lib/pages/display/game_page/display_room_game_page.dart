@@ -23,18 +23,8 @@ class DisplayRoomGamePage extends StatefulWidget {
 
 class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
   late IOWebSocketChannel channel;
-  String currentQuestion = 'Waiting for a question...';
-  String currentAnswer = '';
-  String? imageUrl;
-  List<String> themes = [];
-  List<dynamic> themeAnswers = [];
   late Stream<dynamic> broadcastStream;
   DisplayState currentDisplayState = DisplayState.question;
-  Timer? countdownTimer;
-  int remainingTime = 0;
-  String? currentRightOrder;
-  List<List<dynamic>> imageData = [];
-  bool showLabels = false;
 
   @override
   void initState() {
@@ -55,60 +45,7 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
           const SnackBar(content: Text('Admin left the room')),
         );
         Navigator.popUntil(context, ModalRoute.withName('/'));
-      } else if (data.containsKey('new-question')) {
-        setState(() {
-          currentQuestion = data['new-question'];
-          currentAnswer = data['answer'] ?? '';
-          imageUrl = data['image'];
-          currentDisplayState = DisplayState.question;
-        });
-      } else if (data.containsKey('show-themes')) {
-        setState(() {
-          themes = List<String>.from(data['show-themes']);
-          currentDisplayState = DisplayState.themes;
-        });
-      } else if (data.containsKey('theme-answers')) {
-        setState(() {
-          themeAnswers = data['theme-answers'];
-          currentDisplayState = DisplayState.themeAnswers;
-        });
-      } else if (data.containsKey('show-players-scores')) {
-        setState(() {
-          currentDisplayState = DisplayState.playerScores;
-        });
-      } else if (data.containsKey('show-players-answers')) {
-        setState(() {
-          currentDisplayState = DisplayState.playerAnswers;
-        });
-      } else if (data.containsKey('show-answer')) {
-        setState(() {
-          currentDisplayState = DisplayState.answer;
-        });
-      } else if (data.containsKey('start-timer')) {
-        setState(() {
-          currentDisplayState = DisplayState.timer;
-        });
-        startTimer(data['start-timer'] * 1000);
-      } else if (data.containsKey('pause-timer')) {
-        pauseTimer();
-      } else if (data.containsKey('reset-timer')) {
-        resetTimer();
-      } else if (data.containsKey('right-order')) {
-        setState(() {
-          currentDisplayState = DisplayState.rightOrder;
-          currentRightOrder = data['right-order'];
-          imageData = List<List<dynamic>>.from(data['data'] ?? [])..shuffle();
-          showLabels = false;
-        });
-      } else if (data.containsKey('show-right-order-answer')) {
-        setState(() {
-          currentDisplayState = DisplayState.rightOrder;
-          currentRightOrder = data['show-right-order-answer'];
-          imageData = List<List<dynamic>>.from(data['data'] ?? []);
-          showLabels = true;
-        });
       }
-
     }, onError: (error) {
       print('WebSocket error: $error');
     }, onDone: () {
@@ -124,39 +61,8 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
 
   @override
   void dispose() {
-    countdownTimer?.cancel();
     channel.sink.close();
     super.dispose();
-  }
-
-  void startTimer(int duration) {
-    setState(() {
-      remainingTime = duration;
-    });
-
-    countdownTimer?.cancel();
-
-    const oneMs = Duration(milliseconds: 10);
-    countdownTimer = Timer.periodic(oneMs, (timer) {
-      setState(() {
-        if (remainingTime > 0) {
-          remainingTime -= 10;
-        } else {
-          countdownTimer?.cancel();
-        }
-      });
-    });
-  }
-
-  void pauseTimer() {
-    countdownTimer?.cancel();
-  }
-
-  void resetTimer() {
-    countdownTimer?.cancel();
-    setState(() {
-      remainingTime = 0;
-    });
   }
 
   @override
@@ -166,32 +72,80 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
         title: const Text('Display Room'),
       ),
       body: Center(
-        child: buildDisplay(),
+        child: Stack(
+          children: [
+            buildComponent(
+              visible: currentDisplayState == DisplayState.question,
+              child: QuestionDisplay(
+                setCurrentDisplayState: setCurrentDisplayState,
+                broadcastStream: broadcastStream,
+              ),
+            ),
+            buildComponent(
+              visible: currentDisplayState == DisplayState.timer,
+              child: TimerDisplay(
+                setCurrentDisplayState: setCurrentDisplayState,
+                broadcastStream: broadcastStream,
+              ),
+            ),
+            buildComponent(
+              visible: currentDisplayState == DisplayState.rightOrder,
+              child: RightOrderDisplay(
+                setCurrentDisplayState: setCurrentDisplayState,
+                broadcastStream: broadcastStream,
+              ),
+            ),
+            buildComponent(
+              visible: currentDisplayState == DisplayState.playerScores,
+              child: PlayerScoresDisplay(
+                  roomId: widget.roomId,
+                  setCurrentDisplayState: setCurrentDisplayState,
+                  broadcastStream: broadcastStream
+              ),
+            ),
+            buildComponent(
+              visible: currentDisplayState == DisplayState.playerAnswers,
+              child: PlayerAnswersDisplay(
+                  roomId: widget.roomId,
+                  setCurrentDisplayState: setCurrentDisplayState,
+                  broadcastStream: broadcastStream
+              ),
+            ),
+            buildComponent(
+              visible: currentDisplayState == DisplayState.themes,
+              child: ThemesDisplay(
+                  setCurrentDisplayState: setCurrentDisplayState,
+                  broadcastStream: broadcastStream
+              ),
+            ),
+            buildComponent(
+              visible: currentDisplayState == DisplayState.themeAnswers,
+              child: ThemeAnswersDisplay(
+                  setCurrentDisplayState: setCurrentDisplayState,
+                  broadcastStream: broadcastStream
+              ),
+            ),
+            buildComponent(
+              visible: currentDisplayState == DisplayState.answer,
+              child: AnswerDisplay(
+                  setCurrentDisplayState: setCurrentDisplayState,
+                  broadcastStream: broadcastStream
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget buildDisplay() {
-    switch (currentDisplayState) {
-      case DisplayState.question:
-        return QuestionDisplay(
-          question: currentQuestion,
-          imageUrl: imageUrl,
-        );
-      case DisplayState.timer:
-        return TimerDisplay(remainingTime: remainingTime,);
-      case DisplayState.rightOrder:
-        return RightOrderDisplay(currentRightOrder: currentRightOrder, imageData: imageData, showLabels: showLabels,);
-      case DisplayState.playerScores:
-        return PlayerScoresDisplay(roomId: widget.roomId);
-      case DisplayState.playerAnswers:
-        return PlayerAnswersDisplay(roomId: widget.roomId, currentAnswer: currentAnswer);
-      case DisplayState.themes:
-        return ThemesDisplay(themes: themes);
-      case DisplayState.themeAnswers:
-        return ThemeAnswersDisplay(themeAnswers: themeAnswers);
-      case DisplayState.answer:
-        return AnswerDisplay(answer: currentAnswer);
-      }
+  Widget buildComponent({required bool visible, required Widget child}) {
+    return Visibility(
+      visible: visible,
+      maintainState: true,
+      maintainAnimation: true,
+      maintainSize: true,
+      child: child,
+    );
   }
+
 }

@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'display_state.dart';
+
 class PlayerAnswersDisplay extends StatefulWidget {
   final String roomId;
-  final String currentAnswer;
+  final Function setCurrentDisplayState;
+  final Stream<dynamic> broadcastStream;
 
   const PlayerAnswersDisplay({
     super.key,
     required this.roomId,
-    required this.currentAnswer,
+    required this.setCurrentDisplayState,
+    required this.broadcastStream,
   });
 
   @override
@@ -19,11 +23,27 @@ class PlayerAnswersDisplay extends StatefulWidget {
 class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
   bool showAnswer = false;
   List<Map<String, dynamic>> players = [];
+  String currentAnswer = '';
 
   @override
   void initState() {
     super.initState();
-    fetchPlayerAnswers();
+
+    widget.broadcastStream.listen((message) {
+      final data = jsonDecode(message);
+      if (data.containsKey('new-question')) {
+        setState(() {
+          currentAnswer = data['answer'] ?? '';
+        });
+      } else if (data.containsKey('show-players-answers')) {
+        fetchPlayerAnswers();
+        widget.setCurrentDisplayState(DisplayState.playerAnswers);
+      }
+    }, onError: (error) {
+      print('WebSocket error: $error');
+    }, onDone: () {
+      print('WebSocket connection closed');
+    });
   }
 
   Future<void> fetchPlayerAnswers() async {
@@ -68,11 +88,11 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            if (showAnswer && widget.currentAnswer.isNotEmpty)
+            if (showAnswer && currentAnswer.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Text(
-                  'Answer: ${widget.currentAnswer}',
+                  'Answer: ${currentAnswer}',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -80,7 +100,7 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
                   ),
                 ),
               ),
-            if (!showAnswer && widget.currentAnswer.isNotEmpty)
+            if (!showAnswer && currentAnswer.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: ElevatedButton(

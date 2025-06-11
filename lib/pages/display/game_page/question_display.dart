@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
+import 'display_state.dart';
+
 class QuestionDisplay extends StatefulWidget {
-  final String question;
-  final String? imageUrl;
+  final Function setCurrentDisplayState;
+  final Stream<dynamic> broadcastStream;
 
   const QuestionDisplay({
     Key? key,
-    required this.question,
-    this.imageUrl,
+    required this.setCurrentDisplayState,
+    required this.broadcastStream,
   }) : super(key: key);
 
   @override
@@ -16,6 +20,28 @@ class QuestionDisplay extends StatefulWidget {
 
 class _QuestionDisplayState extends State<QuestionDisplay> {
 
+  String currentQuestion = 'Waiting for a question...';
+  String? imageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.broadcastStream.listen((message) {
+      final data = jsonDecode(message);
+      if (data.containsKey('new-question')) {
+        setState(() {
+          widget.setCurrentDisplayState(DisplayState.question);
+          currentQuestion = data['new-question'];
+          imageUrl = data['image'];
+        });
+      }
+    }, onError: (error) {
+      print('WebSocket error: $error');
+    }, onDone: () {
+      print('WebSocket connection closed');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -23,15 +49,15 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
       children: [
         Center(
           child: Text(
-            widget.question,
+            currentQuestion,
             style: const TextStyle(fontSize: 24),
             textAlign: TextAlign.center,
           ),
         ),
-        if (widget.imageUrl != null && widget.imageUrl!.isNotEmpty)
+        if (imageUrl != null && imageUrl!.isNotEmpty)
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Image.network(widget.imageUrl!),
+            child: Image.network(imageUrl!),
           ),
       ],
     );
