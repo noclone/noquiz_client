@@ -1,21 +1,16 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
+import 'display_state.dart';
 import 'question_display.dart';
 import 'player_scores_display.dart';
 import 'player_answers_display.dart';
+import 'right_order_display.dart';
 import 'themes_display.dart';
 import 'theme_answers_display.dart';
 import 'answer_display.dart';
-
-enum DisplayState {
-  question,
-  playerAnswers,
-  playerScores,
-  themes,
-  themeAnswers,
-  answer,
-}
+import 'timer_display.dart';
 
 class DisplayRoomGamePage extends StatefulWidget {
   final String roomId;
@@ -35,6 +30,11 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
   List<dynamic> themeAnswers = [];
   late Stream<dynamic> broadcastStream;
   DisplayState currentDisplayState = DisplayState.question;
+  Timer? countdownTimer;
+  int remainingTime = 0;
+  String? currentRightOrder;
+  List<List<dynamic>> imageData = [];
+  bool showLabels = false;
 
   @override
   void initState() {
@@ -84,7 +84,31 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
         setState(() {
           currentDisplayState = DisplayState.answer;
         });
+      } else if (data.containsKey('start-timer')) {
+        setState(() {
+          currentDisplayState = DisplayState.timer;
+        });
+        startTimer(data['start-timer'] * 1000);
+      } else if (data.containsKey('pause-timer')) {
+        pauseTimer();
+      } else if (data.containsKey('reset-timer')) {
+        resetTimer();
+      } else if (data.containsKey('right-order')) {
+        setState(() {
+          currentDisplayState = DisplayState.rightOrder;
+          currentRightOrder = data['right-order'];
+          imageData = List<List<dynamic>>.from(data['data'] ?? [])..shuffle();
+          showLabels = false;
+        });
+      } else if (data.containsKey('show-right-order-answer')) {
+        setState(() {
+          currentDisplayState = DisplayState.rightOrder;
+          currentRightOrder = data['show-right-order-answer'];
+          imageData = List<List<dynamic>>.from(data['data'] ?? []);
+          showLabels = true;
+        });
       }
+
     }, onError: (error) {
       print('WebSocket error: $error');
     }, onDone: () {
@@ -92,10 +116,47 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
     });
   }
 
+  void setCurrentDisplayState(DisplayState state) {
+    setState(() {
+      currentDisplayState = state;
+    });
+  }
+
   @override
   void dispose() {
+    countdownTimer?.cancel();
     channel.sink.close();
     super.dispose();
+  }
+
+  void startTimer(int duration) {
+    setState(() {
+      remainingTime = duration;
+    });
+
+    countdownTimer?.cancel();
+
+    const oneMs = Duration(milliseconds: 10);
+    countdownTimer = Timer.periodic(oneMs, (timer) {
+      setState(() {
+        if (remainingTime > 0) {
+          remainingTime -= 10;
+        } else {
+          countdownTimer?.cancel();
+        }
+      });
+    });
+  }
+
+  void pauseTimer() {
+    countdownTimer?.cancel();
+  }
+
+  void resetTimer() {
+    countdownTimer?.cancel();
+    setState(() {
+      remainingTime = 0;
+    });
   }
 
   @override
@@ -116,8 +177,11 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
         return QuestionDisplay(
           question: currentQuestion,
           imageUrl: imageUrl,
-          broadcastStream: broadcastStream,
         );
+      case DisplayState.timer:
+        return TimerDisplay(remainingTime: remainingTime,);
+      case DisplayState.rightOrder:
+        return RightOrderDisplay(currentRightOrder: currentRightOrder, imageData: imageData, showLabels: showLabels,);
       case DisplayState.playerScores:
         return PlayerScoresDisplay(roomId: widget.roomId);
       case DisplayState.playerAnswers:
