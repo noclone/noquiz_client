@@ -64,8 +64,6 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
         if (imageData.isNotEmpty)
           LayoutBuilder(
             builder: (context, constraints) {
-              double imageWidth = constraints.maxWidth / imageData.length - 16;
-
               return Center(
                 child: SizedBox(
                   height: 250,
@@ -77,13 +75,15 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: SizedBox(
-                          width: imageWidth,
+                          width: 150,
                           child: Column(
                             children: [
-                              Image.network(
-                                imageData[index][0],
-                                fit: BoxFit.contain,
-                                height: 200,
+                              Expanded(
+                                child: Image.network(
+                                  imageData[index][0],
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
                               ),
                               if (showLabels)
                                 Text(
@@ -104,4 +104,5 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
       ],
     );
   }
+
 }

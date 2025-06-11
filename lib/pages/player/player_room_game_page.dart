@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/pages/player/right_order.dart';
 import 'dart:convert';
 import 'package:web_socket_channel/io.dart';
 import '../../utils/visibility_component.dart';
@@ -8,6 +9,7 @@ import 'buzzer.dart';
 enum AnswerType {
   none,
   number,
+  rightOrder,
 }
 
 class PlayerRoomGamePage extends StatefulWidget {
@@ -35,6 +37,10 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
           } else if (data['expected_answer_type'] == 'NUMBER') {
             expectedAnswerType = AnswerType.number;
           }
+        });
+      } else if (data.containsKey('right-order')) {
+        setState(() {
+          expectedAnswerType = AnswerType.rightOrder;
         });
       }
     }, onError: (error) {
@@ -65,6 +71,13 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
               visible: expectedAnswerType == AnswerType.number,
               child: NumberInputComponent(
                 channel: widget.channel,
+              ),
+            ),
+            buildComponent(
+              visible: expectedAnswerType == AnswerType.rightOrder,
+              child: RightOrder(
+                channel: widget.channel,
+                broadcastStream: widget.broadcastStream,
               ),
             ),
           ],
