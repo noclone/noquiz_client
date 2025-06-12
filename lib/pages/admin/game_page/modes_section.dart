@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
+import 'board_section.dart';
 import 'right_order_section.dart';
 import 'themes_section.dart';
 import 'questions_section.dart';
@@ -25,7 +26,7 @@ class _ModesSectionState extends State<ModesSection> {
       children: [
         Expanded(
           child: DefaultTabController(
-            length: 3,
+            length: 4,
             child: Column(
               children: [
                 Expanded(
@@ -34,6 +35,7 @@ class _ModesSectionState extends State<ModesSection> {
                       QuestionsSection(roomId: widget.roomId, channel: widget.channel),
                       ThemesSection(roomId: widget.roomId, channel: widget.channel),
                       RightOrderSection(roomId: widget.roomId, channel: widget.channel),
+                      BoardSection(roomId: widget.roomId, channel: widget.channel),
                     ],
                   ),
                 ),
@@ -42,6 +44,7 @@ class _ModesSectionState extends State<ModesSection> {
                     Tab(text: 'Questions'),
                     Tab(text: 'Themes'),
                     Tab(text: 'Right Order'),
+                    Tab(text: 'Board'),
                   ],
                 ),
               ],

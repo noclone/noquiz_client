@@ -25,21 +25,18 @@ class _RightOrderSectionState extends State<RightOrderSection> {
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < 3; i++) {
-      fetchQuestion();
-    }
+    fetchQuestions();
   }
 
-  Future<void> fetchQuestion() async {
+  Future<void> fetchQuestions() async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/right-order/next'));
+      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/right-order'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        if (!data.containsKey('end-of-right-order')) {
-          setState(() {
-            questions.add(data);
-          });
-        }
+        setState(() {
+          questions = List<Map<String, dynamic>>.from(data);
+          sentQuestionIndices.clear();
+        });
       } else {
         print('Failed to load question');
       }
@@ -53,7 +50,6 @@ class _RightOrderSectionState extends State<RightOrderSection> {
       questions.removeAt(index);
       sentQuestionIndices.clear();
     });
-    fetchQuestion();
   }
 
   void sendQuestionToSocket(int index) {
