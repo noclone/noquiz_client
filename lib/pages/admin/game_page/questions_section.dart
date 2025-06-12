@@ -19,45 +19,58 @@ class QuestionsSection extends StatefulWidget {
 }
 
 class _QuestionsSectionState extends State<QuestionsSection> {
-  List<Map<String, dynamic>> questions = [];
+  List<String> categories = [];
+  List<Map<String, dynamic>> categoryQuestions = [];
   Set<int> sentQuestionIndices = {};
 
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < 3; i++) {
-      fetchQuestion();
+    fetchQuestionsCategories();
+  }
+
+  Future<void> fetchQuestionsCategories() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/questions_categories'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          categories = List<String>.from(data);
+        });
+      } else {
+        print('Failed to load questions categories');
+      }
+    } catch (e) {
+      print('Error fetching questions categories: $e');
     }
   }
 
-  Future<void> fetchQuestion() async {
+  Future<void> fetchCategoryQuestions(String category) async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/questions/next'));
+      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/questions_categories/$category'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        if (!data.containsKey('end-of-questions')) {
-          setState(() {
-            questions.add(data);
-          });
-        }
+        setState(() {
+          categoryQuestions = List<Map<String, dynamic>>.from(data);
+          sentQuestionIndices.clear();
+        });
       } else {
-        print('Failed to load question');
+        print('Failed to load category questions');
       }
     } catch (e) {
-      print('Error fetching question: $e');
+      print('Error fetching category questions: $e');
     }
   }
 
   void skipQuestion(int index) {
     setState(() {
-      questions.removeAt(index);
+      categoryQuestions.removeAt(index);
       sentQuestionIndices.clear();
     });
-    fetchQuestion();
   }
 
   void sendQuestionToSocket(int index) {
-    final question = questions[index];
+    final question = categoryQuestions[index];
     var dict = {
       "new-question": question['question'],
       "answer": question['answer'],
@@ -74,7 +87,7 @@ class _QuestionsSectionState extends State<QuestionsSection> {
   }
 
   void sendShowAnswersToSocket(int index) {
-    final question = questions[index];
+    final question = categoryQuestions[index];
     widget.channel.sink.add(jsonEncode({
       "show-answer": question['question'],
     }));
@@ -82,36 +95,59 @@ class _QuestionsSectionState extends State<QuestionsSection> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: questions.length,
-      itemBuilder: (context, index) {
-        final question = questions[index];
-        return Card(
-          margin: const EdgeInsets.all(8.0),
-          color: sentQuestionIndices.contains(index) ? Colors.green : null,
-          child: ListTile(
-            title: Text(question['question']),
-            subtitle: Text('Answer: ${question['answer']} -- Answer Type: ${question['expected_answer_type']}'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.skip_next),
-                  onPressed: () => skipQuestion(index),
+    return Column(
+      children: [
+        SizedBox(
+          height: 50,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final theme = categories[index];
+              return Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: ElevatedButton(
+                  onPressed: () => fetchCategoryQuestions(theme),
+                  child: Text(theme),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: () => sendQuestionToSocket(index),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.visibility),
-                  onPressed: () => sendShowAnswersToSocket(index),
-                ),
-              ],
-            ),
+              );
+            },
           ),
-        );
-      },
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: categoryQuestions.length,
+            itemBuilder: (context, index) {
+              final question = categoryQuestions[index];
+              return Card(
+                margin: const EdgeInsets.all(8.0),
+                color: sentQuestionIndices.contains(index) ? Colors.green : null,
+                child: ListTile(
+                  title: Text(question['question']),
+                  subtitle: Text('Answer: ${question['answer']} -- Answer Type: ${question['expected_answer_type']}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.skip_next),
+                        onPressed: () => skipQuestion(index),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.send),
+                        onPressed: () => sendQuestionToSocket(index),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.visibility),
+                        onPressed: () => sendShowAnswersToSocket(index),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
