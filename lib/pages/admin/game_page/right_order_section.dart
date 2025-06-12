@@ -79,35 +79,50 @@ class _RightOrderSectionState extends State<RightOrderSection> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: questions.length,
-      itemBuilder: (context, index) {
-        final question = questions[index];
-        return Card(
-          margin: const EdgeInsets.all(8.0),
-          color: sentQuestionIndices.contains(index) ? Colors.green : null,
-          child: ListTile(
-            title: Text(question['title']),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.skip_next),
-                  onPressed: () => skipQuestion(index),
+    return Stack(
+      children: [
+        ListView.builder(
+          itemCount: questions.length,
+          itemBuilder: (context, index) {
+            final question = questions[index];
+            return Card(
+              margin: const EdgeInsets.all(8.0),
+              color: sentQuestionIndices.contains(index) ? Colors.green : null,
+              child: ListTile(
+                title: Text(question['title']),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.skip_next),
+                      onPressed: () => skipQuestion(index),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.send),
+                      onPressed: () => sendQuestionToSocket(index),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.visibility),
+                      onPressed: () => sendShowAnswersToSocket(index),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: () => sendQuestionToSocket(index),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.visibility),
-                  onPressed: () => sendShowAnswersToSocket(index),
-                ),
-              ],
-            ),
+              ),
+            );
+          },
+        ),
+        Positioned(
+          bottom: 16.0,
+          right: 16.0,
+          child: FloatingActionButton(
+            onPressed: () {
+              widget.channel.sink.add(jsonEncode({"send-right-order-answer": true}));
+            },
+            child: Icon(Icons.check),
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 }
+
