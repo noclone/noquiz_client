@@ -19,9 +19,8 @@ class QuestionDisplay extends StatefulWidget {
 }
 
 class _QuestionDisplayState extends State<QuestionDisplay> {
-
   String currentQuestion = 'Waiting for a question...';
-  String? imageUrl;
+  List<String> imageUrls = [];
 
   @override
   void initState() {
@@ -32,7 +31,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
         setState(() {
           widget.setCurrentDisplayState(DisplayState.question);
           currentQuestion = data['new-question'];
-          imageUrl = data['image'];
+          imageUrls = List<String>.from(data['images'] ?? []);
         });
       }
     }, onError: (error) {
@@ -44,22 +43,57 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
 
   @override
   Widget build(BuildContext context) {
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final imageWidth = imageUrls.isEmpty ? 0.0 : screenWidth / imageUrls.length - 16.0 * imageUrls.length;
+
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Center(
-          child: Text(
-            currentQuestion,
-            style: const TextStyle(fontSize: 24),
-            textAlign: TextAlign.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: Text(
+              currentQuestion,
+              style: const TextStyle(fontSize: 24),
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-        if (imageUrl != null && imageUrl!.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Image.network(imageUrl!),
-          ),
-      ],
+          if (imageUrls.isNotEmpty)
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return Center(
+                  child: SizedBox(
+                    height: 250,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: imageUrls.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: imageWidth,
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Image.network(
+                                    imageUrls[index],
+                                    fit: BoxFit.scaleDown,
+                                    width: double.infinity,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+        ],
     );
   }
+
 }
+

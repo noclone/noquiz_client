@@ -71,15 +71,12 @@ class _QuestionsSectionState extends State<QuestionsSection> {
 
   void sendQuestionToSocket(int index) {
     final question = categoryQuestions[index];
-    var dict = {
+    widget.channel.sink.add(jsonEncode({
       "new-question": question['question'],
       "answer": question['answer'],
-      "expected_answer_type": question['expected_answer_type']
-    };
-    if (question.containsKey("image")) {
-      dict["image"] = question["image"];
-    }
-    widget.channel.sink.add(jsonEncode(dict));
+      "expected_answer_type": question['expected_answer_type'],
+      "images": question["images"],
+    }));
 
     setState(() {
       sentQuestionIndices.add(index);
