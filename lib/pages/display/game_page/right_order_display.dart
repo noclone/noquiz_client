@@ -93,7 +93,6 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                   final maxWidth = constraints.maxWidth;
                   final count = imageData.length;
                   final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
-                  // 16 for horizontal padding (8 left + 8 right)
 
                   return Center(
                     child: SizedBox(
@@ -117,10 +116,16 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                     ),
                                   ),
                                   Text(
-                                    showAnswer ? imageData[index][2] : imageData[index][1],
+                                    imageData[index][1],
                                     style: const TextStyle(fontSize: 20),
                                     textAlign: TextAlign.center,
                                   ),
+                                  if (showAnswer)
+                                    Text(
+                                      imageData[index][2],
+                                      style: const TextStyle(fontSize: 20),
+                                      textAlign: TextAlign.center,
+                                    ),
                                 ],
                               ),
                             ),
@@ -171,6 +176,11 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                       ),
+                                    ),
+                                    Text(
+                                      imageData[index][1],
+                                      style: const TextStyle(fontSize: 20),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ],
                                 ),

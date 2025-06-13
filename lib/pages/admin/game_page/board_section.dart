@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../utils/board.dart';
@@ -50,6 +49,26 @@ class _BoardSectionState extends State<BoardSection> {
     } catch (e) {
       print('Error fetching board: $e');
     }
+  }
+
+  void _showAnswerDialog(String answer) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Answer'),
+          content: Text(answer),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -124,6 +143,12 @@ class _BoardSectionState extends State<BoardSection> {
                                   "expected_answer_type": board[index]['expected_answer_type'],
                                   "images": board[index]["images"],
                                 }));
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.lightbulb_circle_outlined, size: 20),
+                              onPressed: () {
+                                _showAnswerDialog(board[index]['answer']);
                               },
                             ),
                             IconButton(

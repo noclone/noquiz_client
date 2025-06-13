@@ -80,7 +80,14 @@ class _ThemesSectionState extends State<ThemesSection> {
   }
 
   void sendThemeAnswers() {
-    final answers = themeQuestions.map((question) {
+    final relevantIndices = {...correctAnswers, ...wrongAnswers};
+
+    final filteredQuestions = themeQuestions.where((question) {
+      final index = themeQuestions.indexOf(question);
+      return relevantIndices.contains(index);
+    }).toList();
+
+    final answers = filteredQuestions.map((question) {
       final index = themeQuestions.indexOf(question);
       return {
         'question': question['question'],
@@ -93,6 +100,7 @@ class _ThemesSectionState extends State<ThemesSection> {
       "theme-answers": answers,
     }));
   }
+
 
   void markAsCorrect(int index) {
     setState(() {

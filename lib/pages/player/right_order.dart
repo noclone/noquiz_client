@@ -71,6 +71,7 @@ class _RightOrderState extends State<RightOrder> {
                   width: maxWidth,
                   height: 250,
                   child: ReorderableListView.builder(
+                    buildDefaultDragHandles: false,
                     scrollDirection: Axis.horizontal,
                     itemCount: imageCount,
                     itemBuilder: (context, index) {
@@ -90,6 +91,11 @@ class _RightOrderState extends State<RightOrder> {
                                     width: double.infinity,
                                   ),
                                 ),
+                                Text(
+                                  imageData[index][1],
+                                  style: const TextStyle(fontSize: 20),
+                                  textAlign: TextAlign.center,
+                                ),
                               ],
                             ),
                           ),
@@ -105,5 +111,4 @@ class _RightOrderState extends State<RightOrder> {
       ],
     );
   }
-
 }
