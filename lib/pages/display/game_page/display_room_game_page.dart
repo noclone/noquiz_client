@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 import '../../../utils/visibility_component.dart';
+import 'board_display.dart';
 import 'display_state.dart';
 import 'question_display.dart';
 import 'player_scores_display.dart';
@@ -129,6 +130,13 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
             buildComponent(
               visible: currentDisplayState == DisplayState.answer,
               child: AnswerDisplay(
+                  setCurrentDisplayState: setCurrentDisplayState,
+                  broadcastStream: broadcastStream
+              ),
+            ),
+            buildComponent(
+              visible: currentDisplayState == DisplayState.board,
+              child: BoardDisplay(
                   setCurrentDisplayState: setCurrentDisplayState,
                   broadcastStream: broadcastStream
               ),

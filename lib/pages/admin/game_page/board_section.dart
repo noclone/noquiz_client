@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../utils/board.dart';
+
 class BoardSection extends StatefulWidget {
   final String roomId;
   final WebSocketChannel channel;
@@ -45,19 +47,6 @@ class _BoardSectionState extends State<BoardSection> {
     }
   }
 
-  Color getBorderColor(String difficulty) {
-    switch (difficulty) {
-      case 'EASY':
-        return Colors.green;
-      case 'MEDIUM':
-        return Colors.orange;
-      case 'HARD':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     if (board.isEmpty) {
@@ -81,7 +70,10 @@ class _BoardSectionState extends State<BoardSection> {
               child: IconButton(
                 icon: const Icon(Icons.send, color: Colors.blue),
                 onPressed: () {
-                  // Add your onPressed logic here
+                  widget.channel.sink.add(jsonEncode({
+                    "display-board": board,
+                    "image-visibility": imageVisibility,
+                  }));
                 },
               ),
             ),
@@ -121,13 +113,20 @@ class _BoardSectionState extends State<BoardSection> {
                             IconButton(
                               icon: const Icon(Icons.send, size: 20),
                               onPressed: () {
-                                // Handle send button press
+                                widget.channel.sink.add(jsonEncode({
+                                  "new-question": board[index]['question'],
+                                  "answer": board[index]['answer'],
+                                  "expected_answer_type": board[index]['expected_answer_type'],
+                                  "images": board[index]["images"],
+                                }));
                               },
                             ),
                             IconButton(
                               icon: const Icon(Icons.lightbulb, size: 20),
                               onPressed: () {
-                                // Handle lightbulb button press
+                                widget.channel.sink.add(jsonEncode({
+                                  "show-answer": true,
+                                }));
                               },
                             ),
                             IconButton(

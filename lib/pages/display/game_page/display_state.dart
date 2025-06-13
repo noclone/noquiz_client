@@ -7,4 +7,5 @@ enum DisplayState {
   themes,
   themeAnswers,
   answer,
+  board,
 }

@@ -31,7 +31,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
         setState(() {
           widget.setCurrentDisplayState(DisplayState.question);
           currentQuestion = data['new-question'];
-          imageUrls = List<String>.from(data['images'] ?? []);
+          imageUrls = List<String>.from(data['images']);
         });
       }
     }, onError: (error) {

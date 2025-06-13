@@ -84,9 +84,8 @@ class _QuestionsSectionState extends State<QuestionsSection> {
   }
 
   void sendShowAnswersToSocket(int index) {
-    final question = categoryQuestions[index];
     widget.channel.sink.add(jsonEncode({
-      "show-answer": question['question'],
+      "show-answer": true,
     }));
   }
 
