@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../utils/server.dart';
 import 'display_state.dart';
 
 class PlayerScoresDisplay extends StatefulWidget {
@@ -37,8 +38,12 @@ class _PlayerScoresDisplayState extends State<PlayerScoresDisplay> {
   }
 
   Future<void> fetchRoomState() async {
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      return;
+    }
     try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}'));
+      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {

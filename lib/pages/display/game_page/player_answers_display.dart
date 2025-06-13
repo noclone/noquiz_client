@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../../../utils/server.dart';
 import 'display_state.dart';
 
 class PlayerAnswersDisplay extends StatefulWidget {
@@ -47,8 +48,12 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
   }
 
   Future<void> fetchPlayerAnswers() async {
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      return;
+    }
     try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}'));
+      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {

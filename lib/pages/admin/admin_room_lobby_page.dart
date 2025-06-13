@@ -9,8 +9,9 @@ import 'game_page/admin_room_game_page.dart';
 class AdminRoomLobbyPage extends StatefulWidget {
   final String roomId;
   final String nickname;
+  final String serverIp;
 
-  const AdminRoomLobbyPage({super.key, required this.roomId, required this.nickname});
+  const AdminRoomLobbyPage({super.key, required this.roomId, required this.nickname , required this.serverIp});
 
   @override
   State<AdminRoomLobbyPage> createState() => _AdminRoomLobbyPageState();
@@ -26,7 +27,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
   void initState() {
     super.initState();
     channel = IOWebSocketChannel.connect(
-      Uri.parse('ws://localhost:8000/ws/${widget.roomId}'),
+      Uri.parse('ws://${widget.serverIp}:8000/ws/${widget.roomId}'),
     );
 
     channel.ready.then((_) {

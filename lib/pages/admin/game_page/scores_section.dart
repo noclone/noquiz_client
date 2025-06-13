@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../../../utils/server.dart';
+
 class ScoresSection extends StatefulWidget {
   final List<Map<String, dynamic>> players;
   final String roomId;
@@ -19,9 +21,13 @@ class ScoresSection extends StatefulWidget {
 class _ScoresSectionState extends State<ScoresSection> {
   Future<void> updatePlayerScore(int playerIndex) async {
     final player = widget.players[playerIndex];
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      return;
+    }
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/player/score'),
+        Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/player/score'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

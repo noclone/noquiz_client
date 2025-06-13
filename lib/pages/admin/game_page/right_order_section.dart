@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../utils/server.dart';
+
 class RightOrderSection extends StatefulWidget {
   final String roomId;
   final WebSocketChannel channel;
@@ -29,8 +31,12 @@ class _RightOrderSectionState extends State<RightOrderSection> {
   }
 
   Future<void> fetchQuestions() async {
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      return;
+    }
     try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/right-order'));
+      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/right-order'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {

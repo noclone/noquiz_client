@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:noquiz_client/pages/player/player_room_lobby_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import '../utils/server.dart';
 import 'admin/admin_room_lobby_page.dart';
 import 'display/game_page/display_room_game_page.dart';
 
@@ -18,6 +20,7 @@ class _MenuPageState extends State<MenuPage> {
   String? _roomId;
   bool _isLoading = false;
   final TextEditingController _roomIdController = TextEditingController();
+  final TextEditingController _serverIpController = TextEditingController();
   List<String> roomIds = [];
 
   Future<void> _createRoom() async {
@@ -26,8 +29,14 @@ class _MenuPageState extends State<MenuPage> {
       _roomId = null;
     });
 
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      _showErrorDialog('Server IP address not set.');
+      return;
+    }
+
     try {
-      final url = Uri.parse('http://localhost:8000/api/rooms/create');
+      final url = Uri.parse('http://$serverIp:8000/api/rooms/create');
       final response = await http.post(
         url,
         headers: {
@@ -49,7 +58,7 @@ class _MenuPageState extends State<MenuPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AdminRoomLobbyPage(roomId: _roomId!, nickname: widget.nickname),
+              builder: (context) => AdminRoomLobbyPage(roomId: _roomId!, nickname: widget.nickname, serverIp: serverIp),
             ),
           );
         } else {
@@ -77,8 +86,14 @@ class _MenuPageState extends State<MenuPage> {
       _isLoading = true;
     });
 
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      _showErrorDialog('Server IP address not set.');
+      return;
+    }
+
     try {
-      final url = Uri.parse('http://localhost:8000/api/rooms/$roomId');
+      final url = Uri.parse('http://$serverIp:8000/api/rooms/$roomId');
       final response = await http.get(url);
 
       setState(() {
@@ -89,7 +104,7 @@ class _MenuPageState extends State<MenuPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PlayerRoomLobbyPage(roomId: roomId, nickname: widget.nickname),
+            builder: (context) => PlayerRoomLobbyPage(roomId: roomId, nickname: widget.nickname, serverIp: serverIp),
           ),
         );
       } else {
@@ -114,8 +129,14 @@ class _MenuPageState extends State<MenuPage> {
       _isLoading = true;
     });
 
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      _showErrorDialog('Server IP address not set.');
+      return;
+    }
+
     try {
-      final url = Uri.parse('http://localhost:8000/api/rooms/$roomId');
+      final url = Uri.parse('http://$serverIp:8000/api/rooms/$roomId');
       final response = await http.get(url);
 
       setState(() {
@@ -126,7 +147,7 @@ class _MenuPageState extends State<MenuPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DisplayRoomGamePage(roomId: roomId),
+            builder: (context) => DisplayRoomGamePage(roomId: roomId, serverIp: serverIp),
           ),
         );
       } else {
@@ -159,8 +180,13 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Future<void> fetchRoomIds() async {
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      _showErrorDialog('Server IP address not set.');
+      return;
+    }
     try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms'));
+      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
@@ -175,9 +201,19 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
+  void _setServerIpAddress() async {
+    final serverIp = _serverIpController.text.trim();
+    if (serverIp.isEmpty) {
+      _showErrorDialog('Please enter a server IP address.');
+      return;
+    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('server_ip', serverIp);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Server IP address saved')),
+    );
+
     fetchRoomIds();
   }
 
@@ -197,6 +233,17 @@ class _MenuPageState extends State<MenuPage> {
                   'Welcome, ${widget.nickname}!',
                   style: Theme.of(context).textTheme.headlineMedium,
                   textAlign: TextAlign.center,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextField(
+                    controller: _serverIpController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter server IP address',
+                      border: OutlineInputBorder(),
+                    ),
+                    onSubmitted: (_) => _setServerIpAddress(),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),

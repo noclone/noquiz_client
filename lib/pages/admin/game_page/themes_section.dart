@@ -3,6 +3,8 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../../../utils/server.dart';
+
 class ThemesSection extends StatefulWidget {
   final String roomId;
   final WebSocketChannel channel;
@@ -30,8 +32,12 @@ class _ThemesSectionState extends State<ThemesSection> {
   }
 
   Future<void> fetchThemes() async {
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      return;
+    }
     try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/themes'));
+      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/themes'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
@@ -46,8 +52,12 @@ class _ThemesSectionState extends State<ThemesSection> {
   }
 
   Future<void> fetchThemeQuestions(String theme) async {
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      return;
+    }
     try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/themes/$theme'));
+      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/themes/$theme'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {

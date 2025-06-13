@@ -9,8 +9,9 @@ import 'player_room_game_page.dart';
 class PlayerRoomLobbyPage extends StatefulWidget {
   final String roomId;
   final String nickname;
+  final String serverIp;
 
-  const PlayerRoomLobbyPage({super.key, required this.roomId, required this.nickname});
+  const PlayerRoomLobbyPage({super.key, required this.roomId, required this.nickname, required this.serverIp});
 
   @override
   State<PlayerRoomLobbyPage> createState() => _PlayerRoomLobbyPageState();
@@ -26,7 +27,7 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
   void initState() {
     super.initState();
     channel = IOWebSocketChannel.connect(
-      Uri.parse('ws://localhost:8000/ws/${widget.roomId}'),
+      Uri.parse('ws://${widget.serverIp}:8000/ws/${widget.roomId}'),
     );
 
     channel.ready.then((_) {
@@ -74,14 +75,9 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
-            const Text('Room Lobby'),
-            const SizedBox(width: 10),
-            Text(
-              widget.roomId,
-              style: const TextStyle(fontSize: 16),
-            ),
+            Text('Room Lobby'),
           ],
         ),
       ),

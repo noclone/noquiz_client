@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../utils/board.dart';
+import '../../../utils/server.dart';
 
 class BoardSection extends StatefulWidget {
   final String roomId;
@@ -32,7 +33,11 @@ class _BoardSectionState extends State<BoardSection> {
 
   Future<void> fetchBoard() async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/board'));
+      final serverIp = await getServerIpAddress();
+      if (serverIp == null || serverIp.isEmpty) {
+        return;
+      }
+      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/board'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {

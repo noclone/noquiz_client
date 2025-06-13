@@ -16,8 +16,9 @@ import 'timer_display.dart';
 
 class DisplayRoomGamePage extends StatefulWidget {
   final String roomId;
+  final String serverIp;
 
-  const DisplayRoomGamePage({super.key, required this.roomId});
+  const DisplayRoomGamePage({super.key, required this.roomId, required this.serverIp});
 
   @override
   State<DisplayRoomGamePage> createState() => _DisplayRoomGamePageState();
@@ -32,7 +33,7 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
   void initState() {
     super.initState();
     channel = IOWebSocketChannel.connect(
-      Uri.parse('ws://localhost:8000/ws/${widget.roomId}'),
+      Uri.parse('ws://${widget.serverIp}:8000/ws/${widget.roomId}'),
     );
 
     channel.ready.then((_) {

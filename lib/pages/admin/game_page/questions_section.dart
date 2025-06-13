@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../utils/server.dart';
+
 class QuestionsSection extends StatefulWidget {
   final String roomId;
   final WebSocketChannel channel;
@@ -30,8 +32,12 @@ class _QuestionsSectionState extends State<QuestionsSection> {
   }
 
   Future<void> fetchQuestionsCategories() async {
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      return;
+    }
     try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/questions_categories'));
+      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/questions_categories'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
@@ -46,8 +52,12 @@ class _QuestionsSectionState extends State<QuestionsSection> {
   }
 
   Future<void> fetchCategoryQuestions(String category) async {
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      return;
+    }
     try {
-      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms/${widget.roomId}/questions_categories/$category'));
+      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/questions_categories/$category'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
