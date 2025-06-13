@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import '../../../utils/server.dart';
+import '../../../utils/preferences.dart';
 
 class ScoresSection extends StatefulWidget {
   final List<Map<String, dynamic>> players;

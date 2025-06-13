@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../utils/board.dart';
-import '../../../utils/server.dart';
+import '../../../utils/preferences.dart';
 
 class BoardSection extends StatefulWidget {
   final String roomId;

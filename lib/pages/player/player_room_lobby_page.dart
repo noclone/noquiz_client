@@ -38,6 +38,9 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
 
     broadcastStream.listen((message) {
       final data = jsonDecode(message);
+      if (data.containsKey('initiated-player-id')) {
+        // Save player id
+      }
       if (data.containsKey('room-deleted')) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Admin left the room')),
@@ -83,7 +86,18 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: PlayerList(players: players, admin: admin),
+        child: Column(
+          children: [
+            const Text(
+              'Waiting for the admin to start the game',
+              style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: PlayerList(players: players, admin: admin),
+            ),
+          ],
+        ),
       ),
     );
   }

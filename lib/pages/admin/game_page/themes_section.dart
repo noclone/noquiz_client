@@ -3,7 +3,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../../../utils/server.dart';
+import '../../../utils/preferences.dart';
 
 class ThemesSection extends StatefulWidget {
   final String roomId;

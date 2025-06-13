@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../../../utils/server.dart';
+import '../../../utils/preferences.dart';
 import 'display_state.dart';
 
 class PlayerScoresDisplay extends StatefulWidget {

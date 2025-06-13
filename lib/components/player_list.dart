@@ -20,14 +20,24 @@ class PlayerList extends StatelessWidget {
             itemCount: players.length + (admin != null ? 1 : 0),
             itemBuilder: (context, index) {
               if (admin != null && index == 0) {
-                return ListTile(
-                  title: Text('${admin!['name']} (Admin)'),
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  child: ListTile(
+                    title: Text(admin!['name']),
+                    trailing: const Text(
+                      '(Admin)',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
                 );
               }
               final playerIndex = admin != null ? index - 1 : index;
               final player = players[playerIndex];
-              return ListTile(
-                title: Text(player['name']),
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                child: ListTile(
+                  title: Text(player['name']),
+                ),
               );
             },
           ),

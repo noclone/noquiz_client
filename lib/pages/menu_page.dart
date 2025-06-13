@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:noquiz_client/pages/player/player_room_lobby_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import '../utils/server.dart';
+import '../utils/preferences.dart';
 import 'admin/admin_room_lobby_page.dart';
 import 'display/game_page/display_room_game_page.dart';
 
@@ -19,7 +19,6 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> {
   String? _roomId;
   bool _isLoading = false;
-  final TextEditingController _roomIdController = TextEditingController();
   final TextEditingController _serverIpController = TextEditingController();
   List<String> roomIds = [];
 
@@ -75,13 +74,7 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
-  Future<void> _joinRoom() async {
-    final roomId = _roomIdController.text.trim();
-    if (roomId.isEmpty) {
-      _showErrorDialog('Please enter a room ID.');
-      return;
-    }
-
+  Future<void> _joinRoom(String roomId) async {
     setState(() {
       _isLoading = true;
     });
@@ -118,13 +111,7 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
-  Future<void> _displayRoom() async {
-    final roomId = _roomIdController.text.trim();
-    if (roomId.isEmpty) {
-      _showErrorDialog('Please enter a room ID.');
-      return;
-    }
-
+  Future<void> _displayRoom(String roomId) async {
     setState(() {
       _isLoading = true;
     });
@@ -193,10 +180,10 @@ class _MenuPageState extends State<MenuPage> {
           roomIds = List<String>.from(data);
         });
       } else {
-        print('Failed to load category questions');
+        print('Failed to load room IDs');
       }
     } catch (e) {
-      print('Error fetching category questions: $e');
+      print('Error fetching room IDs: $e');
     }
   }
 
@@ -214,6 +201,20 @@ class _MenuPageState extends State<MenuPage> {
     );
 
     fetchRoomIds();
+  }
+
+  Future<void> _loadServerIpAddress() async {
+    final serverIp = await getServerIpAddress();
+    if (serverIp != null && serverIp.isNotEmpty) {
+      _serverIpController.text = serverIp;
+      fetchRoomIds();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadServerIpAddress();
   }
 
   @override
@@ -235,24 +236,23 @@ class _MenuPageState extends State<MenuPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: TextField(
-                    controller: _serverIpController,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter server IP address',
-                      border: OutlineInputBorder(),
-                    ),
-                    onSubmitted: (_) => _setServerIpAddress(),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: TextField(
-                    controller: _roomIdController,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter Room ID',
-                      border: OutlineInputBorder(),
-                    ),
-                    onSubmitted: (_) => _joinRoom(),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _serverIpController,
+                          decoration: const InputDecoration(
+                            labelText: 'Enter server IP address',
+                            border: OutlineInputBorder(),
+                          ),
+                          onSubmitted: (_) => _setServerIpAddress(),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.refresh),
+                        onPressed: fetchRoomIds,
+                      ),
+                    ],
                   ),
                 ),
                 if (_isLoading)
@@ -260,24 +260,28 @@ class _MenuPageState extends State<MenuPage> {
                     padding: EdgeInsets.all(16.0),
                     child: CircularProgressIndicator(),
                   ),
-                ElevatedButton(
-                  onPressed: _joinRoom,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    textStyle: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  child: const Text('Continue'),
-                ),
-                SizedBox(
-                  height: 100,
+                Expanded(
                   child: ListView.builder(
                     itemCount: roomIds.length,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(roomIds[index]),
-                        onTap: () {
-                          _roomIdController.text = roomIds[index];
-                        },
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        child: ListTile(
+                          title: Text(roomIds[index]),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.login),
+                                onPressed: () => _joinRoom(roomIds[index]),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.tv),
+                                onPressed: () => _displayRoom(roomIds[index]),
+                              ),
+                            ],
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -288,36 +292,18 @@ class _MenuPageState extends State<MenuPage> {
           Positioned(
             bottom: 20,
             right: 20,
-            child: Row(
-              children: [
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _displayRoom,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                      : const Text('Display'),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _createRoom,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                      : const Text('Admin: Create Room'),
-                ),
-              ],
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _createRoom,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              ),
+              child: _isLoading
+                  ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              )
+                  : const Text('Admin: Create Room'),
             ),
           ),
         ],
