@@ -60,41 +60,50 @@ class _RightOrderState extends State<RightOrder> {
           ),
         ),
         if (imageData.isNotEmpty)
-          Center(
-            child: SizedBox(
-              width: imageData.length * (150 + 8 * 2),
-              height: 250,
-              child: ReorderableListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: imageData.length,
-                itemBuilder: (context, index) {
-                  return ReorderableDragStartListener(
-                    key: Key('$index'),
-                    index: index,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        width: 150,
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: Image.network(
-                                imageData[index][0],
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                              ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final maxWidth = constraints.maxWidth;
+              final imageCount = imageData.length;
+              final imageWidth = imageCount > 0 ? maxWidth / imageCount : maxWidth;
+
+              return Center(
+                child: SizedBox(
+                  width: maxWidth,
+                  height: 250,
+                  child: ReorderableListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: imageCount,
+                    itemBuilder: (context, index) {
+                      return ReorderableDragStartListener(
+                        key: Key('$index'),
+                        index: index,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: imageWidth - 16,
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Image.network(
+                                    imageData[index][0],
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                },
-                onReorder: _onReorder,
-              ),
-            ),
+                      );
+                    },
+                    onReorder: _onReorder,
+                  ),
+                ),
+              );
+            },
           ),
       ],
     );
   }
+
 }

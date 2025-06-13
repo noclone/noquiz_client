@@ -84,25 +84,29 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
             Center(
               child: Text(
                 currentRightOrder ?? '',
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
             if (imageData.isNotEmpty)
               LayoutBuilder(
                 builder: (context, constraints) {
+                  final maxWidth = constraints.maxWidth;
+                  final count = imageData.length;
+                  final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
+                  // 16 for horizontal padding (8 left + 8 right)
+
                   return Center(
                     child: SizedBox(
                       height: 350,
                       child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
-                        itemCount: imageData.length,
+                        itemCount: count,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
-                              width: 200,
+                              width: imageWidth,
                               child: Column(
                                 children: [
                                   Expanded(
@@ -135,42 +139,50 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
         child: ListView(
           shrinkWrap: true,
           children: playerAnswers.map((playerAnswer) {
-            return Column(
-              children: [
-                Text(
-                  playerAnswer['playerName'],
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Center(
-                  child: SizedBox(
-                    height: 150,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: playerAnswer['imagesOrder'].length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: 150,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: Image.network(
-                                    playerAnswer['imagesOrder'][index][0],
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                final maxWidth = constraints.maxWidth;
+                final count = playerAnswer['imagesOrder'].length;
+                final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
+
+                return Column(
+                  children: [
+                    Text(
+                      playerAnswer['playerName'],
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                ),
-              ],
+                    Center(
+                      child: SizedBox(
+                        height: 150,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: count,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                width: imageWidth,
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: Image.network(
+                                        playerAnswer['imagesOrder'][index][0],
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             );
           }).toList(),
         ),

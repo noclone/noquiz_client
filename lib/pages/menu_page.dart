@@ -269,7 +269,7 @@ class _MenuPageState extends State<MenuPage> {
                   child: const Text('Continue'),
                 ),
                 SizedBox(
-                  height: 100, // Adjust height as needed
+                  height: 100,
                   child: ListView.builder(
                     itemCount: roomIds.length,
                     itemBuilder: (context, index) {
