@@ -191,7 +191,6 @@ class _MenuPageState extends State<MenuPage> {
         final data = jsonDecode(response.body);
         setState(() {
           roomIds = List<String>.from(data);
-          print(roomIds);
         });
       } else {
         print('Failed to load category questions');
