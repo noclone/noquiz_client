@@ -18,6 +18,7 @@ class _MenuPageState extends State<MenuPage> {
   String? _roomId;
   bool _isLoading = false;
   final TextEditingController _roomIdController = TextEditingController();
+  List<String> roomIds = [];
 
   Future<void> _createRoom() async {
     setState(() {
@@ -157,6 +158,29 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
+  Future<void> fetchRoomIds() async {
+    try {
+      final response = await http.get(Uri.parse('http://localhost:8000/api/rooms'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          roomIds = List<String>.from(data);
+          print(roomIds);
+        });
+      } else {
+        print('Failed to load category questions');
+      }
+    } catch (e) {
+      print('Error fetching category questions: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRoomIds();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -197,6 +221,20 @@ class _MenuPageState extends State<MenuPage> {
                     textStyle: Theme.of(context).textTheme.titleMedium,
                   ),
                   child: const Text('Continue'),
+                ),
+                SizedBox(
+                  height: 100, // Adjust height as needed
+                  child: ListView.builder(
+                    itemCount: roomIds.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(roomIds[index]),
+                        onTap: () {
+                          _roomIdController.text = roomIds[index];
+                        },
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
