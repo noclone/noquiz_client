@@ -27,7 +27,7 @@ class RightOrderDisplay extends StatefulWidget {
 class _RightOrderDisplayState extends State<RightOrderDisplay> {
   String? currentRightOrder;
   List<List<dynamic>> imageData = [];
-  bool showLabels = false;
+  bool showAnswer = false;
   RightOrderState state = RightOrderState.images;
 
   List<Map<String, dynamic>> playerAnswers = [];
@@ -43,7 +43,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
           state = RightOrderState.images;
           currentRightOrder = data['right-order'];
           imageData = List<List<dynamic>>.from(data['data'] ?? [])..shuffle();
-          showLabels = false;
+          showAnswer = false;
         });
       } else if (data.containsKey('show-right-order-answer')) {
         setState(() {
@@ -51,7 +51,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
           state = RightOrderState.images;
           currentRightOrder = data['show-right-order-answer'];
           imageData = List<List<dynamic>>.from(data['data'] ?? []);
-          showLabels = true;
+          showAnswer = true;
         });
       } else if (data.containsKey('player-right-order-answer')) {
         setState(() {
@@ -93,7 +93,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                 builder: (context, constraints) {
                   return Center(
                     child: SizedBox(
-                      height: 250,
+                      height: 350,
                       child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,
@@ -102,7 +102,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
-                              width: 150,
+                              width: 200,
                               child: Column(
                                 children: [
                                   Expanded(
@@ -112,12 +112,11 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                       width: double.infinity,
                                     ),
                                   ),
-                                  if (showLabels)
-                                    Text(
-                                      imageData[index][1],
-                                      style: const TextStyle(fontSize: 20),
-                                      textAlign: TextAlign.center,
-                                    ),
+                                  Text(
+                                    showAnswer ? imageData[index][2] : imageData[index][1],
+                                    style: const TextStyle(fontSize: 20),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ],
                               ),
                             ),
