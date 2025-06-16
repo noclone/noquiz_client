@@ -48,17 +48,16 @@ class _RightOrderState extends State<RightOrder> {
     });
   }
 
+  double responsiveFontSize(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    return screenWidth * 0.03;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Center(
-          child: Text(
-            currentRightOrder ?? '',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ),
         if (imageData.isNotEmpty)
           LayoutBuilder(
             builder: (context, constraints) {
@@ -69,7 +68,7 @@ class _RightOrderState extends State<RightOrder> {
               return Center(
                 child: SizedBox(
                   width: maxWidth,
-                  height: 250,
+                  height: imageWidth,
                   child: ReorderableListView.builder(
                     buildDefaultDragHandles: false,
                     scrollDirection: Axis.horizontal,
@@ -91,10 +90,13 @@ class _RightOrderState extends State<RightOrder> {
                                     width: double.infinity,
                                   ),
                                 ),
-                                Text(
-                                  imageData[index][1],
-                                  style: const TextStyle(fontSize: 20),
-                                  textAlign: TextAlign.center,
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    imageData[index][1],
+                                    style: TextStyle(fontSize: responsiveFontSize(context)),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                               ],
                             ),

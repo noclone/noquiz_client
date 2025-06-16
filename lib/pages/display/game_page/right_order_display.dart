@@ -26,6 +26,7 @@ class RightOrderDisplay extends StatefulWidget {
 
 class _RightOrderDisplayState extends State<RightOrderDisplay> {
   String? currentRightOrder;
+  List<List<dynamic>> answerData = [];
   List<List<dynamic>> imageData = [];
   bool showAnswer = false;
   RightOrderState state = RightOrderState.images;
@@ -41,6 +42,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
           widget.setCurrentDisplayState(DisplayState.rightOrder);
           state = RightOrderState.images;
           currentRightOrder = data['right-order'];
+          answerData = List<List<dynamic>>.from(data['data'] ?? []);
           imageData = List<List<dynamic>>.from(data['data'] ?? [])..shuffle();
           showAnswer = false;
         });
@@ -49,7 +51,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
           widget.setCurrentDisplayState(DisplayState.rightOrder);
           state = RightOrderState.images;
           currentRightOrder = data['show-right-order-answer'];
-          imageData = List<List<dynamic>>.from(data['data'] ?? []);
+          answerData = List<List<dynamic>>.from(data['data'] ?? []);
           showAnswer = true;
         });
       } else if (data.containsKey('player-right-order-answer')) {
@@ -119,25 +121,31 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                   children: [
                                     Expanded(
                                       child: Image.network(
-                                        imageData[index][0],
+                                        showAnswer ? answerData[index][0] : imageData[index][0],
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                       ),
                                     ),
-                                    Text(
-                                      imageData[index][1],
-                                      style: TextStyle(
-                                        fontSize: responsiveFontSize(context),
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    if (showAnswer)
-                                      Text(
-                                        imageData[index][2],
+                                    FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        showAnswer ? answerData[index][1] : imageData[index][1],
                                         style: TextStyle(
                                           fontSize: responsiveFontSize(context),
                                         ),
                                         textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    if (showAnswer)
+                                      FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Text(
+                                          answerData[index][2],
+                                          style: TextStyle(
+                                            fontSize: responsiveFontSize(context),
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
                                       ),
                                   ],
                                 ),
@@ -156,7 +164,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
           visible: state == RightOrderState.playerAnswers,
           child: Column(
             children: [
-              if (imageData.isNotEmpty)
+              if (answerData.isNotEmpty)
                 Card(
                   margin: const EdgeInsets.all(16.0),
                   elevation: 4.0,
@@ -174,7 +182,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                         LayoutBuilder(
                           builder: (context, constraints) {
                             final maxWidth = constraints.maxWidth;
-                            final count = imageData.length;
+                            final count = answerData.length;
                             final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
 
                             return SizedBox(
@@ -192,17 +200,20 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                         children: [
                                           Expanded(
                                             child: Image.network(
-                                              imageData[index][0],
+                                              answerData[index][0],
                                               fit: BoxFit.cover,
                                               width: double.infinity,
                                             ),
                                           ),
-                                          Text(
-                                            imageData[index][1],
-                                            style: TextStyle(
-                                              fontSize: responsiveFontSize(context),
+                                          FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Text(
+                                              answerData[index][1],
+                                              style: TextStyle(
+                                                fontSize: responsiveFontSize(context),
+                                              ),
+                                              textAlign: TextAlign.center,
                                             ),
-                                            textAlign: TextAlign.center,
                                           ),
                                         ],
                                       ),
@@ -243,7 +254,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: count,
                                 itemBuilder: (context, imgIndex) {
-                                  bool isCorrect = playerAnswer['imagesOrder'][imgIndex][0] == imageData[imgIndex][0];
+                                  bool isCorrect = playerAnswer['imagesOrder'][imgIndex][0] == answerData[imgIndex][0];
 
                                   return Padding(
                                     padding: const EdgeInsets.all(6.0),
@@ -265,12 +276,15 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                                 width: double.infinity,
                                               ),
                                             ),
-                                            Text(
-                                              playerAnswer['imagesOrder'][imgIndex][1],
-                                              style: TextStyle(
-                                                fontSize: responsiveFontSize(context),
+                                            FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Text(
+                                                playerAnswer['imagesOrder'][imgIndex][1],
+                                                style: TextStyle(
+                                                  fontSize: responsiveFontSize(context),
+                                                ),
+                                                textAlign: TextAlign.center,
                                               ),
-                                              textAlign: TextAlign.center,
                                             ),
                                           ],
                                         ),
