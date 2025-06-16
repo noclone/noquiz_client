@@ -62,7 +62,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
     final screenWidth = MediaQuery.of(context).size.width;
     final imageWidth = imageUrls.isEmpty ? 0.0 : screenWidth / imageUrls.length - 16.0 * imageUrls.length;
     final double questionFontSize = screenWidth * 0.05;
-    final double countdownFontSize = screenWidth * 0.1; // Adjust the multiplier as needed
+    final double countdownFontSize = screenWidth * 0.1;
 
     return Stack(
       children: [
