@@ -3,14 +3,10 @@ import 'package:noquiz_client/pages/player/right_order.dart';
 import 'dart:convert';
 import 'package:web_socket_channel/io.dart';
 import '../../utils/visibility_component.dart';
+import 'answer_type.dart';
 import 'number_input.dart';
 import 'buzzer.dart';
 
-enum AnswerType {
-  none,
-  number,
-  rightOrder,
-}
 
 class PlayerRoomGamePage extends StatefulWidget {
   final IOWebSocketChannel channel;
@@ -50,6 +46,12 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
     });
   }
 
+  void setExpectedAnswerType(AnswerType type) {
+    setState(() {
+      expectedAnswerType = type;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,6 +67,7 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
               child: BuzzerComponent(
                 channel: widget.channel,
                 broadcastStream: widget.broadcastStream,
+                setExpectedAnswerType: setExpectedAnswerType,
               ),
             ),
             buildComponent(

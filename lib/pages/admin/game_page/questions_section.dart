@@ -81,6 +81,7 @@ class _QuestionsSectionState extends State<QuestionsSection> {
 
   void sendQuestionToSocket(int index) {
     final question = categoryQuestions[index];
+    widget.channel.sink.add(jsonEncode({"reset-buzzer": true}));
     widget.channel.sink.add(jsonEncode({
       "new-question": question['question'],
       "answer": question['answer'],

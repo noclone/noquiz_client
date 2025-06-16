@@ -19,7 +19,7 @@ class QuestionDisplay extends StatefulWidget {
 class _QuestionDisplayState extends State<QuestionDisplay> {
   String currentQuestion = 'Waiting for a question...';
   List<String> imageUrls = [];
-  double questionFontSize = 40;
+  int countdown = 0;
 
   @override
   void initState() {
@@ -28,10 +28,9 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
       final data = jsonDecode(message);
       if (data.containsKey('new-question')) {
         setState(() {
-          widget.setCurrentDisplayState(DisplayState.question);
-          currentQuestion = data['new-question'];
-          imageUrls = List<String>.from(data['images']);
+          countdown = 3;
         });
+        startCountdown(data);
       }
     }, onError: (error) {
       print('WebSocket error: $error');
@@ -40,15 +39,21 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
     });
   }
 
-  void increaseFontSize() {
-    setState(() {
-      questionFontSize += 2;
-    });
-  }
-
-  void decreaseFontSize() {
-    setState(() {
-      questionFontSize = questionFontSize > 2 ? questionFontSize - 2 : questionFontSize;
+  void startCountdown(data) {
+    Future.delayed(const Duration(seconds: 1), () {
+      if (countdown > 1) {
+        setState(() {
+          countdown--;
+        });
+        startCountdown(data);
+      } else {
+        setState(() {
+          widget.setCurrentDisplayState(DisplayState.question);
+          currentQuestion = data['new-question'];
+          imageUrls = List<String>.from(data['images']);
+          countdown = 0;
+        });
+      }
     });
   }
 
@@ -56,6 +61,8 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final imageWidth = imageUrls.isEmpty ? 0.0 : screenWidth / imageUrls.length - 16.0 * imageUrls.length;
+    final double questionFontSize = screenWidth * 0.05;
+    final double countdownFontSize = screenWidth * 0.1; // Adjust the multiplier as needed
 
     return Stack(
       children: [
@@ -63,13 +70,22 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Center(
-              child: Text(
-                currentQuestion,
-                style: TextStyle(fontSize: questionFontSize),
-                textAlign: TextAlign.center,
+              child: SizedBox(
+                width: screenWidth * 0.8,
+                child: countdown > 0
+                    ? Text(
+                  countdown.toString(),
+                  style: TextStyle(fontSize: countdownFontSize),
+                  textAlign: TextAlign.center,
+                )
+                    : Text(
+                  currentQuestion,
+                  style: TextStyle(fontSize: questionFontSize),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
-            if (imageUrls.isNotEmpty)
+            if (imageUrls.isNotEmpty && countdown == 0)
               LayoutBuilder(
                 builder: (context, constraints) {
                   return Center(
@@ -105,26 +121,8 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
               ),
           ],
         ),
-        Positioned(
-          bottom: 16.0,
-          right: 16.0,
-          child: Column(
-            children: [
-              FloatingActionButton(
-                onPressed: increaseFontSize,
-                child: Icon(Icons.add),
-                mini: true,
-              ),
-              SizedBox(height: 8),
-              FloatingActionButton(
-                onPressed: decreaseFontSize,
-                child: Icon(Icons.remove),
-                mini: true,
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
 }
+

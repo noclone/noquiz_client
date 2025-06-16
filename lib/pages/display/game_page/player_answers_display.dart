@@ -58,6 +58,7 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
         final data = jsonDecode(response.body);
         setState(() {
           players = List<Map<String, dynamic>>.from(data['players']);
+          showAnswer = false;
         });
       } else {
         print('Failed to load player answers');
@@ -69,37 +70,48 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    int crossAxisCount = screenWidth > 600 ? 3 : 2;
+
     return Center(
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(screenWidth * 0.05),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.5),
+              color: Colors.grey.withOpacity(0.5),
               spreadRadius: 5,
               blurRadius: 7,
               offset: const Offset(0, 3),
             ),
           ],
         ),
-        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 500),
+        constraints: BoxConstraints(
+          maxWidth: screenWidth * 0.9,
+          maxHeight: screenHeight * 0.8,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Player Answers',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: screenWidth * 0.03,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: screenHeight * 0.02),
             if (showAnswer && currentAnswer.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
+                padding: EdgeInsets.only(bottom: screenHeight * 0.02),
                 child: Text(
-                  'Answer: ${currentAnswer}',
-                  style: const TextStyle(
-                    fontSize: 20,
+                  'Answer: $currentAnswer',
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.04,
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
                   ),
@@ -107,19 +119,28 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
               ),
             if (!showAnswer && currentAnswer.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
+                padding: EdgeInsets.only(bottom: screenHeight * 0.02),
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
                       showAnswer = true;
                     });
                   },
-                  child: const Text('Show Answer'),
+                  child: Text(
+                    'Show Answer',
+                    style: TextStyle(fontSize: screenWidth * 0.03),
+                  ),
                 ),
               ),
             Expanded(
-              child: ListView.builder(
+              child: GridView.builder(
                 shrinkWrap: true,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 3,
+                ),
                 itemCount: players.length,
                 itemBuilder: (context, index) {
                   final player = players[index];
@@ -130,14 +151,16 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
                       children: [
                         Text(
                           player['name'],
-                          style: const TextStyle(fontSize: 20),
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.03,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(width: 10),
                         Text(
                           player['current_answer'] ?? 'No answer',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.035,
                             color: Colors.blue,
                           ),
                         ),

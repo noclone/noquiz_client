@@ -34,6 +34,10 @@ class _BuzzesSectionState extends State<BuzzesSection> {
           });
           buzzes.sort((a, b) => a['time'].compareTo(b['time']));
         });
+      } else if (data.containsKey('reset-buzzer')){
+        setState(() {
+          buzzes.clear();
+        });
       }
     });
   }
