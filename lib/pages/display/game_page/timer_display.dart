@@ -2,20 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 
 class TimerDisplay extends StatefulWidget {
-  final Function setCurrentDisplayState;
   final Stream<dynamic> broadcastStream;
 
-  const TimerDisplay({Key? key, required this.setCurrentDisplayState, required this.broadcastStream}) : super(key: key);
+  const TimerDisplay({Key? key, required this.broadcastStream}) : super(key: key);
 
   @override
   _TimerDisplayState createState() => _TimerDisplayState();
 }
 
 class _TimerDisplayState extends State<TimerDisplay> {
-
   Timer? countdownTimer;
   int remainingTime = 0;
 
@@ -25,7 +22,6 @@ class _TimerDisplayState extends State<TimerDisplay> {
     widget.broadcastStream.listen((message) {
       final data = jsonDecode(message);
       if (data.containsKey('start-timer')) {
-        widget.setCurrentDisplayState(DisplayState.timer);
         startTimer(data['start-timer'] * 1000);
       } else if (data.containsKey('pause-timer')) {
         pauseTimer();
@@ -89,11 +85,18 @@ class _TimerDisplayState extends State<TimerDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final double responsiveFontSize = screenWidth * 0.05;
+
     return Center(
       child: Text(
         formatTime(remainingTime),
-        style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: responsiveFontSize,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
 }
+

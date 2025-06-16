@@ -20,6 +20,8 @@ class TimerSection extends StatefulWidget {
 
 class _TimerSectionState extends State<TimerSection> {
   bool isTimerRunning = false;
+  bool isTimerVisible = false;
+  bool isOverlayMode = false;
   final TextEditingController _timerController = TextEditingController();
 
   void _startTimer() {
@@ -48,37 +50,72 @@ class _TimerSectionState extends State<TimerSection> {
     }
   }
 
+  void toggleTimerVisibility() {
+    setState(() {
+      isTimerVisible = !isTimerVisible;
+    });
+    widget.channel.sink.add(jsonEncode({"show-timer": isTimerVisible, "overlay": isOverlayMode}));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
-          TextField(
-            controller: _timerController,
-            decoration: const InputDecoration(
-              labelText: 'Enter time in seconds',
-              border: OutlineInputBorder(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Overlay Mode'),
+              Switch(
+                value: isOverlayMode,
+                onChanged: (value) {
+                  setState(() {
+                    isOverlayMode = value;
+                  });
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: toggleTimerVisibility,
+            child: Text(isTimerVisible ? 'Hide Timer' : 'Show Timer'),
+          ),
+          const SizedBox(height: 10),
+          Visibility(
+            visible: isTimerVisible,
+            child: Column(
+              children: [
+                TextField(
+                  controller: _timerController,
+                  decoration: const InputDecoration(
+                    labelText: 'Enter time in seconds',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: toggleTimer,
+                  child: Text(isTimerRunning ? 'Pause Timer' : 'Start Timer'),
+                ),
+                const SizedBox(height: 5),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      isTimerRunning = false;
+                    });
+                    _resetTimer();
+                  },
+                  child: const Text('Reset Timer'),
+                ),
+              ],
             ),
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: toggleTimer,
-            child: Text(isTimerRunning ? 'Pause Timer' : 'Start Timer'),
-          ),
-          const SizedBox(height: 5),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                isTimerRunning = false;
-              });
-              _resetTimer();
-            },
-            child: const Text('Reset Timer'),
           ),
         ],
       ),
     );
   }
 }
+
