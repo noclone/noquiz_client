@@ -29,7 +29,6 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
   List<List<dynamic>> imageData = [];
   bool showAnswer = false;
   RightOrderState state = RightOrderState.images;
-
   List<Map<String, dynamic>> playerAnswers = [];
 
   @override
@@ -61,7 +60,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
             'playerName': data['player_name'],
           });
         });
-      } else if (data.containsKey('send-right-order-answer')){
+      } else if (data.containsKey('send-right-order-answer')) {
         setState(() {
           playerAnswers.clear();
         });
@@ -73,92 +72,40 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
     });
   }
 
+  double responsiveFontSize(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    return screenWidth * 0.03;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      buildComponent(
-        visible: state == RightOrderState.images,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Center(
-              child: Text(
-                currentRightOrder ?? '',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    return Stack(
+      children: [
+        buildComponent(
+          visible: state == RightOrderState.images,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(
+                child: Text(
+                  textAlign: TextAlign.center,
+                  currentRightOrder ?? '',
+                  style: TextStyle(
+                    fontSize: responsiveFontSize(context),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
-            if (imageData.isNotEmpty)
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final maxWidth = constraints.maxWidth;
-                  final count = imageData.length;
-                  final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
+              if (imageData.isNotEmpty)
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final maxWidth = constraints.maxWidth;
+                    final count = imageData.length;
+                    final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
 
-                  return Center(
-                    child: SizedBox(
-                      height: 350,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: count,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              width: imageWidth,
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: Image.network(
-                                      imageData[index][0],
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                    ),
-                                  ),
-                                  Text(
-                                    imageData[index][1],
-                                    style: const TextStyle(fontSize: 20),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  if (showAnswer)
-                                    Text(
-                                      imageData[index][2],
-                                      style: const TextStyle(fontSize: 20),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                },
-              ),
-          ],
-        ),
-      ),
-      buildComponent(
-        visible: state == RightOrderState.playerAnswers,
-        child: ListView(
-          shrinkWrap: true,
-          children: playerAnswers.map((playerAnswer) {
-            return LayoutBuilder(
-              builder: (context, constraints) {
-                final maxWidth = constraints.maxWidth;
-                final count = playerAnswer['imagesOrder'].length;
-                final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
-
-                return Column(
-                  children: [
-                    Text(
-                      playerAnswer['playerName'],
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    Center(
+                    return Center(
                       child: SizedBox(
-                        height: 150,
+                        height: imageWidth,
                         child: ListView.builder(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
@@ -172,16 +119,26 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                   children: [
                                     Expanded(
                                       child: Image.network(
-                                        playerAnswer['imagesOrder'][index][0],
+                                        imageData[index][0],
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                       ),
                                     ),
                                     Text(
                                       imageData[index][1],
-                                      style: const TextStyle(fontSize: 20),
+                                      style: TextStyle(
+                                        fontSize: responsiveFontSize(context),
+                                      ),
                                       textAlign: TextAlign.center,
                                     ),
+                                    if (showAnswer)
+                                      Text(
+                                        imageData[index][2],
+                                        style: TextStyle(
+                                          fontSize: responsiveFontSize(context),
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
                                   ],
                                 ),
                               ),
@@ -189,14 +146,157 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                           },
                         ),
                       ),
-                    ),
-                  ],
-                );
-              },
-            );
-          }).toList(),
+                    );
+                  },
+                ),
+            ],
+          ),
         ),
-      ),
-    ]);
+        buildComponent(
+          visible: state == RightOrderState.playerAnswers,
+          child: Column(
+            children: [
+              if (imageData.isNotEmpty)
+                Card(
+                  margin: const EdgeInsets.all(16.0),
+                  elevation: 4.0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Correct Answer',
+                          style: TextStyle(
+                            fontSize: responsiveFontSize(context),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final maxWidth = constraints.maxWidth;
+                            final count = imageData.length;
+                            final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
+
+                            return SizedBox(
+                              height: imageWidth,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: count,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      width: imageWidth,
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: Image.network(
+                                              imageData[index][0],
+                                              fit: BoxFit.cover,
+                                              width: double.infinity,
+                                            ),
+                                          ),
+                                          Text(
+                                            imageData[index][1],
+                                            style: TextStyle(
+                                              fontSize: responsiveFontSize(context),
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: playerAnswers.length,
+                  itemBuilder: (context, index) {
+                    final playerAnswer = playerAnswers[index];
+                    return Column(
+                      children: [
+                        Text(
+                          playerAnswer['playerName'],
+                          style: TextStyle(
+                            fontSize: responsiveFontSize(context),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final maxWidth = constraints.maxWidth;
+                            final count = playerAnswer['imagesOrder'].length;
+                            final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
+
+                            return SizedBox(
+                              height: imageWidth,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: count,
+                                itemBuilder: (context, imgIndex) {
+                                  bool isCorrect = playerAnswer['imagesOrder'][imgIndex][0] == imageData[imgIndex][0];
+
+                                  return Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: isCorrect ? Colors.green : Colors.red,
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      child: SizedBox(
+                                        width: imageWidth,
+                                        child: Column(
+                                          children: [
+                                            Expanded(
+                                              child: Image.network(
+                                                playerAnswer['imagesOrder'][imgIndex][0],
+                                                fit: BoxFit.cover,
+                                                width: double.infinity,
+                                              ),
+                                            ),
+                                            Text(
+                                              playerAnswer['imagesOrder'][imgIndex][1],
+                                              style: TextStyle(
+                                                fontSize: responsiveFontSize(context),
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                        const Divider(
+                          color: Colors.grey,
+                          thickness: 1,
+                          height: 20,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
+
