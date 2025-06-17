@@ -5,7 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../utils/preferences.dart';
 import 'admin/admin_room_lobby_page.dart';
-import 'display/game_page/display_room_game_page.dart';
+import 'display/display_room_lobby_page.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class MenuPage extends StatefulWidget {
   final String nickname;
@@ -134,7 +135,7 @@ class _MenuPageState extends State<MenuPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DisplayRoomGamePage(roomId: roomId, serverIp: serverIp),
+            builder: (context) => DisplayRoomLobbyPage(roomId: roomId, serverIp: serverIp),
           ),
         );
       } else {
@@ -204,11 +205,19 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Future<void> _loadServerIpAddress() async {
-    final serverIp = await getServerIpAddress();
-    if (serverIp != null && serverIp.isNotEmpty) {
+    if (kIsWeb) {
+      String currentUrl = Uri.base.toString();
+      String serverIp = Uri.parse(currentUrl).host;
       _serverIpController.text = serverIp;
-      fetchRoomIds();
     }
+    else
+    {
+      final serverIp = await getServerIpAddress();
+      if (serverIp != null && serverIp.isNotEmpty) {
+        _serverIpController.text = serverIp;
+      }
+    }
+    fetchRoomIds();
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'dart:convert';
 
 import '../../components/player_list.dart';
@@ -18,7 +18,7 @@ class AdminRoomLobbyPage extends StatefulWidget {
 }
 
 class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
-  late IOWebSocketChannel channel;
+  late WebSocketChannel channel;
   late Stream<dynamic> broadcastStream;
   List<Map<String, dynamic>> players = [];
   Map<String, dynamic>? admin;
@@ -26,7 +26,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
   @override
   void initState() {
     super.initState();
-    channel = IOWebSocketChannel.connect(
+    channel = WebSocketChannel.connect(
       Uri.parse('ws://${widget.serverIp}:8000/ws/${widget.roomId}'),
     );
 

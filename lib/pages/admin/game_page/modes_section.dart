@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'board_section.dart';
 import 'right_order_section.dart';
 import 'themes_section.dart';
@@ -7,7 +7,7 @@ import 'questions_section.dart';
 
 class ModesSection extends StatefulWidget {
   final String roomId;
-  final IOWebSocketChannel channel;
+  final WebSocketChannel channel;
 
   const ModesSection({
     Key? key,

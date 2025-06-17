@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../../utils/visibility_component.dart';
 import 'board_display.dart';
 import 'display_state.dart';
@@ -25,7 +25,7 @@ class DisplayRoomGamePage extends StatefulWidget {
 }
 
 class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
-  late IOWebSocketChannel channel;
+  late WebSocketChannel channel;
   late Stream<dynamic> broadcastStream;
   DisplayState currentDisplayState = DisplayState.question;
   DisplayState? previousDisplayState;
@@ -35,13 +35,9 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
   @override
   void initState() {
     super.initState();
-    channel = IOWebSocketChannel.connect(
+    channel = WebSocketChannel.connect(
       Uri.parse('ws://${widget.serverIp}:8000/ws/${widget.roomId}'),
     );
-
-    channel.ready.then((_) {
-      channel.sink.add(jsonEncode({"name": "display_${widget.roomId}", "display": true}));
-    });
 
     broadcastStream = channel.stream.asBroadcastStream();
     broadcastStream.listen((message) {
@@ -74,12 +70,6 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
     setState(() {
       currentDisplayState = state;
     });
-  }
-
-  @override
-  void dispose() {
-    channel.sink.close();
-    super.dispose();
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:noquiz_client/pages/admin/game_page/modes_section.dart';
 import 'buzzes_section.dart';
 import 'scores_section.dart';
@@ -9,7 +9,7 @@ import 'timer_section.dart';
 
 class AdminRoomGamePage extends StatefulWidget {
   final String roomId;
-  final IOWebSocketChannel channel;
+  final WebSocketChannel channel;
   final Stream<dynamic> broadcastStream;
   final List<Map<String, dynamic>> players;
 

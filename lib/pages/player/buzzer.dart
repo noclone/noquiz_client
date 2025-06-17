@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/pages/player/answer_type.dart';
-import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:vibration/vibration.dart';
 
 
 class BuzzerComponent extends StatefulWidget {
-  final IOWebSocketChannel channel;
+  final WebSocketChannel channel;
   final Stream<dynamic> broadcastStream;
   final Function setExpectedAnswerType;
 

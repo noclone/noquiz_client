@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/pages/player/right_order.dart';
 import 'dart:convert';
-import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../utils/visibility_component.dart';
 import 'answer_type.dart';
 import 'number_input.dart';
@@ -9,7 +9,7 @@ import 'buzzer.dart';
 
 
 class PlayerRoomGamePage extends StatefulWidget {
-  final IOWebSocketChannel channel;
+  final WebSocketChannel channel;
   final Stream<dynamic> broadcastStream;
 
   const PlayerRoomGamePage({super.key, required this.channel, required this.broadcastStream});
