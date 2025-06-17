@@ -1,8 +1,10 @@
-import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:qr_flutter_new/qr_flutter.dart';
+import 'dart:convert';
+import 'dart:async';
+
+import 'game_page/display_room_game_page.dart';
 
 class DisplayRoomLobbyPage extends StatefulWidget {
   final String roomId;
@@ -39,7 +41,7 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DisplayRoomLobbyPage(roomId: widget.roomId, serverIp: widget.serverIp),
+            builder: (context) => DisplayRoomGamePage(roomId: widget.roomId, serverIp: widget.serverIp),
           ),
         );
       }
@@ -74,10 +76,18 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
       ),
       body: Center(
         child: showQRCode
-            ? QrImageView(
-          data: qrData,
-          version: QrVersions.auto,
-          size: 200.0,
+            ? LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            double qrSize = constraints.maxWidth * 0.5;
+            if (constraints.maxHeight < qrSize) {
+              qrSize = constraints.maxHeight * 0.5;
+            }
+            return QrImageView(
+              data: qrData,
+              version: QrVersions.auto,
+              size: qrSize,
+            );
+          },
         )
             : Column(
           mainAxisAlignment: MainAxisAlignment.center,
