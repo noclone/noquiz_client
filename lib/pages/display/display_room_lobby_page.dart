@@ -3,17 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:qr_flutter_new/qr_flutter.dart';
-import '../../utils/visibility_component.dart';
-import 'game_page/board_display.dart';
-import 'game_page/display_state.dart';
-import 'game_page/question_display.dart';
-import 'game_page/player_scores_display.dart';
-import 'game_page/player_answers_display.dart';
-import 'game_page/right_order_display.dart';
-import 'game_page/themes_display.dart';
-import 'game_page/theme_answers_display.dart';
-import 'game_page/answer_display.dart';
-import 'game_page/timer_display.dart';
 
 class DisplayRoomLobbyPage extends StatefulWidget {
   final String roomId;
