@@ -8,50 +8,30 @@ import 'player_room_game_page.dart';
 
 class PlayerRoomLobbyPage extends StatefulWidget {
   final String roomId;
-  final String nickname;
-  final String serverIp;
+  final WebSocketChannel channel;
+  final Stream<dynamic> broadcastStream;
 
-  const PlayerRoomLobbyPage({super.key, required this.roomId, required this.nickname, required this.serverIp});
+  const PlayerRoomLobbyPage({super.key, required this.roomId, required this.channel, required this.broadcastStream});
 
   @override
   State<PlayerRoomLobbyPage> createState() => _PlayerRoomLobbyPageState();
 }
 
 class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
-  late WebSocketChannel channel;
-  late Stream<dynamic> broadcastStream;
   List<Map<String, dynamic>> players = [];
   Map<String, dynamic>? admin;
 
   @override
   void initState() {
     super.initState();
-    channel = WebSocketChannel.connect(
-      Uri.parse('ws://${widget.serverIp}:8000/ws/${widget.roomId}'),
-    );
 
-    channel.ready.then((_) {
-      channel.sink.add(jsonEncode({"name": widget.nickname}));
-    });
-
-    broadcastStream = channel.stream.asBroadcastStream();
-
-    broadcastStream.listen((message) {
+    widget.broadcastStream.listen((message) {
       final data = jsonDecode(message);
-      if (data.containsKey('initiated-player-id')) {
-        // Save player id
-      }
-      if (data.containsKey('room-deleted')) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Admin left the room')),
-        );
-        Navigator.popUntil(context, ModalRoute.withName('/'));
-      }
-      else if (data.containsKey('start-game')){
+      if (data.containsKey('start-game')){
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => PlayerRoomGamePage(channel: channel, broadcastStream: broadcastStream,),
+            builder: (context) => PlayerRoomGamePage(channel: widget.channel, broadcastStream: widget.broadcastStream,),
           ),
         );
       }
@@ -68,10 +48,8 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
     });
   }
 
-  @override
-  void dispose() {
-    channel.sink.close();
-    super.dispose();
+  void onPlayerNameUpdated(String newName) {
+    widget.channel.sink.add(jsonEncode({"update-player-name": newName }));
   }
 
   @override
@@ -94,7 +72,7 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: PlayerList(players: players, admin: admin),
+              child: PlayerList(broadcastStream: widget.broadcastStream, players: players, admin: admin, onPlayerNameUpdated: onPlayerNameUpdated,),
             ),
           ],
         ),

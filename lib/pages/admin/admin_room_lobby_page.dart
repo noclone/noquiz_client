@@ -8,10 +8,9 @@ import 'game_page/admin_room_game_page.dart';
 
 class AdminRoomLobbyPage extends StatefulWidget {
   final String roomId;
-  final String nickname;
   final String serverIp;
 
-  const AdminRoomLobbyPage({super.key, required this.roomId, required this.nickname , required this.serverIp});
+  const AdminRoomLobbyPage({super.key, required this.roomId, required this.serverIp});
 
   @override
   State<AdminRoomLobbyPage> createState() => _AdminRoomLobbyPageState();
@@ -31,7 +30,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
     );
 
     channel.ready.then((_) {
-      channel.sink.add(jsonEncode({"name": widget.nickname, "admin": true}));
+      channel.sink.add(jsonEncode({"name": "admin_${widget.roomId}", "admin": true}));
     });
 
     broadcastStream = channel.stream.asBroadcastStream();
@@ -97,7 +96,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                child: PlayerList(players: players, admin: admin),
+                child: PlayerList(players: players, admin: admin, broadcastStream: broadcastStream,),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
