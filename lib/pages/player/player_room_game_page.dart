@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:noquiz_client/pages/player/right_order.dart';
+import 'package:noquiz_client/utils/preferences.dart';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../utils/visibility_component.dart';
@@ -11,8 +13,9 @@ import 'buzzer.dart';
 class PlayerRoomGamePage extends StatefulWidget {
   final WebSocketChannel channel;
   final Stream<dynamic> broadcastStream;
+  final String roomId;
 
-  const PlayerRoomGamePage({super.key, required this.channel, required this.broadcastStream});
+  const PlayerRoomGamePage({super.key, required this.channel, required this.broadcastStream, required this.roomId});
 
   @override
   State<PlayerRoomGamePage> createState() => _PlayerRoomGamePageState();
@@ -27,29 +30,40 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
     widget.broadcastStream.listen((message) {
       final data = jsonDecode(message);
       if (data.containsKey('new-question')) {
-        setState(() {
-          if (data['expected_answer_type'] == 'NONE') {
-            expectedAnswerType = AnswerType.none;
-          } else if (data['expected_answer_type'] == 'NUMBER') {
-            expectedAnswerType = AnswerType.number;
-          }
-        });
+        if (data['expected_answer_type'] == 'NONE') {
+          setExpectedAnswerType(AnswerType.none);
+        } else if (data['expected_answer_type'] == 'NUMBER') {
+          setExpectedAnswerType(AnswerType.number);
+        }
       } else if (data.containsKey('right-order')) {
-        setState(() {
-          expectedAnswerType = AnswerType.rightOrder;
-        });
+        setExpectedAnswerType(AnswerType.rightOrder);
       }
     }, onError: (error) {
       print('WebSocket error: $error');
     }, onDone: () {
       print('WebSocket connection closed');
     });
+
+    resumeSavedState();
+  }
+
+  void resumeSavedState() async {
+    String savedValue = await getPreference('expected_answer_type');
+
+    setState(() {
+      expectedAnswerType = stringToAnswerType(savedValue);
+    });
+    if (expectedAnswerType == AnswerType.rightOrder)
+    {
+      widget.channel.sink.add(jsonEncode({"right-order-request": true}));
+    }
   }
 
   void setExpectedAnswerType(AnswerType type) {
     setState(() {
       expectedAnswerType = type;
     });
+    setPreference('expected_answer_type', type.toString());
   }
 
   @override

@@ -125,7 +125,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     channel.ready.then((_) {
       getPlayerId().then((playerId) {
-        channel.sink.add(jsonEncode({"player_id": playerId}));
+        if (playerId == null || playerId.isEmpty) {
+          channel.sink.add(jsonEncode({"init-message": "empty"}));
+        }
+        else {
+          channel.sink.add(jsonEncode({"player_id": playerId}));
+        }
 
         final broadcastStream = channel.stream.asBroadcastStream();
 

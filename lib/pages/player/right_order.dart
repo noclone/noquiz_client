@@ -30,7 +30,13 @@ class _RightOrderState extends State<RightOrder> {
           currentRightOrder = data['right-order'];
           imageData = List<List<dynamic>>.from(data['data'] ?? [])..shuffle();
         });
-      } else if (data.containsKey('send-right-order-answer')) {
+      } else if (data.containsKey('right-order-answer')) {
+        setState(() {
+          currentRightOrder = data['right-order-answer']["right-order"];
+          imageData = List<List<dynamic>>.from(data['right-order-answer']['data'] ?? [])..shuffle();
+        });
+      }
+      else if (data.containsKey('send-right-order-answer')) {
         widget.channel.sink.add(jsonEncode({
           'player-right-order-answer': imageData,
         }));
