@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:noquiz_client/pages/player/right_order.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'dart:convert';
