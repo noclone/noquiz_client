@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:noquiz_client/utils/preferences.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'dart:convert';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../../../utils/preferences.dart';
 
 class RightOrderSection extends StatefulWidget {
   final String roomId;
@@ -60,11 +61,7 @@ class _RightOrderSectionState extends State<RightOrderSection> {
 
   void sendQuestionToSocket(int index) {
     final question = questions[index];
-    var dict = {
-      "right-order": question['title'],
-      "data": question['data']
-    };
-    widget.channel.sink.add(jsonEncode(dict));
+    sendToSocket(widget.channel, MessageSubject.RIGHT_ORDER, "SEND", {"TITLE": question["title"], "DATA": question["data"]});
 
     setState(() {
       sentQuestionIndices.add(index);
@@ -73,10 +70,7 @@ class _RightOrderSectionState extends State<RightOrderSection> {
 
   void sendShowAnswersToSocket(int index) {
     final question = questions[index];
-    widget.channel.sink.add(jsonEncode({
-      "show-right-order-answer": question['title'],
-      "data": question['data']
-    }));
+    sendToSocket(widget.channel, MessageSubject.RIGHT_ORDER, "SHOW_ANSWER", {"TITLE": question["title"], "DATA": question["data"]});
   }
 
   @override
@@ -118,9 +112,9 @@ class _RightOrderSectionState extends State<RightOrderSection> {
           right: 16.0,
           child: FloatingActionButton(
             onPressed: () {
-              widget.channel.sink.add(jsonEncode({"send-right-order-answer": true}));
+              sendToSocket(widget.channel, MessageSubject.RIGHT_ORDER, "REQUEST_PLAYERS_ANSWER", {});
             },
-            child: Icon(Icons.check),
+            child: const Icon(Icons.check),
           ),
         ),
       ],

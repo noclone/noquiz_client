@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/pages/display/game_page/display_room_game_page.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:qr_flutter_new/qr_flutter.dart';
 import 'dart:convert';
 import 'dart:async';
 
-import 'game_page/display_room_game_page.dart';
 
 class DisplayRoomLobbyPage extends StatefulWidget {
   final String roomId;
@@ -31,7 +32,7 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
     );
 
     channel.ready.then((_) {
-      channel.sink.add(jsonEncode({"name": "display_${widget.roomId}", "display": true}));
+      sendToSocket(channel, MessageSubject.PLAYER_INIT, "INIT_DISPLAY", {"name": "display_${widget.roomId}"});
     });
 
     broadcastStream = channel.stream.asBroadcastStream();

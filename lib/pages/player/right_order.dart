@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/network_image.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../../components/network_image.dart';
 
 class RightOrder extends StatefulWidget {
   final WebSocketChannel channel;
@@ -20,28 +20,24 @@ class RightOrder extends StatefulWidget {
 
 class _RightOrderState extends State<RightOrder> {
   List<List<dynamic>> imageData = [];
-  String? currentRightOrder;
 
   @override
   void initState() {
     super.initState();
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('right-order')) {
-        setState(() {
-          currentRightOrder = data['right-order'];
-          imageData = List<List<dynamic>>.from(data['data'] ?? [])..shuffle();
-        });
-      } else if (data.containsKey('right-order-answer')) {
-        setState(() {
-          currentRightOrder = data['right-order-answer']["right-order"];
-          imageData = List<List<dynamic>>.from(data['right-order-answer']['data'] ?? [])..shuffle();
-        });
-      }
-      else if (data.containsKey('send-right-order-answer')) {
-        widget.channel.sink.add(jsonEncode({
-          'player-right-order-answer': imageData,
-        }));
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.RIGHT_ORDER) {
+        if (data.action == "SEND") {
+          setState(() {
+            imageData = List<List<dynamic>>.from(data.content['DATA'] ?? [])..shuffle();
+          });
+        } else if (data.action == "REQUEST") {
+          setState(() {
+            imageData = List<List<dynamic>>.from(data.content['DATA'] ?? [])..shuffle();
+          });
+        } else if (data.action == "REQUEST_PLAYERS_ANSWER") {
+          sendToSocket(widget.channel, MessageSubject.RIGHT_ORDER, "PLAYER_ANSWER", {"VALUE": imageData});
+        }
       }
     });
   }

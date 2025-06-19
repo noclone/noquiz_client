@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/socket.dart';
 
-import '../../../utils/preferences.dart';
-import 'display_state.dart';
 
 class PlayerScoresDisplay extends StatefulWidget {
   final String roomId;
@@ -25,9 +22,10 @@ class _PlayerScoresDisplayState extends State<PlayerScoresDisplay> {
     super.initState();
 
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('show-players-scores')) {
-        fetchRoomState();
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.PLAYER_SCORE && data.action == 'SHOW') {
+        players = List<Map<String, dynamic>>.from(data.content['PLAYERS']);
+        players.sort((a, b) => b['score'].compareTo(a['score']));
         widget.setCurrentDisplayState(DisplayState.playerScores);
       }
     }, onError: (error) {
@@ -35,27 +33,6 @@ class _PlayerScoresDisplayState extends State<PlayerScoresDisplay> {
     }, onDone: () {
       print('WebSocket connection closed');
     });
-  }
-
-  Future<void> fetchRoomState() async {
-    final serverIp = await getServerIpAddress();
-    if (serverIp == null || serverIp.isEmpty) {
-      return;
-    }
-    try {
-      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}'));
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        setState(() {
-          players = List<Map<String, dynamic>>.from(data['players']);
-          players.sort((a, b) => b['score'].compareTo(a['score']));
-        });
-      } else {
-        print('Failed to load room state');
-      }
-    } catch (e) {
-      print('Error fetching room state: $e');
-    }
   }
 
   @override

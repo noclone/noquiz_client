@@ -1,10 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/network_image.dart';
+import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/board.dart';
+import 'package:noquiz_client/utils/socket.dart';
 
-import '../../../components/network_image.dart';
-import '../../../utils/board.dart';
-import 'display_state.dart';
 
 class BoardDisplay extends StatefulWidget {
   final Function setCurrentDisplayState;
@@ -28,12 +27,12 @@ class _BoardDisplayState extends State<BoardDisplay> {
     super.initState();
 
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('display-board')) {
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.BOARD && data.action == "UPDATE") {
         widget.setCurrentDisplayState(DisplayState.board);
         setState(() {
-          board = List<Map<String, dynamic>>.from(data['display-board']);
-          imageVisibility = List<bool>.from(data['image-visibility']);
+          board = List<Map<String, dynamic>>.from(data.content['BOARD']);
+          imageVisibility = List<bool>.from(data.content['IMAGE-VISIBILITY']);
         });
       }
     }, onError: (error) {

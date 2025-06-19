@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import '../../../utils/preferences.dart';
-import 'display_state.dart';
+import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/socket.dart';
 
 class PlayerAnswersDisplay extends StatefulWidget {
   final String roomId;
@@ -31,13 +28,13 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
     super.initState();
 
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('new-question')) {
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.QUESTION && data.action == 'SEND') {
         setState(() {
-          currentAnswer = data['answer'] ?? '';
+          currentAnswer = data.content['ANSWER'] ?? '';
         });
-      } else if (data.containsKey('show-players-answers')) {
-        fetchPlayerAnswers();
+      } else if (data.subject == MessageSubject.PLAYER_NUMBER_ANSWER && data.action == 'SHOW') {
+        players = List<Map<String, dynamic>>.from(data.content['PLAYERS']);
         widget.setCurrentDisplayState(DisplayState.playerAnswers);
       }
     }, onError: (error) {
@@ -45,27 +42,6 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
     }, onDone: () {
       print('WebSocket connection closed');
     });
-  }
-
-  Future<void> fetchPlayerAnswers() async {
-    final serverIp = await getServerIpAddress();
-    if (serverIp == null || serverIp.isEmpty) {
-      return;
-    }
-    try {
-      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}'));
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        setState(() {
-          players = List<Map<String, dynamic>>.from(data['players']);
-          showAnswer = false;
-        });
-      } else {
-        print('Failed to load player answers');
-      }
-    } catch (e) {
-      print('Error fetching player answers: $e');
-    }
   }
 
   @override

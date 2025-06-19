@@ -1,18 +1,19 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/visibility_component.dart';
+import 'package:noquiz_client/pages/display/game_page/answer_display.dart';
+import 'package:noquiz_client/pages/display/game_page/board_display.dart';
+import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/pages/display/game_page/player_answers_display.dart';
+import 'package:noquiz_client/pages/display/game_page/player_scores_display.dart';
+import 'package:noquiz_client/pages/display/game_page/question_display.dart';
+import 'package:noquiz_client/pages/display/game_page/right_order_display.dart';
+import 'package:noquiz_client/pages/display/game_page/theme_answers_display.dart';
+import 'package:noquiz_client/pages/display/game_page/themes_display.dart';
+import 'package:noquiz_client/pages/display/game_page/timer_display.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import '../../../components/visibility_component.dart';
-import 'board_display.dart';
-import 'display_state.dart';
-import 'question_display.dart';
-import 'player_scores_display.dart';
-import 'player_answers_display.dart';
-import 'right_order_display.dart';
-import 'themes_display.dart';
-import 'theme_answers_display.dart';
-import 'answer_display.dart';
-import 'timer_display.dart';
+
 
 class DisplayRoomGamePage extends StatefulWidget {
   final String roomId;
@@ -41,16 +42,16 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
 
     broadcastStream = channel.stream.asBroadcastStream();
     broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('room-deleted')) {
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.GAME_STATE && data.action == "ROOM_CLOSED") {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Admin left the room')),
         );
         Navigator.popUntil(context, ModalRoute.withName('/'));
-      } else if (data.containsKey('show-timer')) {
+      } else if (data.subject == MessageSubject.TIMER && data.action == "TOGGLE_VISIBILITY") {
         setState(() {
-          showTimer = data['show-timer'];
-          isTimerOverlay = data['overlay'];
+          showTimer = data.content['SHOW'];
+          isTimerOverlay = data.content['OVERLAY'];
           if (showTimer && !isTimerOverlay) {
             previousDisplayState = currentDisplayState;
             currentDisplayState = DisplayState.timer;

@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'display_state.dart';
+import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/socket.dart';
 
 class ThemeAnswersDisplay extends StatefulWidget {
   final Function setCurrentDisplayState;
@@ -27,10 +27,10 @@ class _ThemeAnswersDisplayState extends State<ThemeAnswersDisplay> {
     super.initState();
 
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('theme-answers')) {
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.THEMES && data.action == 'ANSWERS') {
         setState(() {
-          themeAnswers = data['theme-answers'];
+          themeAnswers = data.content['ANSWERS'];
         });
         widget.setCurrentDisplayState(DisplayState.themeAnswers);
       }

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:noquiz_client/utils/socket.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../../../utils/preferences.dart';
 
 class ScoresSection extends StatefulWidget {
   final List<Map<String, dynamic>> players;
   final String roomId;
+  final WebSocketChannel channel;
 
   const ScoresSection({
     super.key,
     required this.players,
     required this.roomId,
+    required this.channel,
   });
 
   @override
@@ -19,44 +20,18 @@ class ScoresSection extends StatefulWidget {
 }
 
 class _ScoresSectionState extends State<ScoresSection> {
-  Future<void> updatePlayerScore(int playerIndex) async {
-    final player = widget.players[playerIndex];
-    final serverIp = await getServerIpAddress();
-    if (serverIp == null || serverIp.isEmpty) {
-      return;
-    }
-    try {
-      final response = await http.post(
-        Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/player/score'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'player_id': player['id'],
-          'score': player['score'],
-        }),
-      );
-
-      if (response.statusCode != 200) {
-        print('Failed to update player score: ${response.body}');
-      }
-    } catch (e) {
-      print('Error updating player score: $e');
-    }
-  }
-
   void incrementScore(int index) {
     setState(() {
       widget.players[index]['score']++;
     });
-    updatePlayerScore(index);
+    sendToSocket(widget.channel, MessageSubject.PLAYER_SCORE, "UPDATE", {"PLAYER_ID": widget.players[index]["id"], "SCORE": widget.players[index]["score"]});
   }
 
   void decrementScore(int index) {
     setState(() {
       widget.players[index]['score']--;
     });
-    updatePlayerScore(index);
+    sendToSocket(widget.channel, MessageSubject.PLAYER_SCORE, "UPDATE", {"PLAYER_ID": widget.players[index]["id"], "SCORE": widget.players[index]["score"]});
   }
 
   @override

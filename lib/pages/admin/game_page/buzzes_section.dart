@@ -1,7 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
 
 class BuzzesSection extends StatefulWidget {
   final WebSocketChannel channel;
@@ -25,19 +25,22 @@ class _BuzzesSectionState extends State<BuzzesSection> {
     super.initState();
 
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('buzz')) {
-        setState(() {
-          buzzes.add({
-            'name': data['buzz'][0],
-            'time': data['buzz'][1],
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.BUZZER) {
+        if (data.action == "ADD") {
+          setState(() {
+            buzzes.add({
+              'name': data.content["PLAYER_NAME"],
+              'time': data.content["TIME"],
+            });
+            buzzes.sort((a, b) => a['time'].compareTo(b['time']));
           });
-          buzzes.sort((a, b) => a['time'].compareTo(b['time']));
-        });
-      } else if (data.containsKey('reset-buzzer')){
-        setState(() {
-          buzzes.clear();
-        });
+        }
+        else if (data.action == "RESET") {
+          setState(() {
+            buzzes.clear();
+          });
+        }
       }
     });
   }
@@ -46,7 +49,7 @@ class _BuzzesSectionState extends State<BuzzesSection> {
     setState(() {
       buzzes.clear();
     });
-    widget.channel.sink.add(jsonEncode({"reset-buzzer": true}));
+    sendToSocket(widget.channel, MessageSubject.BUZZER, "RESET", {});
   }
 
   @override

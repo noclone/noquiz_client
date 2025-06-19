@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/utils/preferences.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../../../utils/preferences.dart';
 
 class ThemesSection extends StatefulWidget {
   final String roomId;
@@ -74,9 +75,7 @@ class _ThemesSectionState extends State<ThemesSection> {
   }
 
   void showThemes() {
-    widget.channel.sink.add(jsonEncode({
-      "show-themes": themes
-    }));
+    sendToSocket(widget.channel, MessageSubject.THEMES, "SHOW", {"THEMES": themes});
   }
 
   void sendThemeAnswers() {
@@ -96,9 +95,7 @@ class _ThemesSectionState extends State<ThemesSection> {
       };
     }).toList();
 
-    widget.channel.sink.add(jsonEncode({
-      "theme-answers": answers,
-    }));
+    sendToSocket(widget.channel, MessageSubject.THEMES, "ANSWERS", {"ANSWERS": answers});
   }
 
 

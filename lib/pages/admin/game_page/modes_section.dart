@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/pages/admin/game_page/board_section.dart';
+import 'package:noquiz_client/pages/admin/game_page/questions_section.dart';
+import 'package:noquiz_client/pages/admin/game_page/right_order_section.dart';
+import 'package:noquiz_client/pages/admin/game_page/themes_section.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'board_section.dart';
-import 'right_order_section.dart';
-import 'themes_section.dart';
-import 'questions_section.dart';
 
 class ModesSection extends StatefulWidget {
   final String roomId;

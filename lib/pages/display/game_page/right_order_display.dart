@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/network_image.dart';
+import 'package:noquiz_client/components/visibility_component.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
-
-import '../../../components/visibility_component.dart';
+import 'package:noquiz_client/utils/socket.dart';
 
 enum RightOrderState {
   images,
@@ -26,7 +24,7 @@ class RightOrderDisplay extends StatefulWidget {
 }
 
 class _RightOrderDisplayState extends State<RightOrderDisplay> {
-  String? currentRightOrder;
+  String? rightOrderTitle;
   List<List<dynamic>> answerData = [];
   List<List<dynamic>> imageData = [];
   bool showAnswer = false;
@@ -37,36 +35,39 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
   void initState() {
     super.initState();
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('right-order')) {
-        setState(() {
-          widget.setCurrentDisplayState(DisplayState.rightOrder);
-          state = RightOrderState.images;
-          currentRightOrder = data['right-order'];
-          answerData = List<List<dynamic>>.from(data['data'] ?? []);
-          imageData = List<List<dynamic>>.from(data['data'] ?? [])..shuffle();
-          showAnswer = false;
-        });
-      } else if (data.containsKey('show-right-order-answer')) {
-        setState(() {
-          widget.setCurrentDisplayState(DisplayState.rightOrder);
-          state = RightOrderState.images;
-          currentRightOrder = data['show-right-order-answer'];
-          answerData = List<List<dynamic>>.from(data['data'] ?? []);
-          showAnswer = true;
-        });
-      } else if (data.containsKey('player-right-order-answer')) {
-        setState(() {
-          state = RightOrderState.playerAnswers;
-          playerAnswers.add({
-            'imagesOrder': data['player-right-order-answer'],
-            'playerName': data['player_name'],
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.RIGHT_ORDER) {
+        if (data.action == "SEND") {
+          setState(() {
+            widget.setCurrentDisplayState(DisplayState.rightOrder);
+            state = RightOrderState.images;
+            rightOrderTitle = data.content['TITLE'];
+            answerData = List<List<dynamic>>.from(data.content['DATA'] ?? []);
+            imageData = List<List<dynamic>>.from(data.content['DATA'] ?? [])
+              ..shuffle();
+            showAnswer = false;
           });
-        });
-      } else if (data.containsKey('send-right-order-answer')) {
-        setState(() {
-          playerAnswers.clear();
-        });
+        } else if (data.action == "SHOW_ANSWER") {
+          setState(() {
+            widget.setCurrentDisplayState(DisplayState.rightOrder);
+            state = RightOrderState.images;
+            rightOrderTitle = data.content['TITLE'];
+            answerData = List<List<dynamic>>.from(data.content['DATA'] ?? []);
+            showAnswer = true;
+          });
+        } else if (data.action == "PLAYER_ANSWER") {
+          setState(() {
+            state = RightOrderState.playerAnswers;
+            playerAnswers.add({
+              'imagesOrder': data.content['VALUE'],
+              'playerName': data.content['PLAYER_NAME'],
+            });
+          });
+        } else if (data.action == "CLEAR_PLAYERS_ANSWER") {
+          setState(() {
+            playerAnswers.clear();
+          });
+        }
       }
     }, onError: (error) {
       print('WebSocket error: $error');
@@ -92,7 +93,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
               Center(
                 child: Text(
                   textAlign: TextAlign.center,
-                  currentRightOrder ?? '',
+                  rightOrderTitle ?? '',
                   style: TextStyle(
                     fontSize: responsiveFontSize(context),
                     fontWeight: FontWeight.bold,

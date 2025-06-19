@@ -1,7 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../../../components/network_image.dart';
-import 'display_state.dart';
+import 'package:noquiz_client/components/network_image.dart';
+import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/socket.dart';
 
 class QuestionDisplay extends StatefulWidget {
   final Function setCurrentDisplayState;
@@ -26,8 +26,8 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
   void initState() {
     super.initState();
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('new-question')) {
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.QUESTION && data.action == 'SEND') {
         setState(() {
           countdown = 3;
         });

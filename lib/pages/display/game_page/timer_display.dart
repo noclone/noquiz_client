@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/utils/socket.dart';
 
 class TimerDisplay extends StatefulWidget {
   final Stream<dynamic> broadcastStream;
@@ -20,13 +20,15 @@ class _TimerDisplayState extends State<TimerDisplay> {
   void initState() {
     super.initState();
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('start-timer')) {
-        startTimer(data['start-timer'] * 1000);
-      } else if (data.containsKey('pause-timer')) {
-        pauseTimer();
-      } else if (data.containsKey('reset-timer')) {
-        resetTimer();
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.TIMER) {
+        if (data.action == "START") {
+          startTimer(data.content['DURATION'] * 1000);
+        } else if (data.action == "PAUSE") {
+          pauseTimer();
+        } else if (data.action == "RESET") {
+          resetTimer();
+        }
       }
     }, onError: (error) {
       print('WebSocket error: $error');

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:noquiz_client/components/network_image.dart';
+import 'package:noquiz_client/utils/board.dart';
+import 'package:noquiz_client/utils/preferences.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../../../utils/board.dart';
-import '../../../utils/preferences.dart';
 
 class BoardSection extends StatefulWidget {
   final String roomId;
@@ -95,10 +96,7 @@ class _BoardSectionState extends State<BoardSection> {
               child: IconButton(
                 icon: const Icon(Icons.send, color: Colors.blue),
                 onPressed: () {
-                  widget.channel.sink.add(jsonEncode({
-                    "display-board": board,
-                    "image-visibility": imageVisibility,
-                  }));
+                  sendToSocket(widget.channel, MessageSubject.BOARD, "UPDATE", {"BOARD": board, "IMAGE_VISIBILITY": imageVisibility});
                 },
               ),
             ),
@@ -138,12 +136,14 @@ class _BoardSectionState extends State<BoardSection> {
                             IconButton(
                               icon: const Icon(Icons.send, size: 20),
                               onPressed: () {
-                                widget.channel.sink.add(jsonEncode({
-                                  "new-question": board[index]['question'],
-                                  "answer": board[index]['answer'],
-                                  "expected_answer_type": board[index]['expected_answer_type'],
-                                  "images": board[index]["images"],
-                                }));
+                                sendToSocket(widget.channel, MessageSubject.QUESTION, "SEND",
+                                    {
+                                      "QUESTION": board[index]['question'],
+                                      "ANSWER": board[index]['answer'],
+                                      "EXPECTED_ANSWER_TYPE": board[index]['expected_answer_type'],
+                                      "IMAGES": board[index]["images"],
+                                    }
+                                );
                               },
                             ),
                             IconButton(
@@ -155,9 +155,7 @@ class _BoardSectionState extends State<BoardSection> {
                             IconButton(
                               icon: const Icon(Icons.lightbulb, size: 20),
                               onPressed: () {
-                                widget.channel.sink.add(jsonEncode({
-                                  "show-answer": true,
-                                }));
+                                sendToSocket(widget.channel, MessageSubject.QUESTION, "SHOW_ANSWER", {});
                               },
                             ),
                             IconButton(

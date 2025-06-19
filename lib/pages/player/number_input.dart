@@ -1,6 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class NumberInputComponent extends StatefulWidget {
@@ -18,7 +17,7 @@ class _NumberInputComponentState extends State<NumberInputComponent> {
   void _submitNumber() {
     final number = _numberController.text;
     if (number.isNotEmpty) {
-      widget.channel.sink.add(jsonEncode({"player-answer": number}));
+      sendToSocket(widget.channel, MessageSubject.PLAYER_NUMBER_ANSWER, "UPDATE", {"VALUE": number});
       _numberController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Answer sent')),

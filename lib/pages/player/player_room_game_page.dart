@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/visibility_component.dart';
+import 'package:noquiz_client/pages/player/answer_type.dart';
+import 'package:noquiz_client/pages/player/buzzer.dart';
+import 'package:noquiz_client/pages/player/number_input.dart';
 import 'package:noquiz_client/pages/player/right_order.dart';
 import 'package:noquiz_client/utils/preferences.dart';
-import 'dart:convert';
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import '../../components/visibility_component.dart';
-import 'answer_type.dart';
-import 'number_input.dart';
-import 'buzzer.dart';
 
 
 class PlayerRoomGamePage extends StatefulWidget {
@@ -27,15 +27,19 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
   void initState() {
     super.initState();
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('new-question')) {
-        if (data['expected_answer_type'] == 'NONE') {
-          setExpectedAnswerType(AnswerType.none);
-        } else if (data['expected_answer_type'] == 'NUMBER') {
-          setExpectedAnswerType(AnswerType.number);
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.QUESTION) {
+        if (data.action == "SEND"){
+          if (data.content['EXPECTED_ANSWER_TYPE'] == 'NONE') {
+            setExpectedAnswerType(AnswerType.none);
+          } else if (data.content['EXPECTED_ANSWER_TYPE'] == 'NUMBER') {
+            setExpectedAnswerType(AnswerType.number);
+          }
         }
-      } else if (data.containsKey('right-order')) {
-        setExpectedAnswerType(AnswerType.rightOrder);
+      } else if (data.subject == MessageSubject.RIGHT_ORDER) {
+        if (data.action == "SEND"){
+          setExpectedAnswerType(AnswerType.rightOrder);
+        }
       }
     }, onError: (error) {
       print('WebSocket error: $error');
@@ -54,7 +58,7 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
     });
     if (expectedAnswerType == AnswerType.rightOrder)
     {
-      widget.channel.sink.add(jsonEncode({"right-order-request": true}));
+      sendToSocket(widget.channel, MessageSubject.RIGHT_ORDER, "REQUEST", {});
     }
   }
 

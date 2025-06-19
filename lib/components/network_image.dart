@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/utils/preferences.dart';
 
-import '../utils/preferences.dart';
 
 class NoQuizNetworkImage extends StatefulWidget {
   final String imagePath;

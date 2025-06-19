@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:noquiz_client/utils/preferences.dart';
+import 'package:noquiz_client/utils/socket.dart';
 
-import '../../../utils/preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class QuestionsSection extends StatefulWidget {
   final String roomId;
@@ -81,13 +82,14 @@ class _QuestionsSectionState extends State<QuestionsSection> {
 
   void sendQuestionToSocket(int index) {
     final question = categoryQuestions[index];
-    widget.channel.sink.add(jsonEncode({"reset-buzzer": true}));
-    widget.channel.sink.add(jsonEncode({
-      "new-question": question['question'],
-      "answer": question['answer'],
-      "expected_answer_type": question['expected_answer_type'],
-      "images": question["images"],
-    }));
+    sendToSocket(widget.channel, MessageSubject.QUESTION, "SEND",
+        {
+          "QUESTION": question['question'],
+          "ANSWER": question['answer'],
+          "EXPECTED_ANSWER_TYPE": question['expected_answer_type'],
+          "IMAGES": question["images"],
+        }
+    );
 
     setState(() {
       sentQuestionIndices.add(index);
@@ -95,9 +97,7 @@ class _QuestionsSectionState extends State<QuestionsSection> {
   }
 
   void sendShowAnswersToSocket(int index) {
-    widget.channel.sink.add(jsonEncode({
-      "show-answer": true,
-    }));
+    sendToSocket(widget.channel, MessageSubject.QUESTION, "SHOW_ANSWER", {});
   }
 
   @override

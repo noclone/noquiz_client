@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/pages/player/answer_type.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:vibration/vibration.dart';
 
@@ -25,8 +24,8 @@ class _BuzzerComponentState extends State<BuzzerComponent> {
   void initState() {
     super.initState();
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('reset-buzzer')) {
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.BUZZER && data.action == "RESET") {
         setState(() {
           widget.setExpectedAnswerType(AnswerType.none);
           isBuzzerEnabled = true;
@@ -46,7 +45,7 @@ class _BuzzerComponentState extends State<BuzzerComponent> {
     if (await Vibration.hasVibrator()) {
       Vibration.vibrate(duration: 400);
     }
-    widget.channel.sink.add(jsonEncode({"buzz": true}));
+    sendToSocket(widget.channel, MessageSubject.BUZZER, "ADD", {});
   }
 
   @override

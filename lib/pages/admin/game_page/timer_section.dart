@@ -1,6 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class TimerSection extends StatefulWidget {
@@ -27,16 +26,16 @@ class _TimerSectionState extends State<TimerSection> {
   void _startTimer() {
     final duration = int.tryParse(_timerController.text) ?? 0;
     if (duration > 0) {
-      widget.channel.sink.add(jsonEncode({"start-timer": duration}));
+      sendToSocket(widget.channel, MessageSubject.TIMER, "START", {"duration": duration});
     }
   }
 
   void _pauseTimer() {
-    widget.channel.sink.add(jsonEncode({"pause-timer": true}));
+    sendToSocket(widget.channel, MessageSubject.TIMER, "PAUSE", {});
   }
 
   void _resetTimer() {
-    widget.channel.sink.add(jsonEncode({"reset-timer": true}));
+    sendToSocket(widget.channel, MessageSubject.TIMER, "RESET", {});
   }
 
   void toggleTimer() {
@@ -54,7 +53,7 @@ class _TimerSectionState extends State<TimerSection> {
     setState(() {
       isTimerVisible = !isTimerVisible;
     });
-    widget.channel.sink.add(jsonEncode({"show-timer": isTimerVisible, "overlay": isOverlayMode}));
+    sendToSocket(widget.channel, MessageSubject.TIMER, "TOGGLE_VISIBILITY", {"SHOW": isTimerVisible, "OVERLAY": isOverlayMode});
   }
 
   @override

@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/socket.dart';
 
-import 'display_state.dart';
 
 class ThemesDisplay extends StatefulWidget {
   final Function setCurrentDisplayState;
@@ -24,10 +23,10 @@ class _ThemesDisplayState extends State<ThemesDisplay> {
     super.initState();
 
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('show-themes')) {
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.THEMES && data.action == 'SHOW') {
         setState(() {
-          themes = List<String>.from(data['show-themes']);
+          themes = List<String>.from(data.content['THEMES']);
         });
         widget.setCurrentDisplayState(DisplayState.themes);
       }

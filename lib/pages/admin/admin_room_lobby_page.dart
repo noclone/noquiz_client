@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:noquiz_client/components/player_list.dart';
+import 'package:noquiz_client/pages/admin/game_page/admin_room_game_page.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'dart:convert';
 
-import '../../components/player_list.dart';
-import 'game_page/admin_room_game_page.dart';
 
 class AdminRoomLobbyPage extends StatefulWidget {
   final String roomId;
@@ -30,17 +30,17 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
     );
 
     channel.ready.then((_) {
-      channel.sink.add(jsonEncode({"name": "admin_${widget.roomId}", "admin": true}));
+      sendToSocket(channel, MessageSubject.PLAYER_INIT, "INIT_ADMIN", {"name": "admin_${widget.roomId}"});
     });
 
     broadcastStream = channel.stream.asBroadcastStream();
 
     broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('players')){
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.GAME_STATE && data.action == "ROOM_UPDATE"){
         setState(() {
-          players = List<Map<String, dynamic>>.from(data['players']);
-          admin = data['admin'];
+          players = List<Map<String, dynamic>>.from(data.content['players']);
+          admin = data.content['admin'];
         });
       }
     }, onError: (error) {
@@ -61,7 +61,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
   }
 
   void _startGame() {
-    channel.sink.add(jsonEncode({"start-game": true}));
+    sendToSocket(channel, MessageSubject.GAME_STATE, "START", {});
     Navigator.push(
       context,
       MaterialPageRoute(

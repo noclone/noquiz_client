@@ -2,14 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:noquiz_client/pages/admin/admin_room_lobby_page.dart';
+import 'package:noquiz_client/pages/display/display_room_lobby_page.dart';
 import 'package:noquiz_client/pages/player/player_room_lobby_page.dart';
 import 'package:noquiz_client/components/dialogs.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'pages/admin/admin_room_lobby_page.dart';
-import 'pages/display/display_room_lobby_page.dart';
 
 void main() {
   runApp(const NoQuiz());
@@ -127,10 +128,10 @@ class _HomeScreenState extends State<HomeScreen> {
     channel.ready.then((_) {
       getPlayerId().then((playerId) {
         if (playerId == null || playerId.isEmpty) {
-          channel.sink.add(jsonEncode({"init-message": "empty"}));
+          sendToSocket(channel, MessageSubject.PLAYER_INIT, "INIT_PLAYER", {});
         }
         else {
-          channel.sink.add(jsonEncode({"player_id": playerId}));
+          sendToSocket(channel, MessageSubject.PLAYER_INIT, "INIT_PLAYER", {"player_id": playerId});
         }
 
         final broadcastStream = channel.stream.asBroadcastStream();

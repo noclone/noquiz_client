@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/socket.dart';
 
-import 'display_state.dart';
 
 class AnswerDisplay extends StatefulWidget {
   final Function setCurrentDisplayState;
@@ -24,13 +23,15 @@ class _AnswerDisplayState extends State<AnswerDisplay> {
     super.initState();
 
     widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('new-question')) {
-        setState(() {
-          currentAnswer = data['answer'] ?? '';
-        });
-      } else if (data.containsKey('show-answer')) {
-        widget.setCurrentDisplayState(DisplayState.answer);
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.QUESTION) {
+        if (data.action == 'SEND') {
+          setState(() {
+            currentAnswer = data.content['ANSWER'] ?? '';
+          });
+        } else if (data.action == 'SHOW_ANSWER') {
+          widget.setCurrentDisplayState(DisplayState.answer);
+        }
       }
     }, onError: (error) {
       print('WebSocket error: $error');

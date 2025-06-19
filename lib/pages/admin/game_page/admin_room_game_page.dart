@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/pages/admin/game_page/buzzes_section.dart';
+import 'package:noquiz_client/pages/admin/game_page/scores_section.dart';
+import 'package:noquiz_client/pages/admin/game_page/timer_section.dart';
+import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:noquiz_client/pages/admin/game_page/modes_section.dart';
-import 'buzzes_section.dart';
-import 'scores_section.dart';
-import 'timer_section.dart';
 
 class AdminRoomGamePage extends StatefulWidget {
   final String roomId;
@@ -27,15 +26,6 @@ class AdminRoomGamePage extends StatefulWidget {
 
 class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  void sendWebSocketMessage(String message) {
-    widget.channel.sink.add(message);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -44,14 +34,14 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
           IconButton(
             icon: const Icon(Icons.people),
             onPressed: () {
-              sendWebSocketMessage(jsonEncode({'show-players-answers': true}));
+              sendToSocket(widget.channel, MessageSubject.PLAYER_NUMBER_ANSWER, "SHOW", {});
             },
             tooltip: 'Show Players Answers',
           ),
           IconButton(
             icon: const Icon(Icons.score),
             onPressed: () {
-              sendWebSocketMessage(jsonEncode({'show-players-scores': true}));
+              sendToSocket(widget.channel, MessageSubject.PLAYER_SCORE, "SHOW", {});
             },
             tooltip: 'Show Players Scores',
           ),
@@ -107,6 +97,7 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
           ScoresSection(
             players: widget.players,
             roomId: widget.roomId,
+            channel: widget.channel,
           ),
         ],
       ),
