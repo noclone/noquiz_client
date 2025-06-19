@@ -3,7 +3,6 @@ import 'package:noquiz_client/pages/display/game_page/display_room_game_page.dar
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:qr_flutter_new/qr_flutter.dart';
-import 'dart:convert';
 import 'dart:async';
 
 
@@ -37,8 +36,8 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
 
     broadcastStream = channel.stream.asBroadcastStream();
     broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('start-game')) {
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.GAME_STATE && data.action == "START") {
         Navigator.push(
           context,
           MaterialPageRoute(

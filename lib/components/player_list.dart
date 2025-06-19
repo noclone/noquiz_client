@@ -1,19 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/utils/preferences.dart';
 
 class PlayerList extends StatefulWidget {
-  final Stream<dynamic> broadcastStream;
   final List<Map<String, dynamic>> players;
   final Map<String, dynamic>? admin;
-  final Function(String)? onPlayerNameUpdated;
 
   const PlayerList({
     super.key,
-    required this.broadcastStream,
     required this.players,
     this.admin,
-    this.onPlayerNameUpdated,
   });
 
   @override
@@ -21,31 +16,17 @@ class PlayerList extends StatefulWidget {
 }
 
 class _PlayerListState extends State<PlayerList> {
-  final _controller = TextEditingController();
-  String playerId = '';
+  String? playerId;
 
   @override
   void initState() {
     super.initState();
-    widget.broadcastStream.listen((message) {
-      final data = jsonDecode(message);
-      if (data.containsKey('players') && data.containsKey('player_id')) {
-        setState(() {
-          playerId = data['player_id'];
-          _controller.text = data['player_name'];
-        });
-      }
-    }, onError: (error) {
-      print('WebSocket error: $error');
-    }, onDone: () {
-      print('WebSocket connection closed');
-    });
-  }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+    getPlayerId().then((playerId) {
+      setState(() {
+        this.playerId = playerId;
+      });
+    });
   }
 
   @override
@@ -80,27 +61,13 @@ class _PlayerListState extends State<PlayerList> {
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 4),
                 child: ListTile(
-                  title: isCurrentPlayer
-                      ? Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _controller,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                          ),
-                          onSubmitted: (newName) {
-                            widget.onPlayerNameUpdated!(newName);
-                          },
-                        ),
-                      ),
-                      const Text(
-                        '(You)',
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                    ],
-                  )
-                      : Text(player['name']),
+                  title: Text(player['name']),
+                  trailing: isCurrentPlayer
+                      ? const Text(
+                          '(You)',
+                          style: TextStyle(color: Colors.blue),
+                        )
+                      : null,
                 ),
               );
             },

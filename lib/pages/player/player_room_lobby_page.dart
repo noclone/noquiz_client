@@ -23,6 +23,61 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
   List<Map<String, dynamic>> players = [];
   Map<String, dynamic>? admin;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showNicknameDialog();
+    });
+
+    widget.broadcastStream.listen((message) {
+      MessageData data = decodeMessageData(message);
+      if (data.subject == MessageSubject.GAME_STATE && data.action == "START") {
+        goToNextPage();
+      } else if (data.subject == MessageSubject.GAME_STATE && data.action == "ROOM_UPDATE") {
+        setState(() {
+          players = List<Map<String, dynamic>>.from(data.content['players']);
+          admin = data.content['admin'];
+        });
+      }
+    }, onError: (error) {
+      print('WebSocket error: $error');
+    }, onDone: () {
+      print('WebSocket connection closed');
+    });
+
+    checkRoomState();
+  }
+
+  void _showNicknameDialog() {
+    TextEditingController nicknameController = TextEditingController();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter Your Nickname'),
+          content: TextField(
+            controller: nicknameController,
+            decoration: const InputDecoration(hintText: "Nickname"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Submit'),
+              onPressed: () {
+                if (nicknameController.text.isNotEmpty) {
+                  Navigator.of(context).pop();
+                  onPlayerNameUpdated(nicknameController.text);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void checkRoomState() async {
     final serverIp = await getServerIpAddress();
     final url = Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}');
@@ -37,37 +92,17 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
     }
   }
 
-  void goToNextPage(){
+  void goToNextPage() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PlayerRoomGamePage(channel: widget.channel, broadcastStream: widget.broadcastStream, roomId: widget.roomId),
+        builder: (context) => PlayerRoomGamePage(
+          channel: widget.channel,
+          broadcastStream: widget.broadcastStream,
+          roomId: widget.roomId,
+        ),
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    widget.broadcastStream.listen((message) {
-      MessageData data = decodeMessageData(message);
-      if (data.subject == MessageSubject.GAME_STATE && data.action == "START"){
-        goToNextPage();
-      }
-      else if (data.subject == MessageSubject.GAME_STATE && data.action == "ROOM_UPDATE") {
-        setState(() {
-          players = List<Map<String, dynamic>>.from(data.content['players']);
-          admin = data.content['admin'];
-        });
-      }
-    }, onError: (error) {
-      print('WebSocket error: $error');
-    }, onDone: () {
-      print('WebSocket connection closed');
-    });
-
-    checkRoomState();
   }
 
   void onPlayerNameUpdated(String newName) {
@@ -94,7 +129,10 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: PlayerList(broadcastStream: widget.broadcastStream, players: players, admin: admin, onPlayerNameUpdated: onPlayerNameUpdated,),
+              child: PlayerList(
+                players: players,
+                admin: admin,
+              ),
             ),
           ],
         ),

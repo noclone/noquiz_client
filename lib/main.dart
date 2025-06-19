@@ -137,11 +137,11 @@ class _HomeScreenState extends State<HomeScreen> {
         final broadcastStream = channel.stream.asBroadcastStream();
 
         broadcastStream.listen((message) {
-          final data = jsonDecode(message);
-          if (data.containsKey('initiated-player-id')) {
-            setPreference('player_id', data['initiated-player-id']);
+          MessageData data = decodeMessageData(message);
+          if (data.subject == MessageSubject.PLAYER_INIT && data.action == "INIT_SUCCESS") {
+            setPreference('player_id', data.content['PLAYER_ID']);
           }
-          if (data.containsKey('room-deleted')) {
+          if (data.subject == MessageSubject.GAME_STATE && data.action == "ROOM_CLOSED") {
             fetchRoomIds();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Admin left the room')),

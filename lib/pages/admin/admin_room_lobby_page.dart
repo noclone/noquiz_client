@@ -96,7 +96,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                child: PlayerList(players: players, admin: admin, broadcastStream: broadcastStream,),
+                child: PlayerList(players: players, admin: admin,),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
