@@ -41,7 +41,7 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DisplayRoomGamePage(roomId: widget.roomId, serverIp: widget.serverIp),
+            builder: (context) => DisplayRoomGamePage(channel: channel, broadcastStream: broadcastStream),
           ),
         );
       }

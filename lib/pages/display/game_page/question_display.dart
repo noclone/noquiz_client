@@ -31,7 +31,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
         setState(() {
           countdown = 3;
         });
-        startCountdown(data);
+        startCountdown(data.content);
       }
     }, onError: (error) {
       print('WebSocket error: $error');
@@ -50,8 +50,8 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
       } else {
         setState(() {
           widget.setCurrentDisplayState(DisplayState.question);
-          currentQuestion = data['new-question'];
-          imageUrls = List<String>.from(data['images']);
+          currentQuestion = data['QUESTION'];
+          imageUrls = List<String>.from(data['IMAGES']);
           countdown = 0;
         });
       }

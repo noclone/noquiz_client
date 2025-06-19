@@ -16,18 +16,16 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 
 class DisplayRoomGamePage extends StatefulWidget {
-  final String roomId;
-  final String serverIp;
+  final WebSocketChannel channel;
+  final Stream<dynamic> broadcastStream;
 
-  const DisplayRoomGamePage({super.key, required this.roomId, required this.serverIp});
+  const DisplayRoomGamePage({super.key, required this.channel, required this.broadcastStream});
 
   @override
   State<DisplayRoomGamePage> createState() => _DisplayRoomGamePageState();
 }
 
 class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
-  late WebSocketChannel channel;
-  late Stream<dynamic> broadcastStream;
   DisplayState currentDisplayState = DisplayState.question;
   DisplayState? previousDisplayState;
   bool showTimer = false;
@@ -36,12 +34,8 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
   @override
   void initState() {
     super.initState();
-    channel = WebSocketChannel.connect(
-      Uri.parse('ws://${widget.serverIp}:8000/ws/${widget.roomId}'),
-    );
 
-    broadcastStream = channel.stream.asBroadcastStream();
-    broadcastStream.listen((message) {
+    widget.broadcastStream.listen((message) {
       MessageData data = decodeMessageData(message);
       if (data.subject == MessageSubject.GAME_STATE && data.action == "ROOM_CLOSED") {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -86,58 +80,56 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
               visible: currentDisplayState == DisplayState.question,
               child: QuestionDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
-                broadcastStream: broadcastStream,
+                broadcastStream: widget.broadcastStream,
               ),
             ),
             buildComponent(
               visible: currentDisplayState == DisplayState.rightOrder,
               child: RightOrderDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
-                broadcastStream: broadcastStream,
+                broadcastStream: widget.broadcastStream,
               ),
             ),
             buildComponent(
               visible: currentDisplayState == DisplayState.playerScores,
               child: PlayerScoresDisplay(
-                roomId: widget.roomId,
                 setCurrentDisplayState: setCurrentDisplayState,
-                broadcastStream: broadcastStream,
+                broadcastStream: widget.broadcastStream,
               ),
             ),
             buildComponent(
               visible: currentDisplayState == DisplayState.playerAnswers,
               child: PlayerAnswersDisplay(
-                roomId: widget.roomId,
                 setCurrentDisplayState: setCurrentDisplayState,
-                broadcastStream: broadcastStream,
+                broadcastStream: widget.broadcastStream,
               ),
             ),
             buildComponent(
               visible: currentDisplayState == DisplayState.themes,
               child: ThemesDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
-                broadcastStream: broadcastStream,
+                broadcastStream: widget.broadcastStream,
               ),
             ),
             buildComponent(
               visible: currentDisplayState == DisplayState.themeAnswers,
               child: ThemeAnswersDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
-                broadcastStream: broadcastStream,
+                broadcastStream: widget.broadcastStream,
               ),
             ),
             buildComponent(
               visible: currentDisplayState == DisplayState.answer,
               child: AnswerDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
-                broadcastStream: broadcastStream,
+                broadcastStream: widget.broadcastStream,
               ),
             ),
             buildComponent(
               visible: currentDisplayState == DisplayState.board,
               child: BoardDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
-                broadcastStream: broadcastStream,
+                broadcastStream: widget.broadcastStream,
               ),
             ),
             showTimer
@@ -146,11 +138,11 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
                     top: 20.0,
                     right: 20.0,
                     child: TimerDisplay(
-                      broadcastStream: broadcastStream,
+                      broadcastStream: widget.broadcastStream,
                     ),
                   )
                   : TimerDisplay(
-                    broadcastStream: broadcastStream,
+                    broadcastStream: widget.broadcastStream,
                   )
                 : Container(),
           ],

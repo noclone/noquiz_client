@@ -4,11 +4,10 @@ import 'package:noquiz_client/utils/socket.dart';
 
 
 class PlayerScoresDisplay extends StatefulWidget {
-  final String roomId;
   final Function setCurrentDisplayState;
   final Stream<dynamic> broadcastStream;
 
-  const PlayerScoresDisplay({super.key, required this.roomId, required this.setCurrentDisplayState, required this.broadcastStream});
+  const PlayerScoresDisplay({super.key, required this.setCurrentDisplayState, required this.broadcastStream});
 
   @override
   State<PlayerScoresDisplay> createState() => _PlayerScoresDisplayState();

@@ -3,13 +3,11 @@ import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 import 'package:noquiz_client/utils/socket.dart';
 
 class PlayerAnswersDisplay extends StatefulWidget {
-  final String roomId;
   final Function setCurrentDisplayState;
   final Stream<dynamic> broadcastStream;
 
   const PlayerAnswersDisplay({
     super.key,
-    required this.roomId,
     required this.setCurrentDisplayState,
     required this.broadcastStream,
   });
