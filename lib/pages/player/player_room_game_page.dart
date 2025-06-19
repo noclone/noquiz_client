@@ -3,7 +3,7 @@ import 'package:noquiz_client/pages/player/right_order.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import '../../utils/visibility_component.dart';
+import '../../components/visibility_component.dart';
 import 'answer_type.dart';
 import 'number_input.dart';
 import 'buzzer.dart';

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/network_image.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 
-import '../../../utils/visibility_component.dart';
+import '../../../components/visibility_component.dart';
 
 enum RightOrderState {
   images,

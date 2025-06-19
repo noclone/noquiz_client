@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import '../../../utils/visibility_component.dart';
+import '../../../components/visibility_component.dart';
 import 'board_display.dart';
 import 'display_state.dart';
 import 'question_display.dart';

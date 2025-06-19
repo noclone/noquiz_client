@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:noquiz_client/pages/player/player_room_lobby_page.dart';
-import 'package:noquiz_client/utils/dialogs.dart';
+import 'package:noquiz_client/components/dialogs.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:web_socket_channel/web_socket_channel.dart';
