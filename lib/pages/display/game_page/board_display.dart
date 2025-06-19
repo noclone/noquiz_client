@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../../../components/network_image.dart';
 import '../../../utils/board.dart';
 import 'display_state.dart';
 
@@ -83,8 +84,8 @@ class _BoardDisplayState extends State<BoardDisplay> {
                             width: 4.0,
                           ),
                         ),
-                        child: Image.network(
-                          thumbnailUrl,
+                        child: NoQuizNetworkImage(
+                          imagePath: thumbnailUrl,
                           fit: BoxFit.fill,
                           width: double.infinity,
                           height: double.infinity,

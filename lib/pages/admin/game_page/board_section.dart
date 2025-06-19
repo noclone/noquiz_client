@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:noquiz_client/components/network_image.dart';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -121,8 +122,8 @@ class _BoardSectionState extends State<BoardSection> {
                             width: 4.0,
                           ),
                         ),
-                        child: Image.network(
-                          thumbnailUrl,
+                        child: NoQuizNetworkImage(
+                          imagePath: thumbnailUrl,
                           fit: BoxFit.fill,
                           width: double.infinity,
                           height: double.infinity,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../../../components/network_image.dart';
 import 'display_state.dart';
 
 class QuestionDisplay extends StatefulWidget {
@@ -103,8 +104,8 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
                               child: Column(
                                 children: [
                                   Expanded(
-                                    child: Image.network(
-                                      imageUrls[index],
+                                    child: NoQuizNetworkImage(
+                                      imagePath: imageUrls[index],
                                       fit: BoxFit.scaleDown,
                                       width: double.infinity,
                                     ),

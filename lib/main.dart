@@ -70,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
       String currentUrl = Uri.base.toString();
       String serverIp = Uri.parse(currentUrl).host;
       _serverIpController.text = serverIp;
+      setPreference("server_ip", serverIp);
     } else {
       final serverIp = await getServerIpAddress();
       if (serverIp != null && serverIp.isNotEmpty) {

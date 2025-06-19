@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/network_image.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 
 import '../../../utils/visibility_component.dart';
@@ -120,8 +121,8 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                 child: Column(
                                   children: [
                                     Expanded(
-                                      child: Image.network(
-                                        showAnswer ? answerData[index][0] : imageData[index][0],
+                                      child: NoQuizNetworkImage(
+                                        imagePath: showAnswer ? answerData[index][0] : imageData[index][0],
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                       ),
@@ -199,8 +200,8 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                       child: Column(
                                         children: [
                                           Expanded(
-                                            child: Image.network(
-                                              answerData[index][0],
+                                            child: NoQuizNetworkImage(
+                                              imagePath: answerData[index][0],
                                               fit: BoxFit.cover,
                                               width: double.infinity,
                                             ),
@@ -270,8 +271,8 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                         child: Column(
                                           children: [
                                             Expanded(
-                                              child: Image.network(
-                                                playerAnswer['imagesOrder'][imgIndex][0],
+                                              child: NoQuizNetworkImage(
+                                                imagePath: playerAnswer['imagesOrder'][imgIndex][0],
                                                 fit: BoxFit.cover,
                                                 width: double.infinity,
                                               ),

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../components/network_image.dart';
+
 class RightOrder extends StatefulWidget {
   final WebSocketChannel channel;
   final Stream<dynamic> broadcastStream;
@@ -90,8 +92,8 @@ class _RightOrderState extends State<RightOrder> {
                             child: Column(
                               children: [
                                 Expanded(
-                                  child: Image.network(
-                                    imageData[index][0],
+                                  child: NoQuizNetworkImage(
+                                    imagePath: imageData[index][0],
                                     fit: BoxFit.cover,
                                     width: double.infinity,
                                   ),
