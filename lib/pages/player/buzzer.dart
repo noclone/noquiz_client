@@ -4,20 +4,23 @@ import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:vibration/vibration.dart';
 
-
 class BuzzerComponent extends StatefulWidget {
   final WebSocketChannel channel;
   final Stream<dynamic> broadcastStream;
   final Function setExpectedAnswerType;
 
-  const BuzzerComponent({super.key, required this.channel, required this.broadcastStream, required this.setExpectedAnswerType});
+  const BuzzerComponent({
+    super.key,
+    required this.channel,
+    required this.broadcastStream,
+    required this.setExpectedAnswerType,
+  });
 
   @override
   State<BuzzerComponent> createState() => _BuzzerComponentState();
 }
 
 class _BuzzerComponentState extends State<BuzzerComponent> {
-
   bool isBuzzerEnabled = true;
 
   @override
@@ -50,15 +53,22 @@ class _BuzzerComponentState extends State<BuzzerComponent> {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: isBuzzerEnabled ? _onBuzzerPressed : null,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red,
-        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
-      ),
-      child: const Text(
-        'BUZZER',
-        style: TextStyle(fontSize: 24, color: Colors.white),
+    final screenSize = MediaQuery.of(context).size;
+    final buttonSize = screenSize.width * 0.5;
+
+    return Center(
+      child: SizedBox(
+        width: buttonSize,
+        height: buttonSize,
+        child: ElevatedButton(
+          onPressed: isBuzzerEnabled ? _onBuzzerPressed : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            shape: const CircleBorder(),
+            padding: EdgeInsets.zero,
+          ),
+          child: null
+        ),
       ),
     );
   }

@@ -46,16 +46,19 @@ class _ThemesDisplayState extends State<ThemesDisplay> {
       crossAxisCount = 3;
     }
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Center(
       child: Container(
         padding: const EdgeInsets.all(20),
-        constraints: const BoxConstraints(maxWidth: 800, maxHeight: 600),
+        constraints: BoxConstraints(maxWidth: screenWidth * 0.8, maxHeight: screenHeight * 0.8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Themes',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: screenWidth * 0.03, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             Expanded(
@@ -73,8 +76,8 @@ class _ThemesDisplayState extends State<ThemesDisplay> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           theme,
-                          style: const TextStyle(
-                            fontSize: 25,
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.04,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

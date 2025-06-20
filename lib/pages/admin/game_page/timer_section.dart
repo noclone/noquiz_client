@@ -26,7 +26,7 @@ class _TimerSectionState extends State<TimerSection> {
   void _startTimer() {
     final duration = int.tryParse(_timerController.text) ?? 0;
     if (duration > 0) {
-      sendToSocket(widget.channel, MessageSubject.TIMER, "START", {"duration": duration});
+      sendToSocket(widget.channel, MessageSubject.TIMER, "START", {"DURATION": duration});
     }
   }
 

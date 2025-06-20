@@ -18,9 +18,6 @@ class ThemeAnswersDisplay extends StatefulWidget {
 
 class _ThemeAnswersDisplayState extends State<ThemeAnswersDisplay> {
   List<dynamic> themeAnswers = [];
-  double questionFontSize = 16;
-  double answerFontSize = 14;
-  double listWidth = 600;
 
   @override
   void initState() {
@@ -41,23 +38,12 @@ class _ThemeAnswersDisplayState extends State<ThemeAnswersDisplay> {
     });
   }
 
-  void increaseFontSize() {
-    setState(() {
-      questionFontSize += 2;
-      answerFontSize += 2;
-    });
-  }
-
-  void decreaseFontSize() {
-    setState(() {
-      questionFontSize = questionFontSize > 2 ? questionFontSize - 2 : questionFontSize;
-      answerFontSize = answerFontSize > 2 ? answerFontSize - 2 : answerFontSize;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    int correctCount = themeAnswers.where((answer) => answer['isCorrect']).length;
+    int correctCount =
+        themeAnswers.where((answer) => answer['isCorrect']).length;
+
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Stack(
       children: [
@@ -70,63 +56,47 @@ class _ThemeAnswersDisplayState extends State<ThemeAnswersDisplay> {
                 children: [
                   Text(
                     'Correct Answers: $correctCount',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: screenWidth * 0.03,
+                        fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
-                  GestureDetector(
-                    onHorizontalDragUpdate: (DragUpdateDetails details) {
-                      setState(() {
-                        listWidth += details.primaryDelta!;
-                        listWidth = listWidth.clamp(300, 800);
-                      });
-                    },
-                    child: SizedBox(
-                      width: listWidth,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: themeAnswers.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final answer = themeAnswers[index];
-                          return ListTile(
-                            title: Text(
-                              answer['question'],
-                              style: TextStyle(
-                                fontSize: questionFontSize,
-                                color: answer['isCorrect'] ? Colors.green : Colors.red,
+                  SizedBox(
+                    width: screenWidth * 0.7,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: themeAnswers.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final answer = themeAnswers[index];
+                        return Card(
+                            margin: const EdgeInsets.all(8.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            child: ListTile(
+                              title: Text(
+                                textAlign: TextAlign.center,
+                                answer['question'],
+                                style: TextStyle(
+                                  fontSize: screenWidth * 0.04,
+                                  color: answer['isCorrect']
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
                               ),
-                            ),
-                            subtitle: Text(
-                              answer['answer'],
-                              style: TextStyle(fontSize: answerFontSize),
-                            ),
-                          );
-                        },
-                      ),
+                              subtitle: Text(
+                                textAlign: TextAlign.center,
+                                answer['answer'],
+                                style: TextStyle(fontSize: screenWidth * 0.04),
+                              ),
+                            ));
+                      },
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-        ),
-        Positioned(
-          bottom: 16.0,
-          right: 16.0,
-          child: Column(
-            children: [
-              FloatingActionButton(
-                onPressed: increaseFontSize,
-                child: const Icon(Icons.add),
-                mini: true,
-              ),
-              const SizedBox(height: 8),
-              FloatingActionButton(
-                onPressed: decreaseFontSize,
-                child: const Icon(Icons.remove),
-                mini: true,
-              ),
-            ],
           ),
         ),
       ],

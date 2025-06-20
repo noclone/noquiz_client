@@ -32,7 +32,7 @@ class _BoardDisplayState extends State<BoardDisplay> {
         widget.setCurrentDisplayState(DisplayState.board);
         setState(() {
           board = List<Map<String, dynamic>>.from(data.content['BOARD']);
-          imageVisibility = List<bool>.from(data.content['IMAGE-VISIBILITY']);
+          imageVisibility = List<bool>.from(data.content['IMAGE_VISIBILITY']);
         });
       }
     }, onError: (error) {

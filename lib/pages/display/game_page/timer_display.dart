@@ -44,9 +44,11 @@ class _TimerDisplayState extends State<TimerDisplay> {
   }
 
   void startTimer(int duration) {
-    setState(() {
-      remainingTime = duration;
-    });
+    if (remainingTime == 0) {
+      setState(() {
+        remainingTime = duration;
+      });
+    }
 
     countdownTimer?.cancel();
 

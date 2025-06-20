@@ -28,6 +28,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
     widget.broadcastStream.listen((message) {
       MessageData data = decodeMessageData(message);
       if (data.subject == MessageSubject.QUESTION && data.action == 'SEND') {
+        widget.setCurrentDisplayState(DisplayState.question);
         setState(() {
           countdown = 3;
         });
@@ -49,7 +50,6 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
         startCountdown(data);
       } else {
         setState(() {
-          widget.setCurrentDisplayState(DisplayState.question);
           currentQuestion = data['QUESTION'];
           imageUrls = List<String>.from(data['IMAGES']);
           countdown = 0;
@@ -61,6 +61,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     final imageWidth = imageUrls.isEmpty ? 0.0 : screenWidth / imageUrls.length - 16.0 * imageUrls.length;
     final double questionFontSize = screenWidth * 0.05;
     final double countdownFontSize = screenWidth * 0.1;
@@ -91,7 +92,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
                 builder: (context, constraints) {
                   return Center(
                     child: SizedBox(
-                      height: 250,
+                      height: screenHeight * 0.6,
                       child: ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis.horizontal,

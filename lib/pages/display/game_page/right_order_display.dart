@@ -109,7 +109,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
 
                     return Center(
                       child: SizedBox(
-                        height: imageWidth,
+                        height: imageWidth * (showAnswer ? 1.5 : 1.2),
                         child: ListView.builder(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
@@ -248,7 +248,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                           builder: (context, constraints) {
                             final maxWidth = constraints.maxWidth;
                             final count = playerAnswer['imagesOrder'].length;
-                            final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
+                            final imageWidth = count > 0 ? (maxWidth / count) - 20 : maxWidth;
 
                             return SizedBox(
                               height: imageWidth,
@@ -264,7 +264,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                           color: isCorrect ? Colors.green : Colors.red,
-                                          width: 2.0,
+                                          width: 4.0,
                                         ),
                                       ),
                                       child: SizedBox(

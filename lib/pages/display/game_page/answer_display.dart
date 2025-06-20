@@ -42,18 +42,21 @@ class _AnswerDisplayState extends State<AnswerDisplay> {
 
   @override
   Widget build(BuildContext context) {
+
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             'Answer:',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: screenWidth * 0.05, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           Text(
             currentAnswer.isNotEmpty ? currentAnswer : 'Answer not available.',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: screenWidth * 0.05, fontWeight: FontWeight.bold, color: Colors.green),
             textAlign: TextAlign.center,
           ),
         ],
