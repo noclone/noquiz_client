@@ -25,7 +25,7 @@ class QuestionDisplay extends StatefulWidget {
 class _QuestionDisplayState extends State<QuestionDisplay> {
   String currentQuestion = 'Waiting for a question...';
   List<String> imageUrls = [];
-  List<String> mcq_options = [];
+  List<String> mcqOptions = [];
   String currentAnswer = '';
   int countdown = 0;
   bool showAnswer = false;
@@ -44,6 +44,8 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
           });
           startCountdown(data.content);
         } else if (data.action == 'SHOW_ANSWER') {
+          widget.showTimerOverlay(false);
+          sendToSocket(widget.channel, MessageSubject.TIMER, "RESET", {});
           setState(() {
             showAnswer = true;
           });
@@ -65,7 +67,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
         startCountdown(data);
       } else {
         if (data['TIMER'] != 0) {
-          widget.showTimerOverlay();
+          widget.showTimerOverlay(true);
           sendToSocket(widget.channel, MessageSubject.TIMER, "START", {"DURATION": data['TIMER']});
         }
 
@@ -73,11 +75,24 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
           currentQuestion = data['QUESTION'];
           currentAnswer = data['ANSWER'] ?? '';
           imageUrls = List<String>.from(data['IMAGES']);
-          mcq_options = List<String>.from(data['MCQ_OPTIONS'])..shuffle();
+          mcqOptions = getMCQOptions(data['MCQ_OPTIONS']);
           countdown = 0;
         });
       }
     });
+  }
+
+  List<String> getMCQOptions(List<dynamic> data){
+    if (data.length == 2){
+      if (data.contains("Up") && data.contains("Down")) {
+        data.sort((a, b) => a == "Up" ? -1 : 1);
+      } else if (data.contains("Left") && data.contains("Right")) {
+        data.sort((a, b) => a == "Left" ? -1 : 1);
+      }
+      return List<String>.from(data);
+    }
+
+    return List<String>.from(data)..shuffle();
   }
 
   @override
@@ -90,7 +105,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
     final double questionFontSize = screenWidth * 0.05;
     final double countdownFontSize = screenWidth * 0.1;
 
-    if (showAnswer && mcq_options.isEmpty){
+    if (showAnswer && mcqOptions.isEmpty){
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -164,7 +179,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
               );
             },
           ),
-        if (mcq_options.isNotEmpty && countdown == 0)
+        if (mcqOptions.isNotEmpty && countdown == 0)
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SizedBox(
@@ -173,12 +188,12 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
               child: GridView.count(
                 crossAxisCount: 2,
                 childAspectRatio: 10,
-                children: List.generate(mcq_options.length, (index) {
+                children: List.generate(mcqOptions.length, (index) {
                   return Card(
-                    color: showAnswer && mcq_options[index] == currentAnswer ? Colors.green : Colors.white,
+                    color: showAnswer && mcqOptions[index] == currentAnswer ? Colors.green : Colors.white,
                     child: Center(
                       child: Text(
-                        mcq_options[index],
+                        mcqOptions[index],
                         style: TextStyle(fontSize: screenWidth * 0.02, color: showAnswer ? Colors.white : Colors.black),
                         textAlign: TextAlign.center,
                       ),

@@ -71,10 +71,10 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
     });
   }
 
-  void showTimerOverlay() {
+  void showTimerOverlay(bool val) {
     setState(() {
-      showTimer = true;
-      isTimerOverlay = true;
+      showTimer = val;
+      isTimerOverlay = val;
     });
   }
 
