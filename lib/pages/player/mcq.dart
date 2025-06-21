@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/utils/questions.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -31,8 +32,7 @@ class _MCQState extends State<MCQ> {
           setState(() {
             answerIndex = -1;
             clickedIndex = -1;
-            mcqOptions = List<String>.from(data.content['MCQ_OPTIONS'])
-              ..shuffle();
+            mcqOptions = getMCQOptions(data.content['MCQ_OPTIONS']);
             answer = data.content['ANSWER'];
           });
         }

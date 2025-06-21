@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/network_image.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/questions.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -80,19 +81,6 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
         });
       }
     });
-  }
-
-  List<String> getMCQOptions(List<dynamic> data){
-    if (data.length == 2){
-      if (data.contains("Up") && data.contains("Down")) {
-        data.sort((a, b) => a == "Up" ? -1 : 1);
-      } else if (data.contains("Left") && data.contains("Right")) {
-        data.sort((a, b) => a == "Left" ? -1 : 1);
-      }
-      return List<String>.from(data);
-    }
-
-    return List<String>.from(data)..shuffle();
   }
 
   @override
