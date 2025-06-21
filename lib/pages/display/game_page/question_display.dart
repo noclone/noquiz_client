@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/network_image.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class QuestionDisplay extends StatefulWidget {
   final Function setCurrentDisplayState;
+  final WebSocketChannel channel;
   final Stream<dynamic> broadcastStream;
+  final Function showTimerOverlay;
 
   const QuestionDisplay({
     Key? key,
     required this.setCurrentDisplayState,
+    required this.channel,
     required this.broadcastStream,
+    required this.showTimerOverlay,
   }) : super(key: key);
 
   @override
@@ -59,6 +64,11 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
         });
         startCountdown(data);
       } else {
+        if (data['TIMER'] != 0) {
+          widget.showTimerOverlay();
+          sendToSocket(widget.channel, MessageSubject.TIMER, "START", {"DURATION": data['TIMER']});
+        }
+
         setState(() {
           currentQuestion = data['QUESTION'];
           currentAnswer = data['ANSWER'] ?? '';

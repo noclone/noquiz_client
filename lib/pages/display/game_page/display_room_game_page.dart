@@ -13,12 +13,12 @@ import 'package:noquiz_client/pages/display/game_page/timer_display.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-
 class DisplayRoomGamePage extends StatefulWidget {
   final WebSocketChannel channel;
   final Stream<dynamic> broadcastStream;
 
-  const DisplayRoomGamePage({super.key, required this.channel, required this.broadcastStream});
+  const DisplayRoomGamePage(
+      {super.key, required this.channel, required this.broadcastStream});
 
   @override
   State<DisplayRoomGamePage> createState() => _DisplayRoomGamePageState();
@@ -36,19 +36,23 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
 
     widget.broadcastStream.listen((message) {
       MessageData data = decodeMessageData(message);
-      if (data.subject == MessageSubject.GAME_STATE && data.action == "ROOM_CLOSED") {
+      if (data.subject == MessageSubject.GAME_STATE &&
+          data.action == "ROOM_CLOSED") {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Admin left the room')),
         );
         Navigator.popUntil(context, ModalRoute.withName('/'));
-      } else if (data.subject == MessageSubject.TIMER && data.action == "TOGGLE_VISIBILITY") {
+      } else if (data.subject == MessageSubject.TIMER &&
+          data.action == "TOGGLE_VISIBILITY") {
         setState(() {
           showTimer = data.content['SHOW'];
           isTimerOverlay = data.content['OVERLAY'];
           if (showTimer && !isTimerOverlay) {
             previousDisplayState = currentDisplayState;
             currentDisplayState = DisplayState.timer;
-          } else if (!showTimer && !isTimerOverlay && previousDisplayState != null) {
+          } else if (!showTimer &&
+              !isTimerOverlay &&
+              previousDisplayState != null) {
             currentDisplayState = previousDisplayState!;
           }
         });
@@ -62,7 +66,15 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
 
   void setCurrentDisplayState(DisplayState state) {
     setState(() {
+      showTimer = false;
       currentDisplayState = state;
+    });
+  }
+
+  void showTimerOverlay() {
+    setState(() {
+      showTimer = true;
+      isTimerOverlay = true;
     });
   }
 
@@ -79,7 +91,9 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
               visible: currentDisplayState == DisplayState.question,
               child: QuestionDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
+                channel: widget.channel,
                 broadcastStream: widget.broadcastStream,
+                showTimerOverlay: showTimerOverlay,
               ),
             ),
             buildComponent(
@@ -124,23 +138,27 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
                 broadcastStream: widget.broadcastStream,
               ),
             ),
-            showTimer
-                ? isTimerOverlay
-                  ? Positioned(
-                    top: 20.0,
-                    right: 20.0,
-                    child: TimerDisplay(
-                      broadcastStream: widget.broadcastStream,
-                    ),
-                  )
-                  : TimerDisplay(
-                    broadcastStream: widget.broadcastStream,
-                  )
-                : Container(),
+            Positioned(
+              top: 20.0,
+              right: 20.0,
+              child: Visibility(
+                visible: showTimer && isTimerOverlay,
+                maintainState: true,
+                maintainAnimation: true,
+                maintainSize: true,
+                child: TimerDisplay(
+                  broadcastStream: widget.broadcastStream,
+                ),
+              ),
+            ),
+            buildComponent(
+                visible: showTimer && !isTimerOverlay,
+                child: TimerDisplay(
+                  broadcastStream: widget.broadcastStream,
+                )),
           ],
         ),
       ),
     );
   }
 }
-
