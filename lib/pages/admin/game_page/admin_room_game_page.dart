@@ -34,7 +34,7 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
           IconButton(
             icon: const Icon(Icons.people),
             onPressed: () {
-              sendToSocket(widget.channel, MessageSubject.PLAYER_NUMBER_ANSWER, "SHOW", {});
+              sendToSocket(widget.channel, MessageSubject.PLAYER_ANSWER, "SHOW", {});
             },
             tooltip: 'Show Players Answers',
           ),
@@ -98,6 +98,7 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
             players: widget.players,
             roomId: widget.roomId,
             channel: widget.channel,
+            broadcastStream: widget.broadcastStream,
           ),
         ],
       ),

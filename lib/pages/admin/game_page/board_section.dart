@@ -142,6 +142,7 @@ class _BoardSectionState extends State<BoardSection> {
                                       "ANSWER": board[index]['answer'],
                                       "EXPECTED_ANSWER_TYPE": board[index]['expected_answer_type'],
                                       "IMAGES": board[index]["images"],
+                                      "MCQ_OPTIONS": board[index]["mcq_options"],
                                     }
                                 );
                               },

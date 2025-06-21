@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/visibility_component.dart';
 import 'package:noquiz_client/pages/player/answer_type.dart';
 import 'package:noquiz_client/pages/player/buzzer.dart';
+import 'package:noquiz_client/pages/player/mcq.dart';
 import 'package:noquiz_client/pages/player/number_input.dart';
 import 'package:noquiz_client/pages/player/right_order.dart';
 import 'package:noquiz_client/utils/preferences.dart';
@@ -34,6 +35,8 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
             setExpectedAnswerType(AnswerType.none);
           } else if (data.content['EXPECTED_ANSWER_TYPE'] == 'NUMBER') {
             setExpectedAnswerType(AnswerType.number);
+          } else if (data.content['EXPECTED_ANSWER_TYPE'] == 'MCQ') {
+            setExpectedAnswerType(AnswerType.mcq);
           }
         }
       } else if (data.subject == MessageSubject.RIGHT_ORDER) {
@@ -50,8 +53,18 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
     resumeSavedState();
   }
 
+  @override
+  void dispose() async {
+    await removePreference("expected_answer_type");
+    super.dispose();
+  }
+
   void resumeSavedState() async {
     String savedValue = await getPreference('expected_answer_type');
+
+    if (savedValue.isEmpty) {
+      return;
+    }
 
     setState(() {
       expectedAnswerType = stringToAnswerType(savedValue);
@@ -96,6 +109,13 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
             buildComponent(
               visible: expectedAnswerType == AnswerType.rightOrder,
               child: RightOrder(
+                channel: widget.channel,
+                broadcastStream: widget.broadcastStream,
+              ),
+            ),
+            buildComponent(
+              visible: expectedAnswerType == AnswerType.mcq,
+              child: MCQ(
                 channel: widget.channel,
                 broadcastStream: widget.broadcastStream,
               ),

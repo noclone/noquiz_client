@@ -17,7 +17,7 @@ enum MessageSubject {
   PLAYER_NAME,
   GAME_STATE,
   BUZZER,
-  PLAYER_NUMBER_ANSWER,
+  PLAYER_ANSWER,
   RIGHT_ORDER,
   TIMER,
   PLAYER_SCORE,
@@ -34,8 +34,8 @@ MessageSubject stringToMessageSubject(String value) {
       return MessageSubject.GAME_STATE;
     case 'BUZZER':
       return MessageSubject.BUZZER;
-    case 'PLAYER_NUMBER_ANSWER':
-      return MessageSubject.PLAYER_NUMBER_ANSWER;
+    case 'PLAYER_ANSWER':
+      return MessageSubject.PLAYER_ANSWER;
     case 'RIGHT_ORDER':
       return MessageSubject.RIGHT_ORDER;
     case 'PLAYER_INIT':

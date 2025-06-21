@@ -88,6 +88,7 @@ class _QuestionsSectionState extends State<QuestionsSection> {
           "ANSWER": question['answer'],
           "EXPECTED_ANSWER_TYPE": question['expected_answer_type'],
           "IMAGES": question["images"],
+          "MCQ_OPTIONS": question["mcq_options"],
         }
     );
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/visibility_component.dart';
-import 'package:noquiz_client/pages/display/game_page/answer_display.dart';
 import 'package:noquiz_client/pages/display/game_page/board_display.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 import 'package:noquiz_client/pages/display/game_page/player_answers_display.dart';
@@ -114,13 +113,6 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
             buildComponent(
               visible: currentDisplayState == DisplayState.themeAnswers,
               child: ThemeAnswersDisplay(
-                setCurrentDisplayState: setCurrentDisplayState,
-                broadcastStream: widget.broadcastStream,
-              ),
-            ),
-            buildComponent(
-              visible: currentDisplayState == DisplayState.answer,
-              child: AnswerDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
                 broadcastStream: widget.broadcastStream,
               ),

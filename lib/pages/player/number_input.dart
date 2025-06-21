@@ -17,7 +17,7 @@ class _NumberInputComponentState extends State<NumberInputComponent> {
   void _submitNumber() {
     final number = _numberController.text;
     if (number.isNotEmpty) {
-      sendToSocket(widget.channel, MessageSubject.PLAYER_NUMBER_ANSWER, "UPDATE", {"VALUE": number});
+      sendToSocket(widget.channel, MessageSubject.PLAYER_ANSWER, "UPDATE", {"VALUE": number});
       _numberController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Answer sent')),

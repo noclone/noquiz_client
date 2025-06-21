@@ -31,7 +31,7 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
         setState(() {
           currentAnswer = data.content['ANSWER'] ?? '';
         });
-      } else if (data.subject == MessageSubject.PLAYER_NUMBER_ANSWER && data.action == 'SHOW') {
+      } else if (data.subject == MessageSubject.PLAYER_ANSWER && data.action == 'SHOW') {
         players = List<Map<String, dynamic>>.from(data.content['PLAYERS']);
         widget.setCurrentDisplayState(DisplayState.playerAnswers);
       }

@@ -2,6 +2,7 @@ enum AnswerType {
   none,
   number,
   rightOrder,
+  mcq,
 }
 
 AnswerType stringToAnswerType(String value) {
@@ -12,6 +13,8 @@ AnswerType stringToAnswerType(String value) {
       return AnswerType.number;
     case 'AnswerType.rightOrder':
       return AnswerType.rightOrder;
+    case 'AnswerType.mcq':
+      return AnswerType.mcq;
     default:
       return AnswerType.none;
   }
