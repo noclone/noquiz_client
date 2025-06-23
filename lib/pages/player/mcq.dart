@@ -40,7 +40,7 @@ class _MCQState extends State<MCQ> {
           setState(() {
             answerIndex = mcqOptions.indexOf(answer);
           });
-          if (answerIndex == clickedIndex) {
+          if (answerIndex != -1 && answerIndex == clickedIndex) {
             sendToSocket(widget.channel, MessageSubject.PLAYER_SCORE, "INCREASE", {"VALUE": 1});
           }
         }

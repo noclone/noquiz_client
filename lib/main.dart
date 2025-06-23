@@ -159,6 +159,21 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _joinAsAdmin(String roomId) async {
+    final serverIp = await getServerIpAddress();
+    if (serverIp == null || serverIp.isEmpty) {
+      showErrorDialog('Server IP address not set.', context);
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AdminRoomLobbyPage(roomId: roomId, serverIp: serverIp),
+      ),
+    );
+  }
+
   Future<void> _createRoom() async {
 
     final serverIp = await getServerIpAddress();
@@ -272,6 +287,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 IconButton(
                                   icon: const Icon(Icons.tv),
                                   onPressed: () => _displayRoom(roomIds[index]),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.admin_panel_settings),
+                                  onPressed: () => _joinAsAdmin(roomIds[index]),
                                 ),
                               ],
                             ),

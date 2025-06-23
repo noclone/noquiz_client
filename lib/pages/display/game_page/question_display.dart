@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/network_image.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
@@ -90,7 +92,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
     final imageWidth = imageUrls.isEmpty
         ? 0.0
         : screenWidth / imageUrls.length - 16.0 * imageUrls.length;
-    final double questionFontSize = screenWidth * 0.05;
+    final double questionFontSize = min(screenWidth * 0.05, screenHeight * 0.08);
     final double countdownFontSize = screenWidth * 0.1;
 
     if (showAnswer && mcqOptions.isEmpty){
