@@ -3,10 +3,10 @@
 NoQuiz is a Flutter-based application to play quizzes.
 noquiz_client is the front-end part of the project. See noquiz_server for the back-end.
 
-# Building
+# Build
 
 ```bash
-flutter build [apk|ios|macos|windows|linux|web] --release
+flutter build web --release
 ```
 
 # Run
