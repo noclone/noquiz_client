@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/pages/display/game_page/display_room_game_page.dart';
+import 'package:noquiz_client/utils/room.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:qr_flutter_new/qr_flutter.dart';
@@ -38,18 +39,15 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
     broadcastStream.listen((message) {
       MessageData data = decodeMessageData(message);
       if (data.subject == MessageSubject.GAME_STATE && data.action == "START") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DisplayRoomGamePage(channel: channel, broadcastStream: broadcastStream),
-          ),
-        );
+        goToNextPage();
       }
     }, onError: (error) {
       print('WebSocket error: $error');
     }, onDone: () {
       print('WebSocket connection closed');
     });
+
+    checkRoomState(widget.roomId, goToNextPage);
   }
 
   @override
@@ -66,6 +64,15 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
         showQRCode = true;
       });
     }
+  }
+
+  void goToNextPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DisplayRoomGamePage(channel: channel, broadcastStream: broadcastStream),
+      ),
+    );
   }
 
   @override

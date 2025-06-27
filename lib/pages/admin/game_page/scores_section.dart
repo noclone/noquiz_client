@@ -76,7 +76,10 @@ class _ScoresSectionState extends State<ScoresSection> {
                   icon: const Icon(Icons.add),
                   onPressed: () => incrementScore(index),
                 ),
-                Text(player['name']),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(player['name']),
+                ),
                 Text('Score: ${player['score']}'),
                 IconButton(
                   icon: const Icon(Icons.remove),

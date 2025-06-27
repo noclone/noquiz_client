@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:noquiz_client/components/player_list.dart';
 import 'package:noquiz_client/pages/player/player_room_game_page.dart';
-import 'package:noquiz_client/utils/preferences.dart';
+import 'package:noquiz_client/utils/room.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'dart:convert';
 
 
 class PlayerRoomLobbyPage extends StatefulWidget {
@@ -46,7 +44,7 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
       print('WebSocket connection closed');
     });
 
-    checkRoomState();
+    checkRoomState(widget.roomId, goToNextPage);
   }
 
   void _showNicknameDialog() {
@@ -76,20 +74,6 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
         );
       },
     );
-  }
-
-  void checkRoomState() async {
-    final serverIp = await getServerIpAddress();
-    final url = Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}');
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data["started"]) {
-        goToNextPage();
-      }
-    } else {
-      print('Failed to load question');
-    }
   }
 
   void goToNextPage() {

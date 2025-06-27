@@ -81,9 +81,13 @@ class _PlayerScoresDisplayState extends State<PlayerScoresDisplay> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          player['name'],
-                          style: TextStyle(fontSize: screenWidth * 0.05),
+                        Flexible(
+                          child: Text(
+                            player['name'],
+                            style: TextStyle(fontSize: screenWidth * 0.05),
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                          ),
                         ),
                         SizedBox(width: screenWidth * 0.025),
                         Text(
