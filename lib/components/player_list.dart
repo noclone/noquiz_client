@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 
 class PlayerList extends StatefulWidget {
@@ -33,9 +34,9 @@ class _PlayerListState extends State<PlayerList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text(
+        Text(
           'Players',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textPrimaryColor),
         ),
         const SizedBox(height: 10),
         Expanded(
@@ -44,9 +45,14 @@ class _PlayerListState extends State<PlayerList> {
             itemBuilder: (context, index) {
               if (widget.admin != null && index == 0) {
                 return Card(
+                  color: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: secondaryColor),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   child: ListTile(
-                    title: Text(widget.admin!['name']),
+                    title: Text(widget.admin!['name'], style: TextStyle(color: textPrimaryColor),),
                     trailing: const Text(
                       '(Admin)',
                       style: TextStyle(color: Colors.red),
@@ -59,13 +65,18 @@ class _PlayerListState extends State<PlayerList> {
               final isCurrentPlayer = player['id'] == playerId;
 
               return Card(
+                color: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(color: secondaryColor),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 margin: const EdgeInsets.symmetric(vertical: 4),
                 child: ListTile(
-                  title: Text(player['name']),
+                  title: Text(player['name'], style: TextStyle(color: textPrimaryColor),),
                   trailing: isCurrentPlayer
-                      ? const Text(
+                      ? Text(
                           '(You)',
-                          style: TextStyle(color: Colors.blue),
+                          style: TextStyle(color: textPrimaryColor),
                         )
                       : null,
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/player_list.dart';
 import 'package:noquiz_client/pages/player/player_room_game_page.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/room.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -55,14 +56,30 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Enter Your Nickname'),
+          title: Text('Enter Your Nickname', style: TextStyle(color: textPrimaryColor),),
+          backgroundColor: primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(color: secondaryColor),
+          ),
           content: TextField(
+            style: TextStyle(color: textPrimaryColor),
+            cursorColor: textPrimaryColor,
             controller: nicknameController,
-            decoration: const InputDecoration(hintText: "Nickname"),
+            decoration: InputDecoration(
+              hintText: "Nickname",
+              hintStyle: TextStyle(color: textSecondaryColor),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: secondaryColorDark),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: secondaryColor),
+              ),
+            ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Submit'),
+              child: Text('Submit', style: TextStyle(color: textPrimaryColor)),
               onPressed: () {
                 if (nicknameController.text.isNotEmpty) {
                   Navigator.of(context).pop();
@@ -97,19 +114,21 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            Text('Room Lobby'),
+            Text('Room Lobby', style: TextStyle(color: textPrimaryColor)),
           ],
         ),
+        backgroundColor: primaryColor,
+        iconTheme: IconThemeData(color: tertiaryColor),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            const Text(
+            Text(
               'Waiting for the admin to start the game',
-              style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+              style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: textPrimaryColor),
             ),
             const SizedBox(height: 20),
             Expanded(

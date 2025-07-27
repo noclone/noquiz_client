@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/pages/player/answer_type.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:vibration/vibration.dart';
@@ -56,20 +57,69 @@ class _BuzzerComponentState extends State<BuzzerComponent> {
     final screenSize = MediaQuery.of(context).size;
     final buttonSize = screenSize.width * 0.5;
 
-    return Center(
-      child: SizedBox(
-        width: buttonSize,
-        height: buttonSize,
-        child: ElevatedButton(
-          onPressed: isBuzzerEnabled ? _onBuzzerPressed : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-            shape: const CircleBorder(),
-            padding: EdgeInsets.zero,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(bottom: 20.0),
+          child: Text(
+            "Press the buzzer when you have the answer!",
+            style: TextStyle(
+              fontSize: 20,
+              color: textPrimaryColor,
+            ),
+            textAlign: TextAlign.center,
           ),
-          child: null
         ),
-      ),
+        const SizedBox(height: 20),
+        Center(
+          child: SizedBox(
+            width: buttonSize,
+            height: buttonSize,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: isBuzzerEnabled
+                      ? [
+                    Colors.orange.shade700,
+                    Colors.orange.shade400,
+                    Colors.orange.shade200,
+                    Colors.orange.shade100,
+                  ]
+                      : [
+                    Colors.blue.shade700,
+                    Colors.blue.shade400,
+                    Colors.blue.shade200,
+                    Colors.blue.shade100,
+                  ],
+                  stops: [0.1, 0.4, 0.7, 0.9],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: isBuzzerEnabled
+                        ? Colors.orange.withAlpha(127)
+                        : Colors.blue.withAlpha(127),
+                    spreadRadius: 10,
+                    blurRadius: 20,
+                    offset: Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: ElevatedButton(
+                onPressed: isBuzzerEnabled ? _onBuzzerPressed : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: CircleBorder(),
+                  padding: EdgeInsets.zero,
+                ),
+                child: null,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

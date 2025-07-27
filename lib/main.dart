@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -6,6 +7,7 @@ import 'package:noquiz_client/pages/admin/admin_room_lobby_page.dart';
 import 'package:noquiz_client/pages/display/display_room_lobby_page.dart';
 import 'package:noquiz_client/pages/player/player_room_lobby_page.dart';
 import 'package:noquiz_client/components/dialogs.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:noquiz_client/utils/socket.dart';
@@ -24,11 +26,27 @@ class NoQuiz extends StatelessWidget {
     return MaterialApp(
       title: 'Quiz App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
+        scaffoldBackgroundColor: primaryColor,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            textStyle: TextStyle(color: textPrimaryColor),
+            shadowColor: secondaryColor,
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: BorderSide(color: secondaryColor, width: 2),
+            ),
+          ),
+        ),
       ),
       home: const HomeScreen(),
     );
   }
+
 }
 
 class HomeScreen extends StatefulWidget {
@@ -42,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final _serverIpController = TextEditingController();
   late WebSocketChannel channel;
   List<String> roomIds = [];
+  bool isConnected = false;
 
   @override
   void initState() {
@@ -63,7 +82,29 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
     await setPreference('server_ip', serverIp);
-    fetchRoomIds();
+    bool success = await fetchRoomIds();
+    if (!success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to connect to the server.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() {
+        isConnected = false;
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Successfully connected to the server.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      setState(() {
+        isConnected = true;
+      });
+    }
+
   }
 
   Future<void> _loadServerIpAddress() async {
@@ -94,26 +135,30 @@ class _HomeScreenState extends State<HomeScreen> {
     return response.statusCode == 200;
   }
 
-  Future<void> fetchRoomIds() async {
+  Future<bool> fetchRoomIds() async {
     String serverIp = _serverIpController.text.trim();
     if (serverIp.isEmpty) {
       showErrorDialog('Server IP address not set.', context);
-      return;
+      return false;
     }
 
     try {
-      final response =
-          await http.get(Uri.parse('http://$serverIp:8000/api/rooms'));
+      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms')).timeout(
+        const Duration(seconds: 1),
+      );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
           roomIds = List<String>.from(data);
         });
+        return true;
       } else {
         print('Failed to load room IDs');
+        return false;
       }
     } catch (e) {
       print('Error fetching room IDs: $e');
+      return false;
     }
   }
 
@@ -237,85 +282,201 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double responsiveFontSize = min(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height) * 0.08;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('NoQuiz'),
-      ),
-      body: Stack(
-        children: <Widget>[
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _serverIpController,
-                          decoration: const InputDecoration(
-                            labelText: 'Server Ip Address',
-                            border: OutlineInputBorder(),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'NoQuiz',
+                style: TextStyle(
+                  fontSize: responsiveFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: textPrimaryColor,
+                  shadows: [
+                    Shadow(
+                      color: secondaryColor,
+                      blurRadius: 10,
+                      offset: Offset(2, 2),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: TextField(
+                  controller: _serverIpController,
+                  style: TextStyle(color: textPrimaryColor),
+                  decoration: InputDecoration(
+                    labelText: 'Server Ip Address',
+                    labelStyle: TextStyle(color: textPrimaryColor),
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: secondaryColor),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: textPrimaryColor),
+                    ),
+                  ),
+                  onSubmitted: (_) => _setServerIpAddress(),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Visibility(
+                visible: isConnected,
+                child: Column(
+                  children: [
+                    FractionallySizedBox(
+                      widthFactor: 0.65,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.05,
+                        child: ElevatedButton(
+                          onPressed: _createRoom,
+                          style: ElevatedButton.styleFrom(
+                            maximumSize: const Size(500, double.infinity),
                           ),
-                          onSubmitted: (_) => _setServerIpAddress(),
+                          child: Text(
+                            'Create Room',
+                            style: TextStyle(
+                              color: textPrimaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: responsiveFontSize * 0.45,
+                            ),
+                          ),
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.refresh),
-                        onPressed: fetchRoomIds,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: roomIds.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 5),
-                          child: ListTile(
-                            title: Text(roomIds[index]),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
+                    ),
+                    const SizedBox(height: 20),
+                    const Divider(
+                      color: Colors.white,
+                      thickness: 1,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 10,
+                      children: [
+                        Text(
+                          'Available rooms',
+                          style: TextStyle(
+                            color: textPrimaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: responsiveFontSize * 0.5,
+                          ),
+                        ),
+                        IconButton(
+                          color: tertiaryColor,
+                          icon: const Icon(Icons.refresh),
+                          onPressed: fetchRoomIds,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 200,
+                      child: ListView.builder(
+                        itemCount: roomIds.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            color: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: BorderSide(color: secondaryColor, width: 2),
+                            ),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            child: ListTile(
+                              title: Text(
+                                roomIds[index],
+                                style: TextStyle(
+                                    fontSize: responsiveFontSize * 0.4,
+                                    color: textPrimaryColor),
+                                textAlign: TextAlign.center,
+                              ),
+                              trailing: GestureDetector(
+                                onLongPress: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          side: BorderSide(color: secondaryColor, width: 2),
+                                        ),
+                                        backgroundColor: primaryColor,
+                                        title: Text(
+                                          'Join Room ${roomIds[index]}',
+                                          style: TextStyle(color: textPrimaryColor),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            ListTile(
+                                              leading: Icon(Icons.person,
+                                                  color: tertiaryColor),
+                                              title: Text(
+                                                'Join as Player',
+                                                style: TextStyle(color: textPrimaryColor),
+                                              ),
+                                              onTap: () {
+                                                Navigator.of(context).pop();
+                                                _connect(roomIds[index]);
+                                              },
+                                            ),
+                                            ListTile(
+                                              leading: Icon(Icons.tv,
+                                                  color: tertiaryColor),
+                                              title: Text(
+                                                'Join as Display',
+                                                style: TextStyle(color: textPrimaryColor),
+                                              ),
+                                              onTap: () {
+                                                Navigator.of(context).pop();
+                                                _displayRoom(roomIds[index]);
+                                              },
+                                            ),
+                                            ListTile(
+                                              leading: Icon(
+                                                  Icons.admin_panel_settings,
+                                                  color: tertiaryColor),
+                                              title: Text(
+                                                'Join as Admin',
+                                                style: TextStyle(color: textPrimaryColor),
+                                              ),
+                                              onTap: () {
+                                                Navigator.of(context).pop();
+                                                _joinAsAdmin(roomIds[index]);
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                child: IconButton(
+                                  color: tertiaryColor,
                                   icon: const Icon(Icons.login),
                                   onPressed: () => _connect(roomIds[index]),
                                 ),
-                                IconButton(
-                                  icon: const Icon(Icons.tv),
-                                  onPressed: () => _displayRoom(roomIds[index]),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.admin_panel_settings),
-                                  onPressed: () => _joinAsAdmin(roomIds[index]),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: ElevatedButton(
-              onPressed: _createRoom,
-              style: ElevatedButton.styleFrom(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              ),
-              child: const Text('Admin: Create Room'),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
