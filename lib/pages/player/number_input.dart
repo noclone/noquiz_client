@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -30,14 +31,27 @@ class _NumberInputComponentState extends State<NumberInputComponent> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Text(
+          'Enter a number:',
+          style: TextStyle(fontSize: 18, color: textPrimaryColor),
+        ),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: TextField(
+            style: TextStyle(color: textPrimaryColor),
+            cursorColor: textPrimaryColor,
             controller: _numberController,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
               labelText: 'Answer',
+              labelStyle: TextStyle(color: textPrimaryColor),
+              border: const OutlineInputBorder(),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: secondaryColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: textPrimaryColor),
+              ),
             ),
           ),
         ),
