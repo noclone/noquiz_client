@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:noquiz_client/components/appbar.dart';
 import 'package:noquiz_client/components/player_list.dart';
 import 'package:noquiz_client/pages/admin/game_page/admin_room_game_page.dart';
 import 'package:noquiz_client/utils/preferences.dart';
@@ -63,10 +64,6 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
     super.dispose();
   }
 
-  Future<void> _copyToClipboard() async {
-    await Clipboard.setData(ClipboardData(text: widget.roomId));
-  }
-
   void _startGame() {
     sendToSocket(channel, MessageSubject.GAME_STATE, "START", {});
     Navigator.push(
@@ -104,22 +101,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            const Text('Room Lobby'),
-            const SizedBox(width: 10),
-            Text(
-              widget.roomId,
-              style: const TextStyle(fontSize: 16),
-            ),
-            IconButton(
-              icon: const Icon(Icons.copy, size: 18),
-              onPressed: _copyToClipboard,
-            ),
-          ],
-        ),
-      ),
+      appBar: const NQAppBar(title: 'Room lobby'),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),

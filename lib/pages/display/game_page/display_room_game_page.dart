@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/appbar.dart';
 import 'package:noquiz_client/components/visibility_component.dart';
 import 'package:noquiz_client/pages/display/game_page/board_display.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
@@ -81,9 +82,7 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Display Room'),
-      ),
+      appBar: const NQAppBar(title: 'Display Room'),
       body: Center(
         child: Stack(
           children: [

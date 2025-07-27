@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/appbar.dart';
 import 'package:noquiz_client/components/player_list.dart';
 import 'package:noquiz_client/pages/player/player_room_game_page.dart';
 import 'package:noquiz_client/utils/colors.dart';
@@ -113,15 +114,7 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Text('Room Lobby', style: TextStyle(color: textPrimaryColor)),
-          ],
-        ),
-        backgroundColor: primaryColor,
-        iconTheme: IconThemeData(color: tertiaryColor),
-      ),
+      appBar: const NQAppBar(title: 'Room lobby'),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/appbar.dart';
 import 'package:noquiz_client/components/visibility_component.dart';
 import 'package:noquiz_client/pages/player/answer_type.dart';
 import 'package:noquiz_client/pages/player/buzzer.dart';
 import 'package:noquiz_client/pages/player/mcq.dart';
 import 'package:noquiz_client/pages/player/number_input.dart';
 import 'package:noquiz_client/pages/player/right_order.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -86,11 +86,7 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Game Room', style: TextStyle(color: textPrimaryColor)),
-        backgroundColor: primaryColor,
-        iconTheme: IconThemeData(color: tertiaryColor),
-      ),
+      appBar: const NQAppBar(title: 'Game Room'),
       body: Center(
         child: Stack(
           alignment: Alignment.center,

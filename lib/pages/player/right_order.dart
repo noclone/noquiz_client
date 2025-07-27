@@ -110,7 +110,7 @@ class _RightOrderState extends State<RightOrder> {
                             child: Column(
                               children: [
                                 Expanded(
-                                  child: NoQuizNetworkImage(
+                                  child: NQNetworkImage(
                                     imagePath: imageData[index][0],
                                     fit: BoxFit.cover,
                                     width: double.infinity,

@@ -120,7 +120,7 @@ class _BoardSectionState extends State<BoardSection> {
                             width: 4.0,
                           ),
                         ),
-                        child: NoQuizNetworkImage(
+                        child: NQNetworkImage(
                           imagePath: thumbnailUrl,
                           fit: BoxFit.fill,
                           width: double.infinity,

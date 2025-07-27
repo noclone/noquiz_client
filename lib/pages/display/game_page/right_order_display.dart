@@ -122,7 +122,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                 child: Column(
                                   children: [
                                     Expanded(
-                                      child: NoQuizNetworkImage(
+                                      child: NQNetworkImage(
                                         imagePath: showAnswer ? answerData[index][0] : imageData[index][0],
                                         fit: BoxFit.cover,
                                         width: double.infinity,
@@ -201,7 +201,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                       child: Column(
                                         children: [
                                           Expanded(
-                                            child: NoQuizNetworkImage(
+                                            child: NQNetworkImage(
                                               imagePath: answerData[index][0],
                                               fit: BoxFit.cover,
                                               width: double.infinity,
@@ -272,7 +272,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                         child: Column(
                                           children: [
                                             Expanded(
-                                              child: NoQuizNetworkImage(
+                                              child: NQNetworkImage(
                                                 imagePath: playerAnswer['imagesOrder'][imgIndex][0],
                                                 fit: BoxFit.cover,
                                                 width: double.infinity,

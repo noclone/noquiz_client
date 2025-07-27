@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/appbar.dart';
 import 'package:noquiz_client/pages/admin/game_page/buzzes_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/scores_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/timer_section.dart';
@@ -28,25 +29,24 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Game Room: ${widget.roomId}'),
+      appBar: NQAppBar(
+        title: 'Game Room: ${widget.roomId}',
         actions: [
           IconButton(
             icon: const Icon(Icons.people),
             onPressed: () {
-              sendToSocket(widget.channel, MessageSubject.PLAYER_ANSWER, "SHOW", {});
+              sendToSocket(widget.channel, MessageSubject.PLAYER_ANSWER, "SHOW", const {});
             },
             tooltip: 'Show Players Answers',
           ),
           IconButton(
             icon: const Icon(Icons.score),
             onPressed: () {
-              sendToSocket(widget.channel, MessageSubject.PLAYER_SCORE, "SHOW", {});
+              sendToSocket(widget.channel, MessageSubject.PLAYER_SCORE, "SHOW", const {});
             },
             tooltip: 'Show Players Scores',
           ),
-        ],
-      ),
+        ],),
       body: Column(
         children: [
           Expanded(

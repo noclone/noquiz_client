@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/appbar.dart';
 import 'package:noquiz_client/pages/display/game_page/display_room_game_page.dart';
 import 'package:noquiz_client/utils/room.dart';
 import 'package:noquiz_client/utils/socket.dart';
@@ -78,9 +79,7 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Display Lobby'),
-      ),
+      appBar: const NQAppBar(title: 'Display Room'),
       body: Center(
         child: showQRCode
             ? LayoutBuilder(

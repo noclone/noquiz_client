@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 
 
-class NoQuizNetworkImage extends StatefulWidget {
+class NQNetworkImage extends StatefulWidget {
   final String imagePath;
   final BoxFit fit;
   final double? width;
   final double? height;
 
-  const NoQuizNetworkImage({
+  const NQNetworkImage({
     Key? key,
     required this.imagePath,
     this.fit = BoxFit.cover,
@@ -17,10 +17,10 @@ class NoQuizNetworkImage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _NoQuizNetworkImageState createState() => _NoQuizNetworkImageState();
+  _NQNetworkImageState createState() => _NQNetworkImageState();
 }
 
-class _NoQuizNetworkImageState extends State<NoQuizNetworkImage> {
+class _NQNetworkImageState extends State<NQNetworkImage> {
   String imageUrlPrefix = "";
 
   void setUrlPrefix() async {

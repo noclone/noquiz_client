@@ -83,7 +83,7 @@ class _BoardDisplayState extends State<BoardDisplay> {
                             width: 4.0,
                           ),
                         ),
-                        child: NoQuizNetworkImage(
+                        child: NQNetworkImage(
                           imagePath: thumbnailUrl,
                           fit: BoxFit.fill,
                           width: double.infinity,

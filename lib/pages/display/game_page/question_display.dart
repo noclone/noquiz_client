@@ -153,7 +153,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
                           child: Column(
                             children: [
                               Expanded(
-                                child: NoQuizNetworkImage(
+                                child: NQNetworkImage(
                                   imagePath: imageUrls[index],
                                   fit: BoxFit.scaleDown,
                                   width: double.infinity,
