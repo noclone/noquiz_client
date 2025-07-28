@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/network_image.dart';
+import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/components/visibility_component.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 
 enum RightOrderState {
@@ -97,6 +99,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                   style: TextStyle(
                     fontSize: responsiveFontSize(context),
                     fontWeight: FontWeight.bold,
+                    color: textPrimaryColor,
                   ),
                 ),
               ),
@@ -105,7 +108,8 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                   builder: (context, constraints) {
                     final maxWidth = constraints.maxWidth;
                     final count = imageData.length;
-                    final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
+                    final imageWidth =
+                        count > 0 ? (maxWidth / count) - 16 : maxWidth;
 
                     return Center(
                       child: SizedBox(
@@ -123,32 +127,38 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                   children: [
                                     Expanded(
                                       child: NQNetworkImage(
-                                        imagePath: showAnswer ? answerData[index][0] : imageData[index][0],
+                                        imagePath: showAnswer
+                                            ? answerData[index][0]
+                                            : imageData[index][0],
                                         fit: BoxFit.cover,
                                         width: double.infinity,
                                       ),
                                     ),
                                     FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: Text(
-                                        showAnswer ? answerData[index][1] : imageData[index][1],
-                                        style: TextStyle(
-                                          fontSize: responsiveFontSize(context),
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
+                                        fit: BoxFit.scaleDown,
+                                        child: showAnswer
+                                            ? Text(
+                                                answerData[index][1],
+                                                style: TextStyle(
+                                                  fontSize: responsiveFontSize(
+                                                      context),
+                                                  fontWeight: FontWeight.bold,
+                                                  color: textPrimaryColor,
+                                                ),
+                                              )
+                                            : NQTitleText(
+                                                text: imageData[index][1],
+                                                fontSize:
+                                                    responsiveFontSize(context),
+                                              )),
                                     if (showAnswer)
                                       FittedBox(
-                                        fit: BoxFit.scaleDown,
-                                        child: Text(
-                                          answerData[index][2],
-                                          style: TextStyle(
-                                            fontSize: responsiveFontSize(context),
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
+                                          fit: BoxFit.scaleDown,
+                                          child: NQTitleText(
+                                            text: answerData[index][2],
+                                            fontSize:
+                                                responsiveFontSize(context),
+                                          )),
                                   ],
                                 ),
                               ),
@@ -167,25 +177,35 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
           child: Column(
             children: [
               if (answerData.isNotEmpty)
-                Card(
+                Container(
                   margin: const EdgeInsets.all(16.0),
-                  elevation: 4.0,
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    border: Border.all(
+                      color: secondaryColor,
+                      width: 2.0,
+                    ),
+                    borderRadius: BorderRadius.circular(10.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: secondaryColor.withAlpha(127),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        Text(
-                          'Correct Answer',
-                          style: TextStyle(
-                            fontSize: responsiveFontSize(context),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        NQTitleText(text: 'Correct Answer', fontSize: responsiveFontSize(context),),
                         LayoutBuilder(
                           builder: (context, constraints) {
                             final maxWidth = constraints.maxWidth;
                             final count = answerData.length;
-                            final imageWidth = count > 0 ? (maxWidth / count) - 16 : maxWidth;
+                            final imageWidth =
+                                count > 0 ? (maxWidth / count) - 16 : maxWidth;
 
                             return SizedBox(
                               height: imageWidth,
@@ -212,7 +232,9 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                             child: Text(
                                               answerData[index][1],
                                               style: TextStyle(
-                                                fontSize: responsiveFontSize(context),
+                                                fontSize:
+                                                    responsiveFontSize(context),
+                                                color: textPrimaryColor,
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
@@ -237,18 +259,13 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                     final playerAnswer = playerAnswers[index];
                     return Column(
                       children: [
-                        Text(
-                          playerAnswer['playerName'],
-                          style: TextStyle(
-                            fontSize: responsiveFontSize(context),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        NQTitleText(text: playerAnswer['playerName'], fontSize: responsiveFontSize(context),),
                         LayoutBuilder(
                           builder: (context, constraints) {
                             final maxWidth = constraints.maxWidth;
                             final count = playerAnswer['imagesOrder'].length;
-                            final imageWidth = count > 0 ? (maxWidth / count) - 20 : maxWidth;
+                            final imageWidth =
+                                count > 0 ? (maxWidth / count) - 20 : maxWidth;
 
                             return SizedBox(
                               height: imageWidth,
@@ -256,14 +273,18 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: count,
                                 itemBuilder: (context, imgIndex) {
-                                  bool isCorrect = playerAnswer['imagesOrder'][imgIndex][0] == answerData[imgIndex][0];
+                                  bool isCorrect = playerAnswer['imagesOrder']
+                                          [imgIndex][0] ==
+                                      answerData[imgIndex][0];
 
                                   return Padding(
                                     padding: const EdgeInsets.all(6.0),
                                     child: Container(
                                       decoration: BoxDecoration(
                                         border: Border.all(
-                                          color: isCorrect ? Colors.green : Colors.red,
+                                          color: isCorrect
+                                              ? Colors.green
+                                              : Colors.red,
                                           width: 4.0,
                                         ),
                                       ),
@@ -273,7 +294,9 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                           children: [
                                             Expanded(
                                               child: NQNetworkImage(
-                                                imagePath: playerAnswer['imagesOrder'][imgIndex][0],
+                                                imagePath:
+                                                    playerAnswer['imagesOrder']
+                                                        [imgIndex][0],
                                                 fit: BoxFit.cover,
                                                 width: double.infinity,
                                               ),
@@ -281,9 +304,11 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                                             FittedBox(
                                               fit: BoxFit.scaleDown,
                                               child: Text(
-                                                playerAnswer['imagesOrder'][imgIndex][1],
+                                                playerAnswer['imagesOrder']
+                                                    [imgIndex][1],
                                                 style: TextStyle(
-                                                  fontSize: responsiveFontSize(context),
+                                                  fontSize: responsiveFontSize(
+                                                      context),
                                                 ),
                                                 textAlign: TextAlign.center,
                                               ),
@@ -298,11 +323,36 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                             );
                           },
                         ),
-                        const Divider(
-                          color: Colors.grey,
-                          thickness: 1,
-                          height: 20,
-                        ),
+                        Container(
+                          margin: const EdgeInsets.all(16.0),
+                          height: 10,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blue.withAlpha(127),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: Offset(0, 3), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Container(
+                              height: 1,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.blue.shade400,
+                                    Colors.white,
+                                    Colors.blue.shade400,
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
                       ],
                     );
                   },
@@ -315,4 +365,3 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
     );
   }
 }
-
