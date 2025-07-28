@@ -96,13 +96,11 @@ class _MCQState extends State<MCQ> {
                     },
                     style: ElevatedButton.styleFrom(
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      backgroundColor: answerIndex == index
-                          ? Colors.green
-                          : Colors.transparent,
-                      shadowColor: clickedIndex == index || answerIndex == index ? Colors.transparent : secondaryColor,
+                      backgroundColor: primaryColor,
+                      shadowColor: answerIndex == index ? Colors.green : clickedIndex == index ? Colors.blue.shade400 : secondaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: answerIndex == index ? Colors.transparent : clickedIndex == index ? Colors.blue.shade700 : secondaryColor, width: 2),
+                        side: BorderSide(color: answerIndex == index ? Colors.green : clickedIndex == index ? Colors.blue.shade400 : secondaryColor, width: 2),
                       ),
                     ),
                     child: FittedBox(

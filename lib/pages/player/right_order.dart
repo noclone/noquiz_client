@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:noquiz_client/components/network_image.dart';
+import 'package:noquiz_client/components/image_list.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -85,57 +85,7 @@ class _RightOrderState extends State<RightOrder> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (imageData.isNotEmpty)
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final maxWidth = constraints.maxWidth;
-              final imageCount = imageData.length;
-              final imageWidth = imageCount > 0 ? maxWidth / imageCount : maxWidth;
-
-              return Center(
-                child: SizedBox(
-                  width: maxWidth,
-                  height: imageWidth,
-                  child: ReorderableListView.builder(
-                    buildDefaultDragHandles: false,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: imageCount,
-                    itemBuilder: (context, index) {
-                      return ReorderableDragStartListener(
-                        key: Key('$index'),
-                        index: index,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            width: imageWidth - 16,
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: NQNetworkImage(
-                                    imagePath: imageData[index][0],
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                  ),
-                                ),
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(
-                                    imageData[index][1],
-                                    style: TextStyle(fontSize: responsiveFontSize(context)),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                    onReorder: _onReorder,
-                  ),
-                ),
-              );
-            },
-          ),
+          NQImageList(imageList: imageData, onReorder: _onReorder,)
       ],
     );
   }

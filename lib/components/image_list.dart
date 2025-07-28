@@ -11,6 +11,7 @@ class NQImageList extends StatelessWidget {
   final bool shadowText;
   final bool colorTextAnswer;
   final bool showAnswer;
+  final ReorderCallback? onReorder;
 
   const NQImageList({
     Key? key,
@@ -20,7 +21,10 @@ class NQImageList extends StatelessWidget {
     this.shadowText = false,
     this.colorTextAnswer = false,
     this.showAnswer = false,
+    this.onReorder,
   }) : super(key: key);
+
+  void empty(int oldIndex, int newIndex) {}
 
   @override
   Widget build(BuildContext context) {
@@ -35,78 +39,93 @@ class NQImageList extends StatelessWidget {
 
         return SizedBox(
           height: imageHeight + textHeight + 16 + answerHeight,
-          child: ListView.builder(
+          child: ReorderableListView.builder(
+            buildDefaultDragHandles: false,
+            onReorder: onReorder == null ? empty : onReorder!,
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
             itemCount: count,
+            proxyDecorator: (child, index, animation) {
+              return Material(
+                color: Colors.transparent,
+                elevation: 6,
+                shadowColor: Colors.black45,
+                child: child,
+              );
+            },
             itemBuilder: (context, index) {
               bool isCorrect = answerList != null &&
                   imageList[index][0] == answerList![index][0];
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SizedBox(
-                  width: imageWidth,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: imageWidth,
-                        height: imageHeight,
-                        child: NQNetworkImage(
-                          imagePath: imageList[index][0],
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      SizedBox(
-                        width: imageWidth,
-                        height: textHeight,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: shadowText
-                              ? NQTitleText(
-                                  text: imageList[index][1],
-                                  fontSize: 200,
-                                )
-                              : Text(
-                                  imageList[index][1],
-                                  style: TextStyle(
-                                    fontSize: 200,
-                                    color: answerList != null && colorTextAnswer
-                                        ? isCorrect
-                                            ? Colors.green
-                                            : Colors.red
-                                        : textPrimaryColor,
-                                    shadows: [
-                                      if (colorTextAnswer)
-                                        Shadow(
-                                          color: answerList != null
-                                              ? isCorrect
-                                                  ? Colors.green
-                                                  : Colors.red
-                                              : secondaryColor,
-                                          blurRadius: 10,
-                                          offset: const Offset(2, 2),
-                                        ),
-                                    ],
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                        ),
-                      ),
-                      if (showAnswer && answerList != null)
-                        SizedBox(
-                          width: imageWidth,
-                          height: answerHeight,
-                          child: FittedBox(
+              return ReorderableDragStartListener(
+                  key: Key('$index'),
+                  enabled: onReorder != null,
+                  index: index,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: imageWidth,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: imageWidth,
+                            height: imageHeight,
+                            child: NQNetworkImage(
+                              imagePath: imageList[index][0],
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(
+                            width: imageWidth,
+                            height: textHeight,
+                            child: FittedBox(
                               fit: BoxFit.scaleDown,
-                              child: NQTitleText(
-                                text: answerList![index][2],
-                                fontSize: 200,
-                              )),
-                        ),
-                    ],
-                  ),
-                ),
-              );
+                              child: shadowText
+                                  ? NQTitleText(
+                                      text: imageList[index][1],
+                                      fontSize: 200,
+                                    )
+                                  : Text(
+                                      imageList[index][1],
+                                      style: TextStyle(
+                                        fontSize: 200,
+                                        color: answerList != null &&
+                                                colorTextAnswer
+                                            ? isCorrect
+                                                ? Colors.green
+                                                : Colors.red
+                                            : textPrimaryColor,
+                                        shadows: [
+                                          if (colorTextAnswer)
+                                            Shadow(
+                                              color: answerList != null
+                                                  ? isCorrect
+                                                      ? Colors.green
+                                                      : Colors.red
+                                                  : secondaryColor,
+                                              blurRadius: 10,
+                                              offset: const Offset(2, 2),
+                                            ),
+                                        ],
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                            ),
+                          ),
+                          if (showAnswer && answerList != null)
+                            SizedBox(
+                              width: imageWidth,
+                              height: answerHeight,
+                              child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: NQTitleText(
+                                    text: answerList![index][2],
+                                    fontSize: 200,
+                                  )),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ));
             },
           ),
         );
