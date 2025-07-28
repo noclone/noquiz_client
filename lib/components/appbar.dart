@@ -18,6 +18,7 @@ class NQAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: NQTitleText(text: title),
       backgroundColor: primaryColor,
       iconTheme: IconThemeData(color: tertiaryColor),
+      actions: actions,
     );
   }
 

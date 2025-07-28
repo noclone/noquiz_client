@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 
 class PlayerScoresDisplay extends StatefulWidget {
@@ -47,11 +49,12 @@ class _PlayerScoresDisplayState extends State<PlayerScoresDisplay> {
       child: Container(
         padding: EdgeInsets.all(screenWidth * 0.05),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: primaryColor,
           borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: secondaryColor, width: 3),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.5),
+              color: secondaryColor.withValues(alpha: 0.5),
               spreadRadius: screenWidth * 0.0125,
               blurRadius: screenWidth * 0.0175,
               offset: const Offset(0, 3),
@@ -62,13 +65,7 @@ class _PlayerScoresDisplayState extends State<PlayerScoresDisplay> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Player Scores',
-              style: TextStyle(
-                fontSize: screenWidth * 0.04,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            NQTitleText(text: 'Scores', fontSize: screenWidth * 0.04,),
             const SizedBox(height: 10),
             Flexible(
               child: ListView.builder(
@@ -84,20 +81,13 @@ class _PlayerScoresDisplayState extends State<PlayerScoresDisplay> {
                         Flexible(
                           child: Text(
                             player['name'],
-                            style: TextStyle(fontSize: screenWidth * 0.05),
+                            style: TextStyle(fontSize: screenWidth * 0.05, color: textPrimaryColor),
                             softWrap: true,
                             overflow: TextOverflow.visible,
                           ),
                         ),
                         SizedBox(width: screenWidth * 0.025),
-                        Text(
-                          player['score'].toString(),
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.05,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.red,
-                          ),
-                        ),
+                        NQTitleText(text: player['score'].toString(), fontSize: screenWidth * 0.05,)
                       ],
                     ),
                   );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 
 class PlayerAnswersDisplay extends StatefulWidget {
@@ -32,7 +34,7 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
           currentAnswer = data.content['ANSWER'] ?? '';
         });
       } else if (data.subject == MessageSubject.PLAYER_ANSWER && data.action == 'SHOW') {
-        players = List<Map<String, dynamic>>.from(data.content['PLAYERS']);
+        players = List<Map<String, dynamic>>.from(data.content['PLAYERS'])..shuffle();
         widget.setCurrentDisplayState(DisplayState.playerAnswers);
       }
     }, onError: (error) {
@@ -41,6 +43,22 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
       print('WebSocket connection closed');
     });
   }
+
+  void sort_players() {
+    setState(() {
+      players.sort((a, b) {
+        final aAnswer = int.tryParse(a['current_answer'].toString()) ?? 0;
+        final bAnswer = int.tryParse(b['current_answer'].toString()) ?? 0;
+        final correct = int.tryParse(currentAnswer) ?? 0;
+
+        final aDiff = (aAnswer - correct).abs();
+        final bDiff = (bAnswer - correct).abs();
+
+        return aDiff.compareTo(bDiff);
+      });
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +71,14 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
       child: Container(
         padding: EdgeInsets.all(screenWidth * 0.05),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: primaryColor,
           borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: secondaryColor, width: 3),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.5),
-              spreadRadius: 5,
-              blurRadius: 7,
+              color: secondaryColor.withValues(alpha: 0.5),
+              spreadRadius: screenWidth * 0.0125,
+              blurRadius: screenWidth * 0.0175,
               offset: const Offset(0, 3),
             ),
           ],
@@ -71,13 +90,7 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Player Answers',
-              style: TextStyle(
-                fontSize: screenWidth * 0.03,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            NQTitleText(text: 'Player Answers', fontSize: screenWidth * 0.03,),
             SizedBox(height: screenHeight * 0.02),
             if (showAnswer && currentAnswer.isNotEmpty)
               Padding(
@@ -88,6 +101,13 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
                     fontSize: screenWidth * 0.04,
                     fontWeight: FontWeight.bold,
                     color: Colors.green,
+                    shadows: [
+                      Shadow(
+                        color: Colors.green.withAlpha(127),
+                        blurRadius: 10,
+                        offset: const Offset(2, 2),
+                      ),
+                    ]
                   ),
                 ),
               ),
@@ -99,6 +119,7 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
                     setState(() {
                       showAnswer = true;
                     });
+                    sort_players();
                   },
                   child: Text(
                     'Show Answer',
@@ -128,16 +149,11 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
                           style: TextStyle(
                             fontSize: screenWidth * 0.03,
                             fontWeight: FontWeight.bold,
+                            color: textPrimaryColor
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Text(
-                          player['current_answer'] ?? 'No answer',
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.035,
-                            color: Colors.blue,
-                          ),
-                        ),
+                        const SizedBox(width: 20),
+                        NQTitleText(text: player['current_answer'] ?? 'No answer', fontSize: screenWidth * 0.035,),
                       ],
                     ),
                   );
