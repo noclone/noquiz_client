@@ -43,10 +43,20 @@ class _RightOrderState extends State<RightOrder> {
 
           int count = countCorrectlyOrderedElements();
           int points = 0;
-          if (count == answerData.length) {
-            points = 2;
-          } else if (count > 0){
-            points = 1;
+          switch (count){
+            case 0:
+            case 1:
+              points = 0;
+              break;
+            case 2:
+              points = 1;
+              break;
+            case 3:
+              points = 3;
+              break;
+            case 5:
+              points = 4;
+              break;
           }
           sendToSocket(widget.channel, MessageSubject.PLAYER_SCORE, "INCREASE", {"VALUE": points});
         }
