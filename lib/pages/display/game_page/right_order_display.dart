@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/image_list.dart';
 import 'package:noquiz_client/components/network_image.dart';
 import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/components/visibility_component.dart';
@@ -177,81 +178,37 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
           child: Column(
             children: [
               if (answerData.isNotEmpty)
-                Container(
-                  margin: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: primaryColor,
-                    border: Border.all(
-                      color: secondaryColor,
-                      width: 2.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: secondaryColor.withAlpha(127),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        NQTitleText(text: 'Correct Answer', fontSize: responsiveFontSize(context),),
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            final maxWidth = constraints.maxWidth;
-                            final count = answerData.length;
-                            final imageWidth =
-                                count > 0 ? (maxWidth / count) - 16 : maxWidth;
-
-                            return SizedBox(
-                              height: imageWidth,
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: count,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: SizedBox(
-                                      width: imageWidth,
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                            child: NQNetworkImage(
-                                              imagePath: answerData[index][0],
-                                              fit: BoxFit.cover,
-                                              width: double.infinity,
-                                            ),
-                                          ),
-                                          FittedBox(
-                                            fit: BoxFit.scaleDown,
-                                            child: Text(
-                                              answerData[index][1],
-                                              style: TextStyle(
-                                                fontSize:
-                                                    responsiveFontSize(context),
-                                                color: textPrimaryColor,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
+                Center(
+                    child: Container(
+                        margin: const EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: primaryColor,
+                          border: Border.all(
+                            color: secondaryColor,
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(10.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: secondaryColor.withAlpha(127),
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              NQTitleText(
+                                text: 'Correct Answer',
+                                fontSize: responsiveFontSize(context),
+                              ),
+                              NQImageList(imageList: answerData),
+                            ],
+                          ),
+                        ))),
               Expanded(
                 child: ListView.builder(
                   itemCount: playerAnswers.length,
@@ -279,42 +236,41 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
 
                                   return Padding(
                                     padding: const EdgeInsets.all(6.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: isCorrect
-                                              ? Colors.green
-                                              : Colors.red,
-                                          width: 4.0,
-                                        ),
-                                      ),
-                                      child: SizedBox(
-                                        width: imageWidth,
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              child: NQNetworkImage(
-                                                imagePath:
-                                                    playerAnswer['imagesOrder']
-                                                        [imgIndex][0],
-                                                fit: BoxFit.cover,
-                                                width: double.infinity,
-                                              ),
+                                    child: SizedBox(
+                                      width: imageWidth,
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: NQNetworkImage(
+                                              imagePath:
+                                              playerAnswer['imagesOrder']
+                                              [imgIndex][0],
+                                              fit: BoxFit.cover,
+                                              width: double.infinity,
                                             ),
-                                            FittedBox(
+                                          ),
+                                          FittedBox(
                                               fit: BoxFit.scaleDown,
                                               child: Text(
                                                 playerAnswer['imagesOrder']
-                                                    [imgIndex][1],
-                                                style: TextStyle(
-                                                  fontSize: responsiveFontSize(
-                                                      context),
-                                                ),
+                                                [imgIndex][1],
                                                 textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                                style: TextStyle(
+                                                  fontSize: responsiveFontSize(context),
+                                                  color: textPrimaryColor,
+                                                  shadows: [
+                                                    Shadow(
+                                                      color: isCorrect
+                                                          ? Colors.green
+                                                          : Colors.red,
+                                                      blurRadius: 10,
+                                                      offset: const Offset(2, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   );

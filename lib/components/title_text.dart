@@ -20,11 +20,11 @@ class NQTitleText extends StatelessWidget {
         fontSize: fontSize,
         fontWeight: FontWeight.bold,
         color: textPrimaryColor,
-        shadows: [
+        shadows: const [
           Shadow(
             color: secondaryColor,
             blurRadius: 10,
-            offset: const Offset(2, 2),
+            offset: Offset(2, 2),
           ),
         ],
       ),
