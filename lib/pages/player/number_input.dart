@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/textfield.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -37,23 +38,7 @@ class _NumberInputComponentState extends State<NumberInputComponent> {
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: TextField(
-            style: TextStyle(color: textPrimaryColor),
-            cursorColor: textPrimaryColor,
-            controller: _numberController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'Answer',
-              labelStyle: TextStyle(color: textPrimaryColor),
-              border: const OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: secondaryColor),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: textPrimaryColor),
-              ),
-            ),
-          ),
+          child: NQTextField(controller: _numberController, labelText: 'Answer', keyboardType: TextInputType.number,),
         ),
         ElevatedButton(
           onPressed: _submitNumber,

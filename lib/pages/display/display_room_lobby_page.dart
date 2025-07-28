@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/appbar.dart';
+import 'package:noquiz_client/components/textfield.dart';
 import 'package:noquiz_client/pages/display/game_page/display_room_game_page.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/room.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -92,6 +94,7 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
               data: qrData,
               version: QrVersions.auto,
               size: qrSize,
+              backgroundColor: textPrimaryColor,
             );
           },
         )
@@ -100,13 +103,7 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: _textController,
-                decoration: const InputDecoration(
-                  labelText: 'Enter data for QR code',
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              child: NQTextField(controller: _textController, labelText: 'Enter data for QR code',),
             ),
             ElevatedButton(
               onPressed: _validateAndShowQRCode,

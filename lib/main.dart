@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:noquiz_client/components/textfield.dart';
 import 'package:noquiz_client/pages/admin/admin_room_lobby_page.dart';
 import 'package:noquiz_client/pages/display/display_room_lobby_page.dart';
 import 'package:noquiz_client/pages/player/player_room_lobby_page.dart';
@@ -121,7 +122,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     String? roomId = await getRoomId();
     if (roomId != null && roomId.isNotEmpty && await roomExists(roomId)) {
-      _connect(roomId);
+      String? type = await getPreference("player_type");
+      type == "player" ? _connect(roomId) : _displayRoom(roomId);
     }
     else {
       fetchRoomIds();
@@ -164,6 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _connect(String roomId) async {
     await setPreference('room_id', roomId);
+    await setPreference('player_type', "player");
 
     String serverIp = _serverIpController.text;
     channel = WebSocketChannel.connect(
@@ -259,13 +262,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _displayRoom(String roomId) async {
-
     String serverIp = _serverIpController.text;
     try {
       final url = Uri.parse('http://$serverIp:8000/api/rooms/$roomId');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
+        await setPreference('room_id', roomId);
+        await setPreference('player_type', "display");
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -310,22 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
-                child: TextField(
-                  controller: _serverIpController,
-                  style: TextStyle(color: textPrimaryColor),
-                  decoration: InputDecoration(
-                    labelText: 'Server Ip Address',
-                    labelStyle: TextStyle(color: textPrimaryColor),
-                    border: OutlineInputBorder(),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: secondaryColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: textPrimaryColor),
-                    ),
-                  ),
-                  onSubmitted: (_) => _setServerIpAddress(),
-                ),
+                child: NQTextField(controller: _serverIpController, labelText: 'Server Ip Address', onSubmitted: _setServerIpAddress)
               ),
               const SizedBox(height: 20),
               Visibility(

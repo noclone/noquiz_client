@@ -14,7 +14,20 @@ class NQAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(title, style: TextStyle(color: textPrimaryColor)),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: textPrimaryColor,
+          shadows: [
+            Shadow(
+              color: secondaryColor,
+              blurRadius: 10,
+              offset: Offset(2, 2),
+            ),
+          ],
+        ),
+      ),
       backgroundColor: primaryColor,
       iconTheme: IconThemeData(color: tertiaryColor),
     );

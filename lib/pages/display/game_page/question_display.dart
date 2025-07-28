@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/network_image.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/questions.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -122,17 +123,22 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
           Center(
             child: SizedBox(
               width: screenWidth * 0.8,
-              child: countdown > 0
-                  ? Text(
-                      countdown.toString(),
-                      style: TextStyle(fontSize: countdownFontSize),
-                      textAlign: TextAlign.center,
-                    )
-                  : Text(
-                      currentQuestion,
-                      style: TextStyle(fontSize: questionFontSize),
-                      textAlign: TextAlign.center,
-                    ),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: const Border(left: BorderSide(width: 1)),
+                ),
+                child: countdown > 0
+                    ? Text(
+                  countdown.toString(),
+                  style: TextStyle(fontSize: countdownFontSize),
+                  textAlign: TextAlign.center,
+                )
+                    : Text(
+                  currentQuestion,
+                  style: TextStyle(fontSize: questionFontSize, color: textPrimaryColor),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
           ),
         if (imageUrls.isNotEmpty && countdown == 0)

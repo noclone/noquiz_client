@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/appbar.dart';
 import 'package:noquiz_client/components/player_list.dart';
+import 'package:noquiz_client/components/textfield.dart';
 import 'package:noquiz_client/pages/player/player_room_game_page.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/room.dart';
@@ -63,21 +64,7 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(color: secondaryColor),
           ),
-          content: TextField(
-            style: TextStyle(color: textPrimaryColor),
-            cursorColor: textPrimaryColor,
-            controller: nicknameController,
-            decoration: InputDecoration(
-              hintText: "Nickname",
-              hintStyle: TextStyle(color: textSecondaryColor),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: secondaryColorDark),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: secondaryColor),
-              ),
-            ),
-          ),
+          content: NQTextField(controller: nicknameController, labelText: "Nickname",),
           actions: <Widget>[
             TextButton(
               child: Text('Submit', style: TextStyle(color: textPrimaryColor)),

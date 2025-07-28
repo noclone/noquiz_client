@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/textfield.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -86,14 +87,7 @@ class _TimerSectionState extends State<TimerSection> {
             visible: isTimerVisible,
             child: Column(
               children: [
-                TextField(
-                  controller: _timerController,
-                  decoration: const InputDecoration(
-                    labelText: 'Enter time in seconds',
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
+                NQTextField(controller: _timerController, labelText: 'Enter time in seconds', keyboardType: TextInputType.number,),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: toggleTimer,
