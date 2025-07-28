@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget buildComponent({required bool visible, required Widget child}) {
+Widget visibility({required bool visible, required Widget child}) {
   return Visibility(
     visible: visible,
     maintainState: true,

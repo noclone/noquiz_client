@@ -86,7 +86,7 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
       body: Center(
         child: Stack(
           children: [
-            buildComponent(
+            visibility(
               visible: currentDisplayState == DisplayState.question,
               child: QuestionDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
@@ -95,42 +95,42 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
                 showTimerOverlay: showTimerOverlay,
               ),
             ),
-            buildComponent(
+            visibility(
               visible: currentDisplayState == DisplayState.rightOrder,
               child: RightOrderDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
                 broadcastStream: widget.broadcastStream,
               ),
             ),
-            buildComponent(
+            visibility(
               visible: currentDisplayState == DisplayState.playerScores,
               child: PlayerScoresDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
                 broadcastStream: widget.broadcastStream,
               ),
             ),
-            buildComponent(
+            visibility(
               visible: currentDisplayState == DisplayState.playerAnswers,
               child: PlayerAnswersDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
                 broadcastStream: widget.broadcastStream,
               ),
             ),
-            buildComponent(
+            visibility(
               visible: currentDisplayState == DisplayState.themes,
               child: ThemesDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
                 broadcastStream: widget.broadcastStream,
               ),
             ),
-            buildComponent(
+            visibility(
               visible: currentDisplayState == DisplayState.themeAnswers,
               child: ThemeAnswersDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
                 broadcastStream: widget.broadcastStream,
               ),
             ),
-            buildComponent(
+            visibility(
               visible: currentDisplayState == DisplayState.board,
               child: BoardDisplay(
                 setCurrentDisplayState: setCurrentDisplayState,
@@ -150,7 +150,7 @@ class _DisplayRoomGamePageState extends State<DisplayRoomGamePage> {
                 ),
               ),
             ),
-            buildComponent(
+            visibility(
                 visible: showTimer && !isTimerOverlay,
                 child: TimerDisplay(
                   broadcastStream: widget.broadcastStream,

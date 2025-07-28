@@ -91,7 +91,7 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            buildComponent(
+            visibility(
               visible: expectedAnswerType == AnswerType.none,
               child: BuzzerComponent(
                 channel: widget.channel,
@@ -99,20 +99,20 @@ class _PlayerRoomGamePageState extends State<PlayerRoomGamePage> {
                 setExpectedAnswerType: setExpectedAnswerType,
               ),
             ),
-            buildComponent(
+            visibility(
               visible: expectedAnswerType == AnswerType.number,
               child: NumberInputComponent(
                 channel: widget.channel,
               ),
             ),
-            buildComponent(
+            visibility(
               visible: expectedAnswerType == AnswerType.rightOrder,
               child: RightOrder(
                 channel: widget.channel,
                 broadcastStream: widget.broadcastStream,
               ),
             ),
-            buildComponent(
+            visibility(
               visible: expectedAnswerType == AnswerType.mcq,
               child: MCQ(
                 channel: widget.channel,
