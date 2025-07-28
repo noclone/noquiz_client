@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/bordered_text.dart';
+import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 import 'package:noquiz_client/utils/socket.dart';
 
@@ -54,11 +56,9 @@ class _ThemeAnswersDisplayState extends State<ThemeAnswersDisplay> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    'Correct Answers: $correctCount',
-                    style: TextStyle(
-                        fontSize: screenWidth * 0.03,
-                        fontWeight: FontWeight.bold),
+                  NQTitleText(
+                    text: 'Correct Answers: $correctCount',
+                    fontSize: screenWidth * 0.03,
                   ),
                   const SizedBox(height: 10),
                   SizedBox(
@@ -69,28 +69,16 @@ class _ThemeAnswersDisplayState extends State<ThemeAnswersDisplay> {
                       itemCount: themeAnswers.length,
                       itemBuilder: (BuildContext context, int index) {
                         final answer = themeAnswers[index];
-                        return Card(
-                            margin: const EdgeInsets.all(8.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                            child: ListTile(
-                              title: Text(
-                                textAlign: TextAlign.center,
-                                answer['question'],
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.04,
-                                  color: answer['isCorrect']
-                                      ? Colors.green
-                                      : Colors.red,
-                                ),
-                              ),
-                              subtitle: Text(
-                                textAlign: TextAlign.center,
-                                answer['answer'],
-                                style: TextStyle(fontSize: screenWidth * 0.04),
-                              ),
-                            ));
+                        return Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: NQBorderedText(
+                            text: answer['question'],
+                            fontSize: screenWidth * 0.04,
+                            subtext: answer['answer'],
+                            borderColor: answer['isCorrect'] ? Colors.green : Colors.red,
+                            padding: const EdgeInsets.all(30),
+                          ),
+                        );
                       },
                     ),
                   ),

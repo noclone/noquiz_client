@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:noquiz_client/components/textfield.dart';
+import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/pages/admin/admin_room_lobby_page.dart';
 import 'package:noquiz_client/pages/display/display_room_lobby_page.dart';
 import 'package:noquiz_client/pages/player/player_room_lobby_page.dart';
@@ -296,21 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text(
-                'NoQuiz',
-                style: TextStyle(
-                  fontSize: responsiveFontSize,
-                  fontWeight: FontWeight.bold,
-                  color: textPrimaryColor,
-                  shadows: [
-                    Shadow(
-                      color: secondaryColor,
-                      blurRadius: 10,
-                      offset: Offset(2, 2),
-                    ),
-                  ],
-                ),
-              ),
+              NQTitleText(text: 'NoQuiz', fontSize: responsiveFontSize,),
               const SizedBox(height: 20),
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/bordered_text.dart';
+import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 import 'package:noquiz_client/utils/socket.dart';
-
 
 class ThemesDisplay extends StatefulWidget {
   final Function setCurrentDisplayState;
   final Stream<dynamic> broadcastStream;
 
   const ThemesDisplay(
-      {super.key, required this.setCurrentDisplayState, required this.broadcastStream});
-
+      {super.key,
+      required this.setCurrentDisplayState,
+      required this.broadcastStream});
 
   @override
   State<ThemesDisplay> createState() => _ThemesDisplayState();
@@ -52,13 +54,14 @@ class _ThemesDisplayState extends State<ThemesDisplay> {
     return Center(
       child: Container(
         padding: const EdgeInsets.all(20),
-        constraints: BoxConstraints(maxWidth: screenWidth * 0.8, maxHeight: screenHeight * 0.8),
+        constraints: BoxConstraints(
+            maxWidth: screenWidth * 0.8, maxHeight: screenHeight * 0.8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Themes',
-              style: TextStyle(fontSize: screenWidth * 0.03, fontWeight: FontWeight.bold),
+            NQTitleText(
+              text: 'Themes',
+              fontSize: screenWidth * 0.03,
             ),
             const SizedBox(height: 10),
             Expanded(
@@ -66,24 +69,10 @@ class _ThemesDisplayState extends State<ThemesDisplay> {
                 crossAxisCount: crossAxisCount,
                 childAspectRatio: 3,
                 children: themes.map<Widget>((theme) {
-                  return Card(
-                    margin: const EdgeInsets.all(8.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          theme,
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.04,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
+                  return Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: NQBorderedText(
+                          text: theme, fontSize: screenWidth * 0.04));
                 }).toList(),
               ),
             ),

@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/bordered_text.dart';
 import 'package:noquiz_client/components/network_image.dart';
+import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/questions.dart';
@@ -72,7 +74,8 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
       } else {
         if (data['TIMER'] != 0) {
           widget.showTimerOverlay(true);
-          sendToSocket(widget.channel, MessageSubject.TIMER, "START", {"DURATION": data['TIMER']});
+          sendToSocket(widget.channel, MessageSubject.TIMER, "START",
+              {"DURATION": data['TIMER']});
         }
 
         setState(() {
@@ -93,23 +96,20 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
     final imageWidth = imageUrls.isEmpty
         ? 0.0
         : screenWidth / imageUrls.length - 16.0 * imageUrls.length;
-    final double questionFontSize = min(screenWidth * 0.05, screenHeight * 0.08);
+    final double questionFontSize =
+        min(screenWidth * 0.05, screenHeight * 0.08);
     final double countdownFontSize = screenWidth * 0.1;
 
-    if (showAnswer && mcqOptions.isEmpty){
+    if (showAnswer && mcqOptions.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Answer:',
-              style: TextStyle(fontSize: screenWidth * 0.05, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              currentAnswer.isNotEmpty ? currentAnswer : 'Answer not available.',
-              style: TextStyle(fontSize: screenWidth * 0.05, fontWeight: FontWeight.bold, color: Colors.green),
-              textAlign: TextAlign.center,
+            NQTitleText(
+              text: currentAnswer.isNotEmpty
+                  ? currentAnswer
+                  : 'Answer not available.',
+              fontSize: screenWidth * 0.05,
             ),
           ],
         ),
@@ -123,22 +123,17 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
           Center(
             child: SizedBox(
               width: screenWidth * 0.8,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: const Border(left: BorderSide(width: 1)),
-                ),
-                child: countdown > 0
-                    ? Text(
-                  countdown.toString(),
-                  style: TextStyle(fontSize: countdownFontSize),
-                  textAlign: TextAlign.center,
-                )
-                    : Text(
-                  currentQuestion,
-                  style: TextStyle(fontSize: questionFontSize, color: textPrimaryColor),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+              child: countdown > 0
+                  ? NQBorderedText(
+                      text: countdown.toString(),
+                      fontSize: countdownFontSize,
+                      padding: const EdgeInsets.all(40.0),
+                    )
+                  : NQBorderedText(
+                      text: currentQuestion,
+                      fontSize: questionFontSize,
+                      padding: const EdgeInsets.all(40.0),
+                    ),
             ),
           ),
         if (imageUrls.isNotEmpty && countdown == 0)
@@ -185,16 +180,47 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
                 crossAxisCount: 2,
                 childAspectRatio: 10,
                 children: List.generate(mcqOptions.length, (index) {
-                  return Card(
-                    color: showAnswer && mcqOptions[index] == currentAnswer ? Colors.green : Colors.white,
-                    child: Center(
-                      child: Text(
-                        mcqOptions[index],
-                        style: TextStyle(fontSize: screenWidth * 0.02, color: showAnswer ? Colors.white : Colors.black),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  );
+                  return Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Container(
+                          decoration: BoxDecoration(
+                            color: primaryColor,
+                            border: Border.all(
+                              color: showAnswer &&
+                                      mcqOptions[index] != currentAnswer
+                                  ? Colors.red
+                                  : secondaryColor,
+                              width: 2.0,
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: showAnswer &&
+                                        mcqOptions[index] != currentAnswer
+                                    ? Colors.red.withAlpha(127)
+                                    : secondaryColor.withAlpha(127),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child:
+                                showAnswer && mcqOptions[index] == currentAnswer
+                                    ? NQTitleText(
+                                        text: mcqOptions[index],
+                                        fontSize: screenWidth * 0.02,
+                                      )
+                                    : Text(
+                                        mcqOptions[index],
+                                        style: TextStyle(
+                                          fontSize: screenWidth * 0.02,
+                                          color: textPrimaryColor,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                          )));
                 }),
               ),
             ),

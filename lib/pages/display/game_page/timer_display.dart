@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 
 class TimerDisplay extends StatefulWidget {
@@ -93,11 +94,28 @@ class _TimerDisplayState extends State<TimerDisplay> {
     final double responsiveFontSize = screenWidth * 0.05;
 
     return Center(
-      child: Text(
-        formatTime(remainingTime),
-        style: TextStyle(
-          fontSize: responsiveFontSize,
-          fontWeight: FontWeight.bold,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(40, 20, 40, 20),
+        decoration: BoxDecoration(
+          color: primaryColor,
+          border: Border.all(color: secondaryColor, width: 2),
+          borderRadius: BorderRadius.circular(80),
+          boxShadow: [
+            BoxShadow(
+              color: secondaryColor.withAlpha(127),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Text(
+          formatTime(remainingTime),
+          style: TextStyle(
+            fontSize: responsiveFontSize,
+            fontWeight: FontWeight.bold,
+            color: textPrimaryColor,
+          ),
         ),
       ),
     );
