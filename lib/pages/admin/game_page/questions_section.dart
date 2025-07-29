@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:noquiz_client/components/box.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:noquiz_client/utils/socket.dart';
 
@@ -38,7 +40,8 @@ class _QuestionsSectionState extends State<QuestionsSection> {
       return;
     }
     try {
-      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/questions_categories'));
+      final response = await http.get(Uri.parse(
+          'http://$serverIp:8000/api/rooms/${widget.roomId}/questions_categories'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
@@ -58,7 +61,8 @@ class _QuestionsSectionState extends State<QuestionsSection> {
       return;
     }
     try {
-      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/questions_categories/$category'));
+      final response = await http.get(Uri.parse(
+          'http://$serverIp:8000/api/rooms/${widget.roomId}/questions_categories/$category'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
@@ -82,16 +86,14 @@ class _QuestionsSectionState extends State<QuestionsSection> {
 
   void sendQuestionToSocket(int index) {
     final question = categoryQuestions[index];
-    sendToSocket(widget.channel, MessageSubject.QUESTION, "SEND",
-        {
-          "QUESTION": question['question'],
-          "ANSWER": question['answer'],
-          "EXPECTED_ANSWER_TYPE": question['expected_answer_type'],
-          "IMAGES": question["images"],
-          "MCQ_OPTIONS": question["mcq_options"],
-          "TIMER": question["timer"],
-        }
-    );
+    sendToSocket(widget.channel, MessageSubject.QUESTION, "SEND", {
+      "QUESTION": question['question'],
+      "ANSWER": question['answer'],
+      "EXPECTED_ANSWER_TYPE": question['expected_answer_type'],
+      "IMAGES": question["images"],
+      "MCQ_OPTIONS": question["mcq_options"],
+      "TIMER": question["timer"],
+    });
 
     setState(() {
       sentQuestionIndices.add(index);
@@ -128,28 +130,35 @@ class _QuestionsSectionState extends State<QuestionsSection> {
             itemCount: categoryQuestions.length,
             itemBuilder: (context, index) {
               final question = categoryQuestions[index];
-              return Card(
-                margin: const EdgeInsets.all(8.0),
-                color: sentQuestionIndices.contains(index) ? Colors.green : null,
-                child: ListTile(
-                  title: Text(question['question']),
-                  subtitle: Text('Answer: ${question['answer']} -- Answer Type: ${question['expected_answer_type']}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.skip_next),
-                        onPressed: () => skipQuestion(index),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.send),
-                        onPressed: () => sendQuestionToSocket(index),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.visibility),
-                        onPressed: () => sendShowAnswersToSocket(index),
-                      ),
-                    ],
+              return Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: NQBox(
+                  padding: const EdgeInsets.all(2.0),
+                  spreadRadius: 2,
+                  borderColor: sentQuestionIndices.contains(index)
+                      ? Colors.green
+                      : secondaryColor,
+                  child: ListTile(
+                    title: Text(question['question'], style: TextStyle(color: textPrimaryColor)),
+                    subtitle: Text(
+                        'Answer: ${question['answer']} -- Answer Type: ${question['expected_answer_type']}', style: TextStyle(color: textSecondaryColor),),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.skip_next),
+                          onPressed: () => skipQuestion(index),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.send),
+                          onPressed: () => sendQuestionToSocket(index),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.visibility),
+                          onPressed: () => sendShowAnswersToSocket(index),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );

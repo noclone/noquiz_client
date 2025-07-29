@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/textfield.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -66,8 +67,12 @@ class _TimerSectionState extends State<TimerSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Overlay Mode'),
+              Text('Overlay Mode', style: TextStyle(color: textPrimaryColor),),
               Switch(
+                activeColor: secondaryColor,
+                activeTrackColor: secondaryColor.withAlpha(127),
+                inactiveThumbColor: textPrimaryColor,
+                inactiveTrackColor: textPrimaryColor.withAlpha(127),
                 value: isOverlayMode,
                 onChanged: (value) {
                   setState(() {

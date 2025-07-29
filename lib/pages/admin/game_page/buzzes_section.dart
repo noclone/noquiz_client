@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/box.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-
 
 class BuzzesSection extends StatefulWidget {
   final WebSocketChannel channel;
@@ -35,8 +36,7 @@ class _BuzzesSectionState extends State<BuzzesSection> {
             });
             buzzes.sort((a, b) => a['time'].compareTo(b['time']));
           });
-        }
-        else if (data.action == "RESET") {
+        } else if (data.action == "RESET") {
           setState(() {
             buzzes.clear();
           });
@@ -71,10 +71,14 @@ class _BuzzesSectionState extends State<BuzzesSection> {
               itemCount: buzzes.length,
               itemBuilder: (context, index) {
                 final buzz = buzzes[index];
-                return ListTile(
-                  title: Text(buzz['name']),
-                  subtitle: Text(buzz['time'].toString()),
-                );
+                return Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: NQBox(
+                      padding: const EdgeInsets.all(0),
+                        child: ListTile(
+                      title: Center(child: Text(buzz['name'],
+                          style: TextStyle(color: textPrimaryColor)),
+                    ))));
               },
             ),
           ),

@@ -3,6 +3,7 @@ import 'package:noquiz_client/components/appbar.dart';
 import 'package:noquiz_client/pages/admin/game_page/buzzes_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/scores_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/timer_section.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:noquiz_client/pages/admin/game_page/modes_section.dart';
@@ -60,15 +61,31 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
                 ),
                 Container(
                   width: 200,
-                  decoration: const BoxDecoration(
-                    border: Border(left: BorderSide(width: 1)),
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    border: const Border(
+                      left: BorderSide(
+                        color: secondaryColor,
+                        width: 2.0,),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: secondaryColor.withAlpha(127),
+                        spreadRadius: 2,
+                        blurRadius: 7,
+                        offset: const Offset(0, 0),
+                      ),
+                    ],
                   ),
                   child: DefaultTabController(
                     length: 2,
                     child: Column(
                       children: [
-                        const TabBar(
-                          tabs: [
+                        TabBar(
+                          indicatorColor: secondaryColor,
+                          labelColor: secondaryColor,
+                          unselectedLabelColor: textPrimaryColor,
+                          tabs: const [
                             Tab(text: 'Buzzes'),
                             Tab(text: 'Timer'),
                           ],

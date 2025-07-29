@@ -6,11 +6,13 @@ import 'package:noquiz_client/components/network_image.dart';
 class NQBoard extends StatelessWidget {
   final List<Map<String, dynamic>> board;
   final List<bool> imageVisibility;
+  final Function(int)? actions;
 
   const NQBoard({
     Key? key,
     required this.board,
     required this.imageVisibility,
+    this.actions,
   }) : super(key: key);
 
   Color getBorderColor(String difficulty) {
@@ -24,6 +26,17 @@ class NQBoard extends StatelessWidget {
       default:
         return Colors.grey;
     }
+  }
+
+  Widget positionActions(index){
+    return Positioned(
+      bottom: 4.0,
+      right: 4.0,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: actions != null ? actions!(index) : [],
+      ),
+    );
   }
 
   @override
@@ -44,7 +57,8 @@ class NQBoard extends StatelessWidget {
                 crossAxisCount: crossAxisCount,
                 crossAxisSpacing: 4.0,
                 mainAxisSpacing: 4.0,
-                childAspectRatio: (size / crossAxisCount) / (size / (itemCount / crossAxisCount).ceil()),
+                childAspectRatio: (size / crossAxisCount) /
+                    (size / (itemCount / crossAxisCount).ceil()),
                 children: List.generate(itemCount, (index) {
                   if (!imageVisibility[index]) {
                     return Container();
@@ -52,18 +66,25 @@ class NQBoard extends StatelessWidget {
                   final thumbnailUrl = board[index]['thumbnail'];
                   return Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: getBorderColor(board[index]['difficulty']),
-                          width: 4.0,
+                    child: Stack(
+                      children: [
+                        SizedBox.expand(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: getBorderColor(board[index]['difficulty']),
+                                width: 4.0,
+                              ),
+                            ),
+                            child: NQNetworkImage(
+                              imagePath: thumbnailUrl,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
-                      ),
-                      child: NQNetworkImage(
-                        imagePath: thumbnailUrl,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                        positionActions(index),
+                      ],
+                    )
                   );
                 }),
               ),

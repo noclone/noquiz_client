@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/box.dart';
+import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 
 class ThemesSection extends StatefulWidget {
   final String roomId;
@@ -38,7 +39,8 @@ class _ThemesSectionState extends State<ThemesSection> {
       return;
     }
     try {
-      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/themes'));
+      final response = await http.get(
+          Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/themes'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
@@ -58,7 +60,8 @@ class _ThemesSectionState extends State<ThemesSection> {
       return;
     }
     try {
-      final response = await http.get(Uri.parse('http://$serverIp:8000/api/rooms/${widget.roomId}/themes/$theme'));
+      final response = await http.get(Uri.parse(
+          'http://$serverIp:8000/api/rooms/${widget.roomId}/themes/$theme'));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
@@ -75,7 +78,8 @@ class _ThemesSectionState extends State<ThemesSection> {
   }
 
   void showThemes() {
-    sendToSocket(widget.channel, MessageSubject.THEMES, "SHOW", {"THEMES": themes});
+    sendToSocket(
+        widget.channel, MessageSubject.THEMES, "SHOW", {"THEMES": themes});
   }
 
   void sendThemeAnswers() {
@@ -95,9 +99,9 @@ class _ThemesSectionState extends State<ThemesSection> {
       };
     }).toList();
 
-    sendToSocket(widget.channel, MessageSubject.THEMES, "ANSWERS", {"ANSWERS": answers});
+    sendToSocket(
+        widget.channel, MessageSubject.THEMES, "ANSWERS", {"ANSWERS": answers});
   }
-
 
   void markAsCorrect(int index) {
     setState(() {
@@ -157,28 +161,32 @@ class _ThemesSectionState extends State<ThemesSection> {
             itemCount: themeQuestions.length,
             itemBuilder: (context, index) {
               final question = themeQuestions[index];
-              return Card(
-                margin: const EdgeInsets.all(8.0),
-                color: correctAnswers.contains(index)
-                    ? Colors.green
-                    : wrongAnswers.contains(index)
-                    ? Colors.red
-                    : null,
-                child: ListTile(
-                  title: Text(question['question']),
-                  subtitle: Text('Answer: ${question['answer']}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.check, color: Colors.green),
-                        onPressed: () => markAsCorrect(index),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close, color: Colors.red),
-                        onPressed: () => markAsWrong(index),
-                      ),
-                    ],
+              return Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: NQBox(
+                  padding: const EdgeInsets.all(2.0),
+                  spreadRadius: 2,
+                  borderColor: correctAnswers.contains(index)
+                      ? Colors.green
+                      : wrongAnswers.contains(index)
+                          ? Colors.red
+                          : secondaryColor,
+                  child: ListTile(
+                    title: Text(question['question'], style: TextStyle(color: textPrimaryColor)),
+                    subtitle: Text('Answer: ${question['answer']}', style: TextStyle(color: textSecondaryColor)),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.check, color: Colors.green),
+                          onPressed: () => markAsCorrect(index),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.red),
+                          onPressed: () => markAsWrong(index),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
