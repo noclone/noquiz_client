@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/image_list.dart';
 import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/components/visibility_component.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 
 enum RightOrderState {
   images,
@@ -85,6 +87,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Stack(
       children: [
         visibility(
@@ -99,7 +102,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                   style: TextStyle(
                     fontSize: responsiveFontSize(context),
                     fontWeight: FontWeight.bold,
-                    color: textPrimaryColor,
+                    color: colorManager.currentColors.textPrimaryColor,
                   ),
                 ),
               ),
@@ -122,15 +125,15 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
                     child: Container(
                         margin: const EdgeInsets.all(16.0),
                         decoration: BoxDecoration(
-                          color: primaryColor,
+                          color: colorManager.currentColors.primaryColor,
                           border: Border.all(
-                            color: secondaryColor,
+                            color: colorManager.currentColors.secondaryColor,
                             width: 2.0,
                           ),
                           borderRadius: BorderRadius.circular(10.0),
                           boxShadow: [
                             BoxShadow(
-                              color: secondaryColor.withAlpha(127),
+                              color: colorManager.currentColors.secondaryColor.withAlpha(127),
                               spreadRadius: 5,
                               blurRadius: 7,
                               offset: const Offset(0, 3),

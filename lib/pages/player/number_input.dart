@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/textfield.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class NumberInputComponent extends StatefulWidget {
@@ -29,12 +31,13 @@ class _NumberInputComponentState extends State<NumberInputComponent> {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           'Enter a number:',
-          style: TextStyle(fontSize: 18, color: textPrimaryColor),
+          style: TextStyle(fontSize: 18, color: colorManager.currentColors.textPrimaryColor),
         ),
         Padding(
           padding: const EdgeInsets.all(16.0),

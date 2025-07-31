@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/appbar.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/pages/admin/game_page/buzzes_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/scores_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/timer_section.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:noquiz_client/pages/admin/game_page/modes_section.dart';
 
@@ -29,6 +30,7 @@ class AdminRoomGamePage extends StatefulWidget {
 class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Scaffold(
       appBar: NQAppBar(
         title: 'Game Room: ${widget.roomId}',
@@ -62,15 +64,15 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
                 Container(
                   width: 200,
                   decoration: BoxDecoration(
-                    color: primaryColor,
-                    border: const Border(
+                    color: colorManager.currentColors.primaryColor,
+                    border: Border(
                       left: BorderSide(
-                        color: secondaryColor,
+                        color: colorManager.currentColors.secondaryColor,
                         width: 2.0,),
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: secondaryColor.withAlpha(127),
+                        color: colorManager.currentColors.secondaryColor.withAlpha(127),
                         spreadRadius: 2,
                         blurRadius: 7,
                         offset: const Offset(0, 0),
@@ -82,9 +84,9 @@ class _AdminRoomGamePageState extends State<AdminRoomGamePage> {
                     child: Column(
                       children: [
                         TabBar(
-                          indicatorColor: secondaryColor,
-                          labelColor: secondaryColor,
-                          unselectedLabelColor: textPrimaryColor,
+                          indicatorColor: colorManager.currentColors.secondaryColor,
+                          labelColor: colorManager.currentColors.secondaryColor,
+                          unselectedLabelColor: colorManager.currentColors.textPrimaryColor,
                           tabs: const [
                             Tab(text: 'Buzzes'),
                             Tab(text: 'Timer'),

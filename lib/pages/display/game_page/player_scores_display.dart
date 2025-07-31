@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 
 class PlayerScoresDisplay extends StatefulWidget {
   final Function setCurrentDisplayState;
@@ -44,17 +46,18 @@ class _PlayerScoresDisplayState extends State<PlayerScoresDisplay> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final colorManager = Provider.of<ColorManager>(context);
 
     return Center(
       child: Container(
         padding: EdgeInsets.all(screenWidth * 0.05),
         decoration: BoxDecoration(
-          color: primaryColor,
+          color: colorManager.currentColors.primaryColor,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: secondaryColor, width: 3),
+          border: Border.all(color: colorManager.currentColors.secondaryColor, width: 3),
           boxShadow: [
             BoxShadow(
-              color: secondaryColor.withValues(alpha: 0.5),
+              color: colorManager.currentColors.secondaryColor.withValues(alpha: 0.5),
               spreadRadius: screenWidth * 0.0125,
               blurRadius: screenWidth * 0.0175,
               offset: const Offset(0, 3),
@@ -81,7 +84,7 @@ class _PlayerScoresDisplayState extends State<PlayerScoresDisplay> {
                         Flexible(
                           child: Text(
                             player['name'],
-                            style: TextStyle(fontSize: screenWidth * 0.05, color: textPrimaryColor),
+                            style: TextStyle(fontSize: screenWidth * 0.05, color: colorManager.currentColors.textPrimaryColor),
                             softWrap: true,
                             overflow: TextOverflow.visible,
                           ),

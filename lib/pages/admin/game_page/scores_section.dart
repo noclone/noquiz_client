@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ScoresSection extends StatefulWidget {
@@ -58,6 +60,7 @@ class _ScoresSectionState extends State<ScoresSection> {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Container(
       height: 125,
       width: MediaQuery.of(context).size.width,
@@ -76,7 +79,7 @@ class _ScoresSectionState extends State<ScoresSection> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      color: secondaryColor,
+                      color: colorManager.currentColors.secondaryColor,
                       icon: const Icon(Icons.add),
                       onPressed: () => incrementScore(index),
                     ),
@@ -84,15 +87,15 @@ class _ScoresSectionState extends State<ScoresSection> {
                       fit: BoxFit.scaleDown,
                       child: Text(
                         player['name'],
-                        style: TextStyle(color: textPrimaryColor),
+                        style: TextStyle(color: colorManager.currentColors.textPrimaryColor),
                       ),
                     ),
                     Text(
                       'Score: ${player['score']}',
-                      style: const TextStyle(color: secondaryColor),
+                      style: TextStyle(color: colorManager.currentColors.secondaryColor),
                     ),
                     IconButton(
-                      color: secondaryColor,
+                      color: colorManager.currentColors.secondaryColor,
                       icon: const Icon(Icons.remove),
                       onPressed: () => decrementScore(index),
                     ),

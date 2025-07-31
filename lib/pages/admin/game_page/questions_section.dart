@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:noquiz_client/components/box.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -106,6 +108,7 @@ class _QuestionsSectionState extends State<QuestionsSection> {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Column(
       children: [
         SizedBox(
@@ -137,11 +140,11 @@ class _QuestionsSectionState extends State<QuestionsSection> {
                   spreadRadius: 2,
                   borderColor: sentQuestionIndices.contains(index)
                       ? Colors.green
-                      : secondaryColor,
+                      : colorManager.currentColors.secondaryColor,
                   child: ListTile(
-                    title: Text(question['question'], style: TextStyle(color: textPrimaryColor)),
+                    title: Text(question['question'], style: TextStyle(color: colorManager.currentColors.textPrimaryColor)),
                     subtitle: Text(
-                        'Answer: ${question['answer']} -- Answer Type: ${question['expected_answer_type']}', style: TextStyle(color: textSecondaryColor),),
+                        'Answer: ${question['answer']} -- Answer Type: ${question['expected_answer_type']}', style: TextStyle(color: colorManager.currentColors.textSecondaryColor),),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

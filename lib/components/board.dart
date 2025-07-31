@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/network_image.dart';
+import 'package:provider/provider.dart';
 
 class NQBoard extends StatelessWidget {
   final List<Map<String, dynamic>> board;
   final List<bool> imageVisibility;
-  final Function(int)? actions;
+  final Function(int, ColorManager)? actions;
 
   const NQBoard({
     Key? key,
@@ -28,19 +30,20 @@ class NQBoard extends StatelessWidget {
     }
   }
 
-  Widget positionActions(index){
+  Widget positionActions(index, ColorManager colorManager){
     return Positioned(
       bottom: 4.0,
       right: 4.0,
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: actions != null ? actions!(index) : [],
+        children: actions != null ? actions!(index, colorManager) : [],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: LayoutBuilder(
@@ -82,7 +85,7 @@ class NQBoard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        positionActions(index),
+                        positionActions(index, colorManager),
                       ],
                     )
                   );

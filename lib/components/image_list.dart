@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/utils/colors.dart';
+import 'package:provider/provider.dart';
 
 import 'network_image.dart';
 
@@ -28,6 +30,7 @@ class NQImageList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         final count = imageList.length;
@@ -93,7 +96,7 @@ class NQImageList extends StatelessWidget {
                                             ? isCorrect
                                                 ? Colors.green
                                                 : Colors.red
-                                            : textPrimaryColor,
+                                            : colorManager.currentColors.textPrimaryColor,
                                         shadows: [
                                           if (colorTextAnswer)
                                             Shadow(
@@ -101,7 +104,7 @@ class NQImageList extends StatelessWidget {
                                                   ? isCorrect
                                                       ? Colors.green
                                                       : Colors.red
-                                                  : secondaryColor,
+                                                  : colorManager.currentColors.secondaryColor,
                                               blurRadius: 10,
                                               offset: const Offset(2, 2),
                                             ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/box.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class BuzzesSection extends StatefulWidget {
@@ -54,6 +56,7 @@ class _BuzzesSectionState extends State<BuzzesSection> {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Container(
       width: 200,
       decoration: const BoxDecoration(
@@ -74,10 +77,11 @@ class _BuzzesSectionState extends State<BuzzesSection> {
                 return Padding(
                     padding: const EdgeInsets.all(10),
                     child: NQBox(
+                      borderColor: colorManager.currentColors.secondaryColor,
                       padding: const EdgeInsets.all(0),
                         child: ListTile(
                       title: Center(child: Text(buzz['name'],
-                          style: TextStyle(color: textPrimaryColor)),
+                          style: TextStyle(color: colorManager.currentColors.textPrimaryColor)),
                     ))));
               },
             ),

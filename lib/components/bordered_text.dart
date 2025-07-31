@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/box.dart';
-import 'package:noquiz_client/utils/colors.dart';
+import 'package:noquiz_client/components/color_manager.dart';
+import 'package:provider/provider.dart';
 
 class NQBorderedText extends StatelessWidget {
   final String text;
@@ -15,15 +16,15 @@ class NQBorderedText extends StatelessWidget {
     this.subtext,
     this.fontSize,
     this.padding = const EdgeInsets.all(8.0),
-    this.borderColor = secondaryColor,
+    required this.borderColor,
   }) : super(key: key);
 
-  Widget getText() {
+  Widget getText(ColorManager colorManager) {
     return Text(
       text,
       style: TextStyle(
         fontSize: fontSize,
-        color: textPrimaryColor,
+        color: colorManager.currentColors.textPrimaryColor,
       ),
       textAlign: TextAlign.center,
     );
@@ -31,25 +32,27 @@ class NQBorderedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
+
     return NQBox(
       padding: padding,
       borderColor: borderColor,
       child: Center(
         child: subtext == null
-            ? getText()
+            ? getText(colorManager)
             : Column(
                 children: [
-                  getText(),
+                  getText(colorManager),
                   Text(
                     subtext!,
                     style: TextStyle(
                       fontSize: fontSize,
-                      color: textPrimaryColor,
-                      shadows: const [
+                      color: colorManager.currentColors.textPrimaryColor,
+                      shadows: [
                         Shadow(
-                          color: secondaryColor,
+                          color: colorManager.currentColors.secondaryColor,
                           blurRadius: 10,
-                          offset: Offset(2, 2),
+                          offset: const Offset(2, 2),
                         ),
                       ],
                     ),

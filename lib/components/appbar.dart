@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/title_text.dart';
-import 'package:noquiz_client/utils/colors.dart';
+import 'package:provider/provider.dart';
 
 class NQAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -14,10 +15,11 @@ class NQAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return AppBar(
       title: NQTitleText(text: title),
-      backgroundColor: primaryColor,
-      iconTheme: IconThemeData(color: tertiaryColor),
+      backgroundColor: colorManager.currentColors.primaryColor,
+      iconTheme: IconThemeData(color: colorManager.currentColors.tertiaryColor),
       actions: actions,
     );
   }

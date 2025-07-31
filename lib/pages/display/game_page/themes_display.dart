@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/bordered_text.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 
 class ThemesDisplay extends StatefulWidget {
   final Function setCurrentDisplayState;
@@ -50,6 +52,7 @@ class _ThemesDisplayState extends State<ThemesDisplay> {
 
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final colorManager = Provider.of<ColorManager>(context);
 
     return Center(
       child: Container(
@@ -72,6 +75,7 @@ class _ThemesDisplayState extends State<ThemesDisplay> {
                   return Padding(
                       padding: const EdgeInsets.all(20),
                       child: NQBorderedText(
+                          borderColor: colorManager.currentColors.secondaryColor,
                           text: theme, fontSize: screenWidth * 0.04));
                 }).toList(),
               ),

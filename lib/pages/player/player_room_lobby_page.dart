@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/appbar.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/player_list.dart';
 import 'package:noquiz_client/components/textfield.dart';
 import 'package:noquiz_client/pages/player/player_room_game_page.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/room.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 
@@ -27,8 +29,9 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
   @override
   void initState() {
     super.initState();
+    final colorManager = Provider.of<ColorManager>(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showNicknameDialog();
+      _showNicknameDialog(colorManager);
     });
 
     widget.broadcastStream.listen((message) {
@@ -50,7 +53,7 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
     checkRoomState(widget.roomId, goToNextPage);
   }
 
-  void _showNicknameDialog() {
+  void _showNicknameDialog(ColorManager colorManager) {
     TextEditingController nicknameController = TextEditingController();
 
     showDialog(
@@ -58,16 +61,16 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Enter Your Nickname', style: TextStyle(color: textPrimaryColor),),
-          backgroundColor: primaryColor,
+          title: Text('Enter Your Nickname', style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
+          backgroundColor: colorManager.currentColors.primaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
-            side: BorderSide(color: secondaryColor),
+            side: BorderSide(color: colorManager.currentColors.secondaryColor),
           ),
           content: NQTextField(controller: nicknameController, labelText: "Nickname",),
           actions: <Widget>[
             TextButton(
-              child: Text('Submit', style: TextStyle(color: textPrimaryColor)),
+              child: Text('Submit', style: TextStyle(color: colorManager.currentColors.textPrimaryColor)),
               onPressed: () {
                 if (nicknameController.text.isNotEmpty) {
                   Navigator.of(context).pop();
@@ -100,6 +103,7 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Scaffold(
       appBar: const NQAppBar(title: 'Room lobby'),
       body: Padding(
@@ -108,7 +112,7 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
           children: [
             Text(
               'Waiting for the admin to start the game',
-              style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: textPrimaryColor),
+              style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: colorManager.currentColors.textPrimaryColor),
             ),
             const SizedBox(height: 20),
             Expanded(

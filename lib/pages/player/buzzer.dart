@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/pages/player/answer_type.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:vibration/vibration.dart';
 
@@ -56,6 +58,7 @@ class _BuzzerComponentState extends State<BuzzerComponent> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final buttonSize = screenSize.width * 0.5;
+    final colorManager = Provider.of<ColorManager>(context);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -66,7 +69,7 @@ class _BuzzerComponentState extends State<BuzzerComponent> {
             "Press the buzzer when you have the answer!",
             style: TextStyle(
               fontSize: 20,
-              color: textPrimaryColor,
+              color: colorManager.currentColors.textPrimaryColor,
             ),
             textAlign: TextAlign.center,
           ),

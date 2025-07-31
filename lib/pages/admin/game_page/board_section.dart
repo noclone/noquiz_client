@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:noquiz_client/components/board.dart';
-import 'package:noquiz_client/utils/colors.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'dart:convert';
@@ -73,10 +73,10 @@ class _BoardSectionState extends State<BoardSection> {
     );
   }
 
-  List<Widget> actions(int index){
+  List<Widget> actions(int index, ColorManager colorManager){
     return [
       IconButton(
-        color: secondaryColor,
+        color: colorManager.currentColors.secondaryColor,
         icon: const Icon(Icons.send, size: 20),
         onPressed: () {
           sendToSocket(widget.channel, MessageSubject.QUESTION, "SEND", {
@@ -90,14 +90,14 @@ class _BoardSectionState extends State<BoardSection> {
         },
       ),
       IconButton(
-        color: secondaryColor,
+        color: colorManager.currentColors.secondaryColor,
         icon: const Icon(Icons.lightbulb_circle_outlined, size: 20),
         onPressed: () {
           _showAnswerDialog(board[index]['answer']);
         },
       ),
       IconButton(
-        color: secondaryColor,
+        color: colorManager.currentColors.secondaryColor,
         icon: const Icon(Icons.lightbulb, size: 20),
         onPressed: () {
           sendToSocket(
@@ -105,7 +105,7 @@ class _BoardSectionState extends State<BoardSection> {
         },
       ),
       IconButton(
-        color: secondaryColor,
+        color: colorManager.currentColors.secondaryColor,
         icon: const Icon(Icons.delete, size: 20),
         onPressed: () {
           setState(() {

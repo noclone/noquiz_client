@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/questions.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class MCQ extends StatefulWidget {
@@ -58,6 +60,7 @@ class _MCQState extends State<MCQ> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final aspectRatio = screenWidth / screenHeight;
+    final colorManager = Provider.of<ColorManager>(context);
 
     return Center(
       child: SizedBox(
@@ -96,11 +99,11 @@ class _MCQState extends State<MCQ> {
                     },
                     style: ElevatedButton.styleFrom(
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      backgroundColor: primaryColor,
-                      shadowColor: answerIndex == index ? Colors.green : clickedIndex == index ? Colors.blue.shade400 : secondaryColor,
+                      backgroundColor: colorManager.currentColors.primaryColor,
+                      shadowColor: answerIndex == index ? Colors.green : clickedIndex == index ? Colors.blue.shade400 : colorManager.currentColors.secondaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: answerIndex == index ? Colors.green : clickedIndex == index ? Colors.blue.shade400 : secondaryColor, width: 2),
+                        side: BorderSide(color: answerIndex == index ? Colors.green : clickedIndex == index ? Colors.blue.shade400 : colorManager.currentColors.secondaryColor, width: 2),
                       ),
                     ),
                     child: FittedBox(
@@ -110,7 +113,7 @@ class _MCQState extends State<MCQ> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: screenWidth * 0.1,
-                          color: textPrimaryColor,
+                          color: colorManager.currentColors.textPrimaryColor,
                         ),
                       ),
                     ),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/textfield.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class TimerSection extends StatefulWidget {
@@ -60,6 +61,7 @@ class _TimerSectionState extends State<TimerSection> {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -67,12 +69,12 @@ class _TimerSectionState extends State<TimerSection> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Overlay Mode', style: TextStyle(color: textPrimaryColor),),
+              Text('Overlay Mode', style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
               Switch(
-                activeColor: secondaryColor,
-                activeTrackColor: secondaryColor.withAlpha(127),
-                inactiveThumbColor: textPrimaryColor,
-                inactiveTrackColor: textPrimaryColor.withAlpha(127),
+                activeColor: colorManager.currentColors.secondaryColor,
+                activeTrackColor: colorManager.currentColors.secondaryColor.withAlpha(127),
+                inactiveThumbColor: colorManager.currentColors.textPrimaryColor,
+                inactiveTrackColor: colorManager.currentColors.textPrimaryColor.withAlpha(127),
                 value: isOverlayMode,
                 onChanged: (value) {
                   setState(() {

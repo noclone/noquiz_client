@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:noquiz_client/components/box.dart';
-import 'package:noquiz_client/utils/colors.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'dart:convert';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -79,6 +80,7 @@ class _RightOrderSectionState extends State<RightOrderSection> {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Stack(
       children: [
         ListView.builder(
@@ -92,9 +94,9 @@ class _RightOrderSectionState extends State<RightOrderSection> {
                 spreadRadius: 2,
                 borderColor: sentQuestionIndices.contains(index)
                     ? Colors.green
-                    : secondaryColor,
+                    : colorManager.currentColors.secondaryColor,
                 child: ListTile(
-                  title: Text(question['title'], style: TextStyle(color: textPrimaryColor)),
+                  title: Text(question['title'], style: TextStyle(color: colorManager.currentColors.textPrimaryColor)),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -120,13 +122,14 @@ class _RightOrderSectionState extends State<RightOrderSection> {
         Positioned(
           bottom: 16.0,
           right: 16.0,
-          child: NQBox(child: FloatingActionButton(
-            backgroundColor: primaryColor,
+          child: NQBox(borderColor: colorManager.currentColors.secondaryColor,
+          child: FloatingActionButton(
+            backgroundColor: colorManager.currentColors.primaryColor,
             onPressed: () {
               sendToSocket(widget.channel, MessageSubject.RIGHT_ORDER,
                   "REQUEST_PLAYERS_ANSWER", {});
             },
-            child: const Icon(Icons.check, color: secondaryColor,),
+            child: Icon(Icons.check, color: colorManager.currentColors.secondaryColor,),
           ),)
         ),
       ],

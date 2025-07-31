@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/pages/admin/game_page/board_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/questions_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/right_order_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/themes_section.dart';
 import 'package:noquiz_client/utils/colors.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ModesSection extends StatefulWidget {
@@ -23,6 +25,7 @@ class ModesSection extends StatefulWidget {
 class _ModesSectionState extends State<ModesSection> {
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Column(
       children: [
         Expanded(
@@ -41,9 +44,9 @@ class _ModesSectionState extends State<ModesSection> {
                   ),
                 ),
                 TabBar(
-                  indicatorColor: secondaryColor,
-                  labelColor: secondaryColor,
-                  unselectedLabelColor: textPrimaryColor,
+                  indicatorColor: colorManager.currentColors.secondaryColor,
+                  labelColor: colorManager.currentColors.secondaryColor,
+                  unselectedLabelColor: colorManager.currentColors.textPrimaryColor,
                   tabs: const [
                     Tab(text: 'Questions'),
                     Tab(text: 'Themes'),

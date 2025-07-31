@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/utils/colors.dart';
+import 'package:provider/provider.dart';
 
 class NQTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -17,23 +19,24 @@ class NQTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return TextField(
       controller: controller,
-      style: TextStyle(color: textPrimaryColor),
+      style: TextStyle(color: colorManager.currentColors.textPrimaryColor),
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(color: textPrimaryColor),
+        labelStyle: TextStyle(color: colorManager.currentColors.textPrimaryColor),
         border: const OutlineInputBorder(),
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: secondaryColor),
+          borderSide: BorderSide(color: colorManager.currentColors.secondaryColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: textPrimaryColor),
+          borderSide: BorderSide(color: colorManager.currentColors.textPrimaryColor),
         ),
       ),
       onSubmitted: (_) => onSubmitted != null ? onSubmitted!() : (),
       keyboardType: keyboardType,
-      cursorColor: secondaryColor,
+      cursorColor: colorManager.currentColors.secondaryColor,
     );
   }
 }

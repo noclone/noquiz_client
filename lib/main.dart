@@ -9,15 +9,22 @@ import 'package:noquiz_client/pages/admin/admin_room_lobby_page.dart';
 import 'package:noquiz_client/pages/display/display_room_lobby_page.dart';
 import 'package:noquiz_client/pages/player/player_room_lobby_page.dart';
 import 'package:noquiz_client/components/dialogs.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+import 'components/color_manager.dart';
 
 
 void main() {
-  runApp(const NoQuiz());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ColorManager(),
+      child: const NoQuiz(),
+    ),
+  );
 }
 
 class NoQuiz extends StatelessWidget {
@@ -25,22 +32,21 @@ class NoQuiz extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return MaterialApp(
       title: 'Quiz App',
       theme: ThemeData(
-        primarySwatch: Colors.orange,
-        scaffoldBackgroundColor: primaryColor,
+        scaffoldBackgroundColor: colorManager.currentColors.primaryColor,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.transparent,
-            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            textStyle: TextStyle(color: textPrimaryColor),
-            shadowColor: secondaryColor,
+            textStyle: TextStyle(color: colorManager.currentColors.textPrimaryColor),
+            shadowColor: colorManager.currentColors.secondaryColor,
             elevation: 5,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
-              side: BorderSide(color: secondaryColor, width: 2),
+              side: BorderSide(color: colorManager.currentColors.secondaryColor, width: 2),
             ),
           ),
         ),
@@ -288,6 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     double responsiveFontSize = min(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height) * 0.08;
+    final colorManager = Provider.of<ColorManager>(context);
 
     return Scaffold(
       body: Center(
@@ -320,7 +327,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Text(
                             'Create Room',
                             style: TextStyle(
-                              color: textPrimaryColor,
+                              color: colorManager.currentColors.textPrimaryColor,
                               fontWeight: FontWeight.bold,
                               fontSize: responsiveFontSize * 0.45,
                             ),
@@ -340,13 +347,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         Text(
                           'Available rooms',
                           style: TextStyle(
-                            color: textPrimaryColor,
+                            color: colorManager.currentColors.textPrimaryColor,
                             fontWeight: FontWeight.bold,
                             fontSize: responsiveFontSize * 0.5,
                           ),
                         ),
                         IconButton(
-                          color: tertiaryColor,
+                          color: colorManager.currentColors.tertiaryColor,
                           icon: const Icon(Icons.refresh),
                           onPressed: fetchRoomIds,
                         ),
@@ -362,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.transparent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
-                              side: BorderSide(color: secondaryColor, width: 2),
+                              side: BorderSide(color: colorManager.currentColors.secondaryColor, width: 2),
                             ),
                             margin: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 5),
@@ -371,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 roomIds[index],
                                 style: TextStyle(
                                     fontSize: responsiveFontSize * 0.4,
-                                    color: textPrimaryColor),
+                                    color: colorManager.currentColors.textPrimaryColor),
                                 textAlign: TextAlign.center,
                               ),
                               trailing: GestureDetector(
@@ -382,12 +389,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                       return AlertDialog(
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          side: BorderSide(color: secondaryColor, width: 2),
+                                          side: BorderSide(color: colorManager.currentColors.secondaryColor, width: 2),
                                         ),
-                                        backgroundColor: primaryColor,
+                                        backgroundColor: colorManager.currentColors.primaryColor,
                                         title: Text(
                                           'Join Room ${roomIds[index]}',
-                                          style: TextStyle(color: textPrimaryColor),
+                                          style: TextStyle(color: colorManager.currentColors.textPrimaryColor),
                                           textAlign: TextAlign.center,
                                         ),
                                         content: Column(
@@ -395,10 +402,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                           children: <Widget>[
                                             ListTile(
                                               leading: Icon(Icons.person,
-                                                  color: tertiaryColor),
+                                                  color: colorManager.currentColors.tertiaryColor),
                                               title: Text(
                                                 'Join as Player',
-                                                style: TextStyle(color: textPrimaryColor),
+                                                style: TextStyle(color: colorManager.currentColors.textPrimaryColor),
                                               ),
                                               onTap: () {
                                                 Navigator.of(context).pop();
@@ -407,10 +414,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                             ListTile(
                                               leading: Icon(Icons.tv,
-                                                  color: tertiaryColor),
+                                                  color: colorManager.currentColors.tertiaryColor),
                                               title: Text(
                                                 'Join as Display',
-                                                style: TextStyle(color: textPrimaryColor),
+                                                style: TextStyle(color: colorManager.currentColors.textPrimaryColor),
                                               ),
                                               onTap: () {
                                                 Navigator.of(context).pop();
@@ -420,10 +427,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ListTile(
                                               leading: Icon(
                                                   Icons.admin_panel_settings,
-                                                  color: tertiaryColor),
+                                                  color: colorManager.currentColors.tertiaryColor),
                                               title: Text(
                                                 'Join as Admin',
-                                                style: TextStyle(color: textPrimaryColor),
+                                                style: TextStyle(color: colorManager.currentColors.textPrimaryColor),
                                               ),
                                               onTap: () {
                                                 Navigator.of(context).pop();
@@ -437,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                                 child: IconButton(
-                                  color: tertiaryColor,
+                                  color: colorManager.currentColors.tertiaryColor,
                                   icon: const Icon(Icons.login),
                                   onPressed: () => _connect(roomIds[index]),
                                 ),

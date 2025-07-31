@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/utils/colors.dart';
+import 'package:provider/provider.dart';
 
 class NQBox extends StatelessWidget {
   final Widget child;
@@ -10,16 +12,17 @@ class NQBox extends StatelessWidget {
     Key? key,
     required this.child,
     this.padding = const EdgeInsets.all(8.0),
-    this.borderColor = secondaryColor,
+    required this.borderColor,
     this.spreadRadius = 5.0,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Container(
         padding: padding,
         decoration: BoxDecoration(
-          color: primaryColor,
+          color: colorManager.currentColors.primaryColor,
           border: Border.all(
             color: borderColor,
             width: 2.0,

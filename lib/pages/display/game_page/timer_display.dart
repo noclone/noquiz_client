@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 
 class TimerDisplay extends StatefulWidget {
   final Stream<dynamic> broadcastStream;
@@ -92,17 +94,18 @@ class _TimerDisplayState extends State<TimerDisplay> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final double responsiveFontSize = screenWidth * 0.05;
+    final colorManager = Provider.of<ColorManager>(context);
 
     return Center(
       child: Container(
         padding: const EdgeInsets.fromLTRB(40, 20, 40, 20),
         decoration: BoxDecoration(
-          color: primaryColor,
-          border: Border.all(color: secondaryColor, width: 2),
+          color: colorManager.currentColors.primaryColor,
+          border: Border.all(color: colorManager.currentColors.secondaryColor, width: 2),
           borderRadius: BorderRadius.circular(80),
           boxShadow: [
             BoxShadow(
-              color: secondaryColor.withAlpha(127),
+              color: colorManager.currentColors.secondaryColor.withAlpha(127),
               spreadRadius: 5,
               blurRadius: 7,
               offset: const Offset(0, 3),
@@ -114,7 +117,7 @@ class _TimerDisplayState extends State<TimerDisplay> {
           style: TextStyle(
             fontSize: responsiveFontSize,
             fontWeight: FontWeight.bold,
-            color: textPrimaryColor,
+            color: colorManager.currentColors.textPrimaryColor,
           ),
         ),
       ),

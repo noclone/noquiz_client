@@ -2,12 +2,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/bordered_text.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/network_image.dart';
 import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
 import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/questions.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class QuestionDisplay extends StatefulWidget {
@@ -99,6 +101,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
     final double questionFontSize =
         min(screenWidth * 0.05, screenHeight * 0.08);
     final double countdownFontSize = screenWidth * 0.1;
+    final colorManager = Provider.of<ColorManager>(context);
 
     if (showAnswer && mcqOptions.isEmpty) {
       return Center(
@@ -128,11 +131,13 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
                       text: countdown.toString(),
                       fontSize: countdownFontSize,
                       padding: const EdgeInsets.all(40.0),
+                      borderColor: colorManager.currentColors.secondaryColor,
                     )
                   : NQBorderedText(
                       text: currentQuestion,
                       fontSize: questionFontSize,
                       padding: const EdgeInsets.all(40.0),
+                      borderColor: colorManager.currentColors.secondaryColor,
                     ),
             ),
           ),
@@ -184,12 +189,12 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
                       padding: const EdgeInsets.all(8),
                       child: Container(
                           decoration: BoxDecoration(
-                            color: primaryColor,
+                            color: colorManager.currentColors.primaryColor,
                             border: Border.all(
                               color: showAnswer &&
                                       mcqOptions[index] != currentAnswer
                                   ? Colors.red
-                                  : secondaryColor,
+                                  : colorManager.currentColors.secondaryColor,
                               width: 2.0,
                             ),
                             borderRadius: BorderRadius.circular(10.0),
@@ -198,7 +203,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
                                 color: showAnswer &&
                                         mcqOptions[index] != currentAnswer
                                     ? Colors.red.withAlpha(127)
-                                    : secondaryColor.withAlpha(127),
+                                    : colorManager.currentColors.secondaryColor.withAlpha(127),
                                 spreadRadius: 5,
                                 blurRadius: 7,
                                 offset: const Offset(0, 3),
@@ -216,7 +221,7 @@ class _QuestionDisplayState extends State<QuestionDisplay> {
                                         mcqOptions[index],
                                         style: TextStyle(
                                           fontSize: screenWidth * 0.02,
-                                          color: textPrimaryColor,
+                                          color: colorManager.currentColors.textPrimaryColor,
                                         ),
                                         textAlign: TextAlign.center,
                                       ),

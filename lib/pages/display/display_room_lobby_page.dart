@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/appbar.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/textfield.dart';
 import 'package:noquiz_client/pages/display/game_page/display_room_game_page.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/room.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:qr_flutter_new/qr_flutter.dart';
 import 'dart:async';
@@ -80,6 +81,7 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Scaffold(
       appBar: const NQAppBar(title: 'Display Room'),
       body: Center(
@@ -94,7 +96,7 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
               data: qrData,
               version: QrVersions.auto,
               size: qrSize,
-              backgroundColor: textPrimaryColor,
+              backgroundColor: colorManager.currentColors.textPrimaryColor,
             );
           },
         )
