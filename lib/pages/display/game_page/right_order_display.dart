@@ -4,7 +4,6 @@ import 'package:noquiz_client/components/image_list.dart';
 import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/components/visibility_component.dart';
 import 'package:noquiz_client/pages/display/game_page/display_state.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:provider/provider.dart';
 

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:noquiz_client/components/box.dart';
 import 'package:noquiz_client/components/color_manager.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:provider/provider.dart';

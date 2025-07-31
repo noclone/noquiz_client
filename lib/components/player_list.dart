@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/color_manager.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:provider/provider.dart';
 

@@ -4,7 +4,6 @@ import 'package:noquiz_client/pages/admin/game_page/board_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/questions_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/right_order_section.dart';
 import 'package:noquiz_client/pages/admin/game_page/themes_section.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 

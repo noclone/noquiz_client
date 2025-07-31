@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/textfield.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';

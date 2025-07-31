@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/title_text.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:provider/provider.dart';
 
 import 'network_image.dart';

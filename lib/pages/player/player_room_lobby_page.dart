@@ -4,7 +4,6 @@ import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/player_list.dart';
 import 'package:noquiz_client/components/textfield.dart';
 import 'package:noquiz_client/pages/player/player_room_game_page.dart';
-import 'package:noquiz_client/utils/colors.dart';
 import 'package:noquiz_client/utils/room.dart';
 import 'package:noquiz_client/utils/socket.dart';
 import 'package:provider/provider.dart';
