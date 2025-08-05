@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:noquiz_client/components/appbar.dart';
 import 'package:noquiz_client/components/textfield.dart';
 import 'package:noquiz_client/components/title_text.dart';
 import 'package:noquiz_client/pages/admin/admin_room_lobby_page.dart';
@@ -297,6 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final colorManager = Provider.of<ColorManager>(context);
 
     return Scaffold(
+      appBar: NQAppBar(title: ""),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
