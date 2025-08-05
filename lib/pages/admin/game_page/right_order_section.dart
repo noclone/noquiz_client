@@ -102,14 +102,17 @@ class _RightOrderSectionState extends State<RightOrderSection> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.skip_next),
+                        color: colorManager.currentColors.textPrimaryColor,
                         onPressed: () => skipQuestion(index),
                       ),
                       IconButton(
                         icon: const Icon(Icons.send),
+                        color: colorManager.currentColors.textPrimaryColor,
                         onPressed: () => sendQuestionToSocket(index),
                       ),
                       IconButton(
                         icon: const Icon(Icons.visibility),
+                        color: colorManager.currentColors.textPrimaryColor,
                         onPressed: () => sendShowAnswersToSocket(index),
                       ),
                     ],

@@ -125,7 +125,7 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
                   },
                   child: Text(
                     'Show Answer',
-                    style: TextStyle(fontSize: screenWidth * 0.03),
+                    style: TextStyle(fontSize: screenWidth * 0.03, color: colorManager.currentColors.textPrimaryColor),
                   ),
                 ),
               ),

@@ -135,7 +135,7 @@ class _ThemesSectionState extends State<ThemesSection> {
                   padding: const EdgeInsets.all(4.0),
                   child: ElevatedButton(
                     onPressed: () => fetchThemeQuestions(theme),
-                    child: Text(theme),
+                    child: Text(theme, style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
                   ),
                 );
               } else if (index == themes.length) {
@@ -143,6 +143,7 @@ class _ThemesSectionState extends State<ThemesSection> {
                   padding: const EdgeInsets.all(4.0),
                   child: IconButton(
                     icon: const Icon(Icons.screen_share),
+                    color: colorManager.currentColors.textPrimaryColor,
                     onPressed: () => showThemes(),
                   ),
                 );
@@ -151,6 +152,7 @@ class _ThemesSectionState extends State<ThemesSection> {
                   padding: const EdgeInsets.all(4.0),
                   child: IconButton(
                     icon: const Icon(Icons.send),
+                    color: colorManager.currentColors.textPrimaryColor,
                     onPressed: () => sendThemeAnswers(),
                   ),
                 );

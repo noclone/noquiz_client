@@ -28,9 +28,8 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
   @override
   void initState() {
     super.initState();
-    final colorManager = Provider.of<ColorManager>(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showNicknameDialog(colorManager);
+      _showNicknameDialog();
     });
 
     widget.broadcastStream.listen((message) {
@@ -52,8 +51,9 @@ class _PlayerRoomLobbyPageState extends State<PlayerRoomLobbyPage> {
     checkRoomState(widget.roomId, goToNextPage);
   }
 
-  void _showNicknameDialog(ColorManager colorManager) {
+  void _showNicknameDialog() {
     TextEditingController nicknameController = TextEditingController();
+    final colorManager = Provider.of<ColorManager>(context, listen: false);
 
     showDialog(
       context: context,

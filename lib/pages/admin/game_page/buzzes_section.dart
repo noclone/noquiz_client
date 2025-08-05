@@ -66,7 +66,7 @@ class _BuzzesSectionState extends State<BuzzesSection> {
           const SizedBox(height: 10),
           ElevatedButton(
             onPressed: resetBuzzers,
-            child: const Text('Reset Buzzers'),
+            child: Text('Reset Buzzers', style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
           ),
           Expanded(
             child: ListView.builder(

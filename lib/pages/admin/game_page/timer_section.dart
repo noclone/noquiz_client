@@ -87,7 +87,7 @@ class _TimerSectionState extends State<TimerSection> {
           const SizedBox(height: 10),
           ElevatedButton(
             onPressed: toggleTimerVisibility,
-            child: Text(isTimerVisible ? 'Hide Timer' : 'Show Timer'),
+            child: Text(isTimerVisible ? 'Hide Timer' : 'Show Timer', style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
           ),
           const SizedBox(height: 10),
           Visibility(
@@ -98,7 +98,7 @@ class _TimerSectionState extends State<TimerSection> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: toggleTimer,
-                  child: Text(isTimerRunning ? 'Pause Timer' : 'Start Timer'),
+                  child: Text(isTimerRunning ? 'Pause Timer' : 'Start Timer', style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
                 ),
                 const SizedBox(height: 5),
                 ElevatedButton(
@@ -108,7 +108,7 @@ class _TimerSectionState extends State<TimerSection> {
                     });
                     _resetTimer();
                   },
-                  child: const Text('Reset Timer'),
+                  child: Text('Reset Timer', style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
                 ),
               ],
             ),

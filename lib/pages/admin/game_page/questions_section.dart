@@ -121,7 +121,7 @@ class _QuestionsSectionState extends State<QuestionsSection> {
                 padding: const EdgeInsets.all(4.0),
                 child: ElevatedButton(
                   onPressed: () => fetchCategoryQuestions(theme),
-                  child: Text(theme),
+                  child: Text(theme, style: TextStyle(color: colorManager.currentColors.textPrimaryColor)),
                 ),
               );
             },
@@ -149,14 +149,17 @@ class _QuestionsSectionState extends State<QuestionsSection> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.skip_next),
+                          color: colorManager.currentColors.textPrimaryColor,
                           onPressed: () => skipQuestion(index),
                         ),
                         IconButton(
                           icon: const Icon(Icons.send),
+                          color: colorManager.currentColors.textPrimaryColor,
                           onPressed: () => sendQuestionToSocket(index),
                         ),
                         IconButton(
                           icon: const Icon(Icons.visibility),
+                          color: colorManager.currentColors.textPrimaryColor,
                           onPressed: () => sendShowAnswersToSocket(index),
                         ),
                       ],

@@ -44,7 +44,7 @@ class _NumberInputComponentState extends State<NumberInputComponent> {
         ),
         ElevatedButton(
           onPressed: _submitNumber,
-          child: const Text('Submit'),
+          child: Text('Submit', style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
         ),
       ],
     );

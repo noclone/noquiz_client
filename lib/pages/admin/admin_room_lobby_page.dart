@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:noquiz_client/components/appbar.dart';
+import 'package:noquiz_client/components/color_manager.dart';
 import 'package:noquiz_client/components/player_list.dart';
 import 'package:noquiz_client/pages/admin/game_page/admin_room_game_page.dart';
 import 'package:noquiz_client/utils/preferences.dart';
 import 'package:noquiz_client/utils/socket.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 
@@ -99,6 +101,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorManager = Provider.of<ColorManager>(context);
     return Scaffold(
       appBar: const NQAppBar(title: 'Room lobby'),
       body: SafeArea(
@@ -113,12 +116,12 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _startGame,
-                child: const Text('Start Game'),
+                child: Text('Start Game', style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: _continue,
-                child: const Text('Continue'),
+                child: Text('Continue', style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
@@ -126,7 +129,7 @@ class _AdminRoomLobbyPageState extends State<AdminRoomLobbyPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                 ),
-                child: const Text('Delete Room'),
+                child: Text('Delete Room', style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
               ),
             ],
           ),

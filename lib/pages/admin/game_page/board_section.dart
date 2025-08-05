@@ -73,7 +73,7 @@ class _BoardSectionState extends State<BoardSection> {
     );
   }
 
-  List<Widget> actions(int index, ColorManager colorManager){
+  List<Widget> actions(int index, ColorManager colorManager) {
     return [
       IconButton(
         color: colorManager.currentColors.secondaryColor,
@@ -122,10 +122,24 @@ class _BoardSectionState extends State<BoardSection> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return NQBoard(
-      board: board,
-      imageVisibility: imageVisibility,
-      actions: actions,
+    return Stack(
+        children: [
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              icon: const Icon(Icons.send, color: Colors.blue),
+              onPressed: () {
+                sendToSocket(widget.channel, MessageSubject.BOARD, "UPDATE",
+                    {"BOARD": board, "IMAGE_VISIBILITY": imageVisibility});
+              },
+            ),
+          ),
+          NQBoard(
+            board: board,
+            imageVisibility: imageVisibility,
+            actions: actions,
+          )
+        ]
     );
   }
 }

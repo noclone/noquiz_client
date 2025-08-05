@@ -109,7 +109,7 @@ class _DisplayRoomLobbyPageState extends State<DisplayRoomLobbyPage> {
             ),
             ElevatedButton(
               onPressed: _validateAndShowQRCode,
-              child: const Text('Generate QR Code'),
+              child: Text('Generate QR Code', style: TextStyle(color: colorManager.currentColors.textPrimaryColor),),
             ),
           ],
         ),
