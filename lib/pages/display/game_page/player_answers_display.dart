@@ -33,6 +33,7 @@ class _PlayerAnswersDisplayState extends State<PlayerAnswersDisplay> {
       if (data.subject == MessageSubject.QUESTION && data.action == 'SEND') {
         setState(() {
           currentAnswer = data.content['ANSWER'] ?? '';
+          showAnswer = false;
         });
       } else if (data.subject == MessageSubject.PLAYER_ANSWER && data.action == 'SHOW') {
         players = List<Map<String, dynamic>>.from(data.content['PLAYERS'])..shuffle();
