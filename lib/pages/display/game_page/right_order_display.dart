@@ -107,7 +107,7 @@ class _RightOrderDisplayState extends State<RightOrderDisplay> {
               ),
               if (imageData.isNotEmpty)
                 NQImageList(
-                  imageList: imageData,
+                  imageList: showAnswer ? answerData : imageData,
                   answerList: showAnswer ? answerData : null,
                   showAnswer: showAnswer,
                   shadowText: !showAnswer,
